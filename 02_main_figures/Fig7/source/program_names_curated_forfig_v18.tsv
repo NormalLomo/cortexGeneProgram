@@ -1,0 +1,55 @@
+program	P	curated_name
+program_1	P1	P1 Reg. alt. mRNA splicing
+program_2	P2	P2 Axoneme assembly *
+program_3	P3	P3 Glutamate receptor signaling
+program_4	P4	P4 Mito. resp. chain asm. *
+program_5	P5	P5 Neg. reg. lipid biosynth.
+program_6	P6	P6 Pos. reg. secretion *
+program_7	P7	P7 Cation channel (interneuron)
+program_8	P8	P8 Neurofilament cytoskeleton (pan-neuronal)
+program_10	P9	P9 Reg. ECM organization
+program_11	P10	P10 Reg. SR Ca2+ release *
+program_12	P11	P11 Postsynaptic glutamate sig. *
+program_13	P12	P12 Oligodendrocyte development *
+program_14	P13	P13 Pos. reg. cation channel
+program_15	P14	P14 Astrocyte glutamate transport
+program_16	P15	P15 Axon guidance & outgrowth *
+program_17	P16	P16 Axon guidance / synaptic adhesion
+program_20	P17	P17 Glutamate-receptor signaling
+program_21	P18	P18 Reg. trans-synaptic signaling *
+program_22	P19	P19 Axon guidance/neural crest
+program_23	P20	P20 Heteroph. cell adhesion *
+program_24	P21	P21 Synaptic-vesicle exocytosis (inh)
+program_25	P22	P22 Neuropeptide signaling
+program_26	P23	P23 Reg. myelination
+program_27	P24	P24 Mixed/low-specificity *
+program_28	P25	P25 Voltage-gated ion channels *
+program_29	P26	P26 Glutamate-receptor (postsyn.) *
+program_30	P27	P27 Body fluid secretion *
+program_31	P28	P28 Axon guidance / cell adhesion (L6b)
+program_32	P29	P29 Ionotropic glutamate receptors *
+program_33	P30	P30 Cholinergic synapse
+program_34	P31	P31 Activity-dependent IEG
+program_36	P32	P32 Oligodendrocyte (diffuse) *
+program_37	P33	P33 Oligodendrocyte/myelin
+program_38	P34	P34 Oligodendrocyte diff.
+program_39	P35	P35 Synaptic adhesion & assembly *
+program_40	P36	P36 Microglial immune activation
+program_41	P37	P37 Calcium ion homeostasis *
+program_42	P38	P38 Reg. secretion by cell *
+program_43	P39	P39 ECM/OPC proteoglycan
+program_44	P40	P40 L-glutamate transport
+program_45	P41	P41 Myelination
+program_46	P42	P42 Pos. reg. vasoconstriction *
+program_47	P43	P43 Glutamate-receptor (postsyn.) *
+program_48	P44	P44 Sprouting angiogenesis
+program_49	P45	P45 Microglial immune adhesion
+program_50	P46	P46 ECM organization
+program_51	P47	P47 Reactive astrocyte/vascular
+program_53	P48	P48 Astrocyte metal homeostasis
+program_54	P49	P49 Microglial complement/MHC
+program_55	P50	P50 Reg. endoth. chemotaxis *
+program_56	P51	P51 Blood vessel morphogenesis
+program_58	P52	P52 Neuropeptide signaling
+program_59	P53	P53 Blood vessel morphog. (vasc.)
+program_60	P54	P54 Microglial chemokine signaling

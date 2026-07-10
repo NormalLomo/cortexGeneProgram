@@ -1,0 +1,15 @@
+step_id	command_or_source	inputs	outputs	status
+human.jorstad.download	01_data_processing/00_human_snrna_discovery/00_download_jorstad_cellxgene.R	CELLxGENE collection d17249d2-0e6e-4500-abb8-e6c93fa1ac6f	Five H5AD assets plus SOURCE_CHECKSUMS.tsv	EXECUTABLE_DYNAMIC_MANIFEST
+human.wei.record	01_data_processing/00_human_snrna_discovery/00_record_wei_stomics_manifest.py	STOMICS API listing for STDS0000242	69-row provider receipt selecting STDF000000000022418 as human_cnmf_input	READY_FOR_MANUAL_PROVIDER_RECEIPT
+human.merge	01_data_processing/00_human_snrna_discovery/01_prepare_jorstad_wei.py	SOURCE_CHECKSUMS.tsv; materialized STDF000000000022418 H5AD with byte/SHA256 receipt; blacklist	Raw-UMI merged human H5AD	MANUAL_PROVIDER_ACCESS_REQUIRED
+human.cnmf	01_data_processing/00_human_snrna_discovery/02_run_cnmf_discovery.py	Raw-UMI merged human H5AD; config/cnmf_discovery.yaml	100-replicate K sweep; K60 package-native outputs	READY_AFTER_HUMAN_MERGE
+human.cnmf.export	01_data_processing/00_human_snrna_discovery/03_export_cnmf_outputs.py	cNMF consensus output	gene_spectra_score; gene_spectra_tpm; consensus usages; downstream_outputs.json	READY_AFTER_CNMF
+mouse.download	01_data_processing/00_mouse_snrna_preprocessing/00_fetch_macosko_nemo_bag.sh	NeMO Raw_10x BDBag nemo:dat-y5zxh0y	Validated BDBag receipt and, when requested, 1068 raw FASTQ payloads	READY_FOR_BDBAG_DOWNLOAD
+mouse.subset	01_data_processing/00_mouse_snrna_preprocessing/00_fix_subset_mouse.py	Reconstructed Macosko H5AD and matching brain_struct metadata	761378-nucleus CSR H5AD	BLOCKED_H5AD_METADATA_RECONSTRUCTION
+spatial.wei.record	01_data_processing/00_human_snrna_discovery/00_record_wei_stomics_manifest.py	STOMICS API listing for STDS0000242	44 provider records with role spatial_cellbin_h5ad	READY_FOR_MANUAL_PROVIDER_RECEIPT
+spatial.bin50	01_data_processing/02_spatial_preprocessing/00_bin_spatial_counts.py	Materialized Wei spatial H5AD records with verified domain TSV	Bin50 H5AD	MANUAL_PROVIDER_ACCESS_AND_DOMAIN_METADATA_REQUIRED
+spatial.rctd_objects	01_data_processing/02_spatial_preprocessing/01_convert_h5ad_to_h5seurat.R;02_prepare_rctd_objects.R	Bin50 H5AD; reference H5AD	H5Seurat and RCTD reference/spatial RDS objects	READY_AFTER_SPATIAL_BIN50
+spatial.rctd	01_data_processing/02_spatial_preprocessing/02_run_rctd.R	RCTD reference/spatial RDS objects	RCTD result RDS	READY_AFTER_RCTD_OBJECTS
+han.sections	01_data_processing/02_spatial_preprocessing/03_validate_han_sections.py	Manual provider section receipt with exact IDs, paths, and SHA256	Validated Han section receipt	MANUAL_PROVIDER_ACCESS_EXACT_SECTION_OBJECT_REQUIRED
+crossspecies.macaque	01_data_processing/02_spatial_preprocessing/00_validate_chen_provider_files.py;04_prepare_chen_macaque.py	Manual provider Chen files; ortholog TSV; K60 spectra	Validated snRNA receipt and region-level macaque program scores	MANUAL_PROVIDER_ACCESS_REQUIRED
+final.assets	final_asset_map.tsv	Derived outputs from upstream analysis stages	Numbered figures, tables, and supplementary data	MIXED_SEE_FINAL_ASSET_MAP

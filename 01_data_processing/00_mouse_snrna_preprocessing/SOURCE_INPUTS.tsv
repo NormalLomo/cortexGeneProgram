@@ -1,0 +1,2 @@
+source_id	input_contract	acquisition_output	preparation_contract	status
+macosko_mouse	Exact NeMO Raw_10x BDBag plus a reconstructed H5AD and matching cell metadata	00_fetch_macosko_nemo_bag.sh retrieves and validates the 1068-payload BDBag; the source is raw FASTQ only	00_fix_subset_mouse.py filters brain_struct=Isocortex, requires 761378 nuclei, and streams configurable 10000-cell dense blocks by default	DERIVED_INPUT_EDGE_UNRESOLVED

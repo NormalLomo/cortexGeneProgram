@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: This candidate source release has no version-specific Zenodo DOI yet. It will be archived as a new version under the concept DOI; use the repository URL until Zenodo mints the matching version DOI.
+title: Human Cortical Gene Program Source Code
+type: software
+authors:
+  - family-names: Luo
+    given-names: Meng
+    orcid: https://orcid.org/0000-0003-0622-9060
+version: 2026.07.11
+date-released: 2026-07-11
+repository-code: https://github.com/NormalLomo/cortexGeneProgram
+license: MIT
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.21245200
+    description: Concept DOI for the collection of archived versions of this software.
+  - type: doi
+    value: 10.5281/zenodo.21245201
+    description: Versioned DOI for the initial archived software snapshot; it does not identify this 2026.07.11 candidate.

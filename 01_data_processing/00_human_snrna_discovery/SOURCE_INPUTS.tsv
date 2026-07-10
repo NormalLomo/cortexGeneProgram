@@ -1,0 +1,3 @@
+source_id	input_contract	acquisition_output	preparation_contract	status
+jorstad_supercluster	Five verified H5AD assets from the Jorstad collection API	SOURCE_CHECKSUMS.tsv with dataset_id,file_name,bytes,sha256	01_prepare_jorstad_wei.py accepts --jorstad-manifest and merges all five before enforcing 814034 filtered nuclei	EXECUTABLE_DYNAMIC_MANIFEST
+wei_cortex	Aggregate snRNA H5AD STDF000000000022418 plus metadata CSV STDF000000000022423 from STDS0000242	00_record_wei_stomics_manifest.py writes the 69-row provider receipt and selects the aggregate H5AD as human_cnmf_input	01_prepare_jorstad_wei.py enforces 222005 filtered nuclei and records the materialized input SHA256	MANUAL_PROVIDER_ACCESS_REQUIRED

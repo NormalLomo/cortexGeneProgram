@@ -1,0 +1,4 @@
+source_id	input_contract	preprocessing_chain	status
+wei_spatial	Exact raw spatial H5AD with nonnegative counts and coordinates plus anatomical-domain TSV	00_record_wei_stomics_manifest.py -> 00_bin_spatial_counts.py -> 01_convert_h5ad_to_h5seurat.R -> 01_sct_program_scoring.R -> 02_prepare_rctd_objects.R -> 02_run_rctd.R	MANUAL_PROVIDER_ACCESS_AND_DOMAIN_METADATA_REQUIRED
+han_spatial	Nonempty provider-selected section receipt with exact relative files and SHA256 values	03_validate_han_sections.py then section-level preprocessing	MANUAL_PROVIDER_ACCESS_EXACT_SECTION_OBJECT_REQUIRED
+chen_macaque	Provider-acquired macaque expression H5AD, region field, and one-to-one ortholog TSV	00_validate_chen_provider_files.py -> 04_prepare_chen_macaque.py	MANUAL_PROVIDER_ACCESS_REQUIRED

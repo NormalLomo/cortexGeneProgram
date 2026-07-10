@@ -1,0 +1,12 @@
+{
+  "R": {"Version": "4.3.3", "Repositories": [{"Name": "CRAN", "URL": "https://cloud.r-project.org"}]},
+  "Packages": {
+    "digest": {"Package": "digest", "Version": "0.6.36", "Source": "Repository", "Repository": "CRAN"},
+    "httr": {"Package": "httr", "Version": "1.4.7", "Source": "Repository", "Repository": "CRAN"},
+    "jsonlite": {"Package": "jsonlite", "Version": "1.8.8", "Source": "Repository", "Repository": "CRAN"},
+    "Seurat": {"Package": "Seurat", "Version": "5.1.0", "Source": "Repository", "Repository": "CRAN"},
+    "sctransform": {"Package": "sctransform", "Version": "0.4.1", "Source": "Repository", "Repository": "CRAN"},
+    "SeuratDisk": {"Package": "SeuratDisk", "Version": "0.0.0.9021", "Source": "GitHub", "RemoteUsername": "mojaveazure", "RemoteRepo": "seurat-disk"},
+    "spacexr": {"Package": "spacexr", "Version": "2.2.0", "Source": "Repository", "Repository": "CRAN"}
+  }
+}

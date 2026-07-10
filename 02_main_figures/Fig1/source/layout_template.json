@@ -1,0 +1,430 @@
+{
+  "figure": "Fig.1 main - Cortical gene-expression program atlas (10 panels)",
+  "build_script": "scripts/fig1/fig1_svg_panels.R",
+  "crop_tool": "scripts/fig1/fig1_ink_crop.py (gs -sDEVICE=bbox tight ink crop)",
+  "coordinate_system": {
+    "units": "mm",
+    "origin": "top-left",
+    "x": "rightward",
+    "y": "downward"
+  },
+  "page": {
+    "w": 185.0,
+    "h": 292.513,
+    "aspect_w_h": 0.6324,
+    "orientation": "portrait",
+    "note": "page HEIGHT computed from gapless packed rows"
+  },
+  "layout": {
+    "content_w": 178.0,
+    "margin": 3.5,
+    "gutter": 0.0,
+    "title_strip_h": 6.0,
+    "tag_offset": 0.6,
+    "rows": [
+      [
+        "a"
+      ],
+      [
+        "b",
+        "c"
+      ],
+      [
+        "d"
+      ],
+      [
+        "e",
+        "f",
+        "g"
+      ],
+      [
+        "h",
+        "i",
+        "j"
+      ]
+    ],
+    "row_heights_mm": [
+      41.95,
+      93.05,
+      42.15,
+      53.9,
+      48.46
+    ],
+    "pack": "GUTTER=0, panels abut row-wise, row height = W/sum(AR), no stretch"
+  },
+  "cropped_aspects": {
+    "a": 4.2428,
+    "b": 0.7842,
+    "c": 1.1287,
+    "d": 4.2226,
+    "e": 0.6993,
+    "f": 0.9022,
+    "g": 1.7011,
+    "h": 0.9017,
+    "i": 0.7668,
+    "j": 2.0049
+  },
+  "rules": {
+    "tight_pack": "GUTTER=0: panels ABUT with no empty borders between them",
+    "no_stretch": "every box AR == panel cropped AR -> fit fraction == 1.0"
+  },
+  "panels": [
+    {
+      "panel": "a",
+      "name": "Graphical abstract (study design)",
+      "natural_aspect": 4.2428,
+      "box": {
+        "x": 3.5,
+        "y": 9.5,
+        "w": 178.0,
+        "h": 41.953
+      },
+      "box_aspect": 4.2428,
+      "box_rel": {
+        "x": 0.0189,
+        "y": 0.0325,
+        "w": 0.9622,
+        "h": 0.1434
+      },
+      "fit": {
+        "panel_w": 178.0,
+        "panel_h": 41.95,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "a",
+      "tag_pos": {
+        "x": 4.1,
+        "y": 10.1,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_a.svg",
+        "patchwork_obj": "p_a"
+      }
+    },
+    {
+      "panel": "b",
+      "name": "Program x subclass identity heatmap",
+      "natural_aspect": 0.7842,
+      "box": {
+        "x": 3.5,
+        "y": 51.453,
+        "w": 72.972,
+        "h": 93.052
+      },
+      "box_aspect": 0.7842,
+      "box_rel": {
+        "x": 0.0189,
+        "y": 0.1759,
+        "w": 0.3944,
+        "h": 0.3181
+      },
+      "fit": {
+        "panel_w": 72.97,
+        "panel_h": 93.05,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "b",
+      "tag_pos": {
+        "x": 4.1,
+        "y": 52.053,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_b.svg",
+        "patchwork_obj": "p_b"
+      }
+    },
+    {
+      "panel": "c",
+      "name": "UMAP + subclass contours",
+      "natural_aspect": 1.1287,
+      "box": {
+        "x": 76.472,
+        "y": 51.453,
+        "w": 105.028,
+        "h": 93.052
+      },
+      "box_aspect": 1.1287,
+      "box_rel": {
+        "x": 0.4134,
+        "y": 0.1759,
+        "w": 0.5677,
+        "h": 0.3181
+      },
+      "fit": {
+        "panel_w": 105.03,
+        "panel_h": 93.05,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "c",
+      "tag_pos": {
+        "x": 77.072,
+        "y": 52.053,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_c.svg",
+        "patchwork_obj": "p_c"
+      }
+    },
+    {
+      "panel": "d",
+      "name": "Top-gene loadings per program (banner)",
+      "natural_aspect": 4.2226,
+      "box": {
+        "x": 3.5,
+        "y": 144.506,
+        "w": 178.0,
+        "h": 42.154
+      },
+      "box_aspect": 4.2226,
+      "box_rel": {
+        "x": 0.0189,
+        "y": 0.494,
+        "w": 0.9622,
+        "h": 0.1441
+      },
+      "fit": {
+        "panel_w": 178.0,
+        "panel_h": 42.15,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "d",
+      "tag_pos": {
+        "x": 4.1,
+        "y": 145.106,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_d.svg",
+        "patchwork_obj": "p_d"
+      }
+    },
+    {
+      "panel": "e",
+      "name": "Functional-identity lollipop",
+      "natural_aspect": 0.6993,
+      "box": {
+        "x": 3.5,
+        "y": 186.66,
+        "w": 37.69,
+        "h": 53.897
+      },
+      "box_aspect": 0.6993,
+      "box_rel": {
+        "x": 0.0189,
+        "y": 0.6381,
+        "w": 0.2037,
+        "h": 0.1843
+      },
+      "fit": {
+        "panel_w": 37.69,
+        "panel_h": 53.9,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "e",
+      "tag_pos": {
+        "x": 4.1,
+        "y": 187.26,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_e.svg",
+        "patchwork_obj": "p_e"
+      }
+    },
+    {
+      "panel": "f",
+      "name": "Program-sharing chord",
+      "natural_aspect": 0.9022,
+      "box": {
+        "x": 41.19,
+        "y": 186.66,
+        "w": 48.626,
+        "h": 53.897
+      },
+      "box_aspect": 0.9022,
+      "box_rel": {
+        "x": 0.2226,
+        "y": 0.6381,
+        "w": 0.2628,
+        "h": 0.1843
+      },
+      "fit": {
+        "panel_w": 48.63,
+        "panel_h": 53.9,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "f",
+      "tag_pos": {
+        "x": 41.79,
+        "y": 187.26,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_f.svg",
+        "patchwork_obj": "p_f"
+      }
+    },
+    {
+      "panel": "g",
+      "name": "Program specificity ridgeline",
+      "natural_aspect": 1.7011,
+      "box": {
+        "x": 89.816,
+        "y": 186.66,
+        "w": 91.684,
+        "h": 53.897
+      },
+      "box_aspect": 1.7011,
+      "box_rel": {
+        "x": 0.4855,
+        "y": 0.6381,
+        "w": 0.4956,
+        "h": 0.1843
+      },
+      "fit": {
+        "panel_w": 91.68,
+        "panel_h": 53.9,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "g",
+      "tag_pos": {
+        "x": 90.416,
+        "y": 187.26,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_g.svg",
+        "patchwork_obj": "p_g"
+      }
+    },
+    {
+      "panel": "h",
+      "name": "Marker x subclass heatmap",
+      "natural_aspect": 0.9017,
+      "box": {
+        "x": 3.5,
+        "y": 240.557,
+        "w": 43.693,
+        "h": 48.456
+      },
+      "box_aspect": 0.9017,
+      "box_rel": {
+        "x": 0.0189,
+        "y": 0.8224,
+        "w": 0.2362,
+        "h": 0.1657
+      },
+      "fit": {
+        "panel_w": 43.69,
+        "panel_h": 48.46,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "h",
+      "tag_pos": {
+        "x": 4.1,
+        "y": 241.157,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_h.svg",
+        "patchwork_obj": "p_h"
+      }
+    },
+    {
+      "panel": "i",
+      "name": "Marker UMAP feature plots (2 x 2)",
+      "natural_aspect": 0.7668,
+      "box": {
+        "x": 47.193,
+        "y": 240.557,
+        "w": 37.156,
+        "h": 48.456
+      },
+      "box_aspect": 0.7668,
+      "box_rel": {
+        "x": 0.2551,
+        "y": 0.8224,
+        "w": 0.2008,
+        "h": 0.1657
+      },
+      "fit": {
+        "panel_w": 37.16,
+        "panel_h": 48.46,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "i",
+      "tag_pos": {
+        "x": 47.793,
+        "y": 241.157,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_i.svg",
+        "patchwork_obj": "p_i"
+      }
+    },
+    {
+      "panel": "j",
+      "name": "Program co-activity network",
+      "natural_aspect": 2.0049,
+      "box": {
+        "x": 84.35,
+        "y": 240.557,
+        "w": 97.15,
+        "h": 48.456
+      },
+      "box_aspect": 2.0049,
+      "box_rel": {
+        "x": 0.4559,
+        "y": 0.8224,
+        "w": 0.5251,
+        "h": 0.1657
+      },
+      "fit": {
+        "panel_w": 97.15,
+        "panel_h": 48.46,
+        "fill_fraction": 1.0,
+        "stretched": false
+      },
+      "tag": "j",
+      "tag_pos": {
+        "x": 84.95,
+        "y": 241.157,
+        "anchor": "top-left"
+      },
+      "source": {
+        "render": "svg_panels/fig1_j.svg",
+        "patchwork_obj": "p_j"
+      }
+    }
+  ],
+  "packing_check": {
+    "gutter": 0.0,
+    "max_fill_gap_from_1": 0.0,
+    "no_stretch_no_letterbox": true,
+    "row_width_err_mm": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "rows_abut_W_ok": true,
+    "x_used": 181.5,
+    "x_limit": 181.5,
+    "y_used": 289.013,
+    "y_limit": 289.013
+  }
+}

@@ -1,0 +1,61 @@
+P	v17_wrong_name	v18_correct_name	confidence	changed
+P1	P1 Reg. alt. mRNA splicing	P1 Reg. alt. mRNA splicing	brain-sig	no
+P2	P2 Axoneme assembly*	P2 Axoneme assembly *	brain-weak	YES
+P3	P3 Glutamate receptor signaling	P3 Glutamate receptor signaling	brain-sig	no
+P4	P4 Mito. resp. chain asm.*	P4 Mito. resp. chain asm. *	brain-weak	YES
+P5	P5 Neg. reg. lipid biosynth.	P5 Neg. reg. lipid biosynth.	brain-sig	no
+P6	P6 Pos. reg. secretion*	P6 Pos. reg. secretion *	brain-weak	YES
+P7	P7 Glutamate metabolism	P7 Cation channel (interneuron)	brain-sig	YES
+P8	P8 Neurofilament cytoskeleton (pan-neuronal)	P8 Neurofilament cytoskeleton (pan-neuronal)	brain-sig	no
+P9	P9 Ca2+ import to cytosol	P9 Ca2+ import to cytosol	brain-sig	no
+P10	P10 Reg. ECM organization	P10 Reg. ECM organization	brain-sig	no
+P11	P11 Reg. SR Ca2+ release*	P11 Reg. SR Ca2+ release *	brain-weak	YES
+P12	P12 Sterol biosynthesis*	P12 Postsynaptic glutamate sig. *	brain-weak	YES
+P13	P13 Astrocyte development*	P13 Oligodendrocyte development *	brain-weak	YES
+P14	P14 Pos. reg. cation channel	P14 Pos. reg. cation channel	brain-sig	no
+P15	P15 Pos. reg. endoth. migration	P15 Astrocyte glutamate transport	brain-sig	YES
+P16	P16 Zn2+ transport*	P16 Axon guidance & outgrowth *	brain-weak	YES
+P17	P17 Axon guidance / synaptic adhesion	P17 Axon guidance / synaptic adhesion	brain-sig	no
+P18	P18 Ca2+ import to cytosol*	P18 Ca2+ import to cytosol *	brain-weak	YES
+P19	P19 Retrograde axonal transport	P19 Retrograde axonal transport	brain-sig	no
+P20	P20 Ca2+ import to cytosol	P20 Glutamate-receptor signaling	brain-sig	YES
+P21	P21 Reg. trans-synaptic signaling*	P21 Reg. trans-synaptic signaling *	brain-weak	YES
+P22	P22 Sprouting angiogenesis	P22 Axon guidance/neural crest	brain-sig	YES
+P23	P23 Heteroph. cell adhesion*	P23 Heteroph. cell adhesion *	brain-weak	YES
+P24	P24 Synaptic-vesicle exocytosis (inh)	P24 Synaptic-vesicle exocytosis (inh)	brain-sig	no
+P25	P25 Neuropeptide signaling	P25 Neuropeptide signaling	brain-sig	no
+P26	P26 Reg. myelination	P26 Reg. myelination	brain-sig	no
+P27	P27 Cholesterol biosynthesis*	P27 Mixed/low-specificity *	brain-weak	YES
+P28	P28 Anion transmemb. transport*	P28 Voltage-gated ion channels *	brain-weak	YES
+P29	P29 Glutamatergic synapse*	P29 Glutamate-receptor (postsyn.) *	brain-weak	YES
+P30	P30 Body fluid secretion*	P30 Body fluid secretion *	brain-weak	YES
+P31	P31 Axon guidance / cell adhesion (L6b)	P31 Axon guidance / cell adhesion (L6b)	brain-sig	no
+P32	P32 Action potential*	P32 Ionotropic glutamate receptors *	brain-weak	YES
+P33	P33 Cholinergic synapse	P33 Cholinergic synapse	brain-sig	no
+P34	P34 Pos. reg. chemokine prod.	P34 Activity-dependent IEG	brain-sig	YES
+P35	P35 Axoneme assembly*	P35 Axoneme assembly *	brain-weak	YES
+P36	P36 Pos. reg. cell-cell adhesion*	P36 Oligodendrocyte (diffuse) *	brain-weak	YES
+P37	P37 Leukocyte cell-cell adhesion	P37 Oligodendrocyte/myelin	brain-sig	YES
+P38	P38 Heteroph. cell adhesion	P38 Oligodendrocyte diff.	brain-sig	YES
+P39	P39 Cholinergic synapse*	P39 Synaptic adhesion & assembly *	brain-weak	YES
+P40	P40 Pos. reg. chemokine	P40 Microglial immune activation	brain-sig	YES
+P41	P41 Calcium ion homeostasis*	P41 Calcium ion homeostasis *	brain-weak	YES
+P42	P42 Reg. secretion by cell*	P42 Reg. secretion by cell *	brain-weak	YES
+P43	P43 Neg. reg. angiogenesis	P43 ECM/OPC proteoglycan	brain-sig	YES
+P44	P44 L-glutamate transport	P44 L-glutamate transport	brain-sig	no
+P45	P45 Myelination	P45 Myelination	brain-sig	no
+P46	P46 Pos. reg. vasoconstriction*	P46 Pos. reg. vasoconstriction *	brain-weak	YES
+P47	P47 Glutamatergic synapse*	P47 Glutamate-receptor (postsyn.) *	brain-weak	YES
+P48	P48 Sprouting angiogenesis	P48 Sprouting angiogenesis	brain-sig	no
+P49	P49 Leukocyte adhesion	P49 Microglial immune adhesion	brain-sig	YES
+P50	P50 ECM organization	P50 ECM organization	brain-sig	no
+P51	P51 Pos. reg. vasculature dev.	P51 Reactive astrocyte/vascular	brain-sig	YES
+P52	P52 Synapse assembly*	P52 Synapse assembly *	brain-weak	YES
+P53	P53 Reg. endoth. migration	P53 Astrocyte metal homeostasis	brain-sig	YES
+P54	P54 Pos. reg. TNF cytokine prod.	P54 Microglial complement/MHC	brain-sig	YES
+P55	P55 Reg. endoth. chemotaxis*	P55 Reg. endoth. chemotaxis *	brain-weak	YES
+P56	P56 Blood vessel development	P56 Blood vessel morphogenesis	brain-sig	YES
+P57	P57 SV proton transport (pan-neuronal)	P57 SV proton transport (pan-neuronal)	brain-sig	no
+P58	P58 Neuropeptide signaling	P58 Neuropeptide signaling	brain-sig	no
+P59	P59 Blood vessel morphog. (vasc.)	P59 Blood vessel morphog. (vasc.)	brain-sig	no
+P60	P60 Chemokine signaling	P60 Microglial chemokine signaling	brain-sig	YES
