@@ -3,14 +3,15 @@
 # Panels: a lollipop conservation rank, b 14x14 region-pair heatmap, c expr-vs-neigh scatter
 # (rewiring quadrant), d conservation-distance curve, e hit partner networks (ggraph),
 # f hit spatial fields (bin50), g multi-step filter funnel.
-# 2026-06-20 renumber patch: namemap now keyed by cnmf_component (old integer) -> new_P label.
+# Display labels map source component IDs to contiguous retained-program IDs.
 suppressMessages({
   library(ggplot2); library(data.table); library(ggrepel)
   library(ggraph); library(igraph); library(scales); library(svglite)
 })
-B   <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1"
-OUT <- file.path(B, "xregion_auroc")
-FIG <- "CORTEX_PROGRAM_ROOT/figures/xregion_auroc"
+ROOT <- Sys.getenv("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
+B   <- file.path(ROOT, "results/crossregion_v1")
+OUT <- Sys.getenv("XREGION_OUTPUT_DIR", file.path(B, "xregion_auroc"))
+FIG <- Sys.getenv("FIGS6_OUTPUT_DIR", file.path(ROOT, "figures/xregion_auroc"))
 dir.create(FIG, showWarnings=FALSE, recursive=TRUE)
 PANELS <- file.path(FIG, "panels"); dir.create(PANELS, showWarnings=FALSE)
 
@@ -28,8 +29,9 @@ sv <- function(p, name, w, h) {
   print(p); invisible(dev.off())
   cat("panel", name, "->", w, "x", h, "in\n")
 }
-# ------ renumber patch: key by cnmf_component (old integer), display new_P label ------
-nm <- fread(file.path(B,"program_names.tsv"))
+# Map source component IDs to retained display labels.
+nm <- fread(Sys.getenv("RETAIN_MAP", file.path(ROOT,"tables/TableS3_program_annotation.tsv")))
+setnames(nm, "functional_name", "name_short")
 # nm$new_P is "P1".."P54" or "EXCLUDED"; nm$cnmf_component is the old integer 1..60
 # build lab from new_P + name_short (confidence stars preserved)
 nm[, lab := ifelse(new_P == "EXCLUDED", NA_character_,
@@ -37,12 +39,11 @@ nm[, lab := ifelse(new_P == "EXCLUDED", NA_character_,
                     paste0(new_P," ",name_short," *"),
                     paste0(new_P," ",name_short)))]
 # namemap: key = old cnmf_component integer (as character), value = new-P label
-namemap <- setNames(nm$lab, as.character(nm$cnmf_component))
+namemap <- setNames(nm$lab, sub("^P", "", nm$new_P))
 # old2new: key = old integer (as character), value = new_P string e.g. "P21"
 old2new <- setNames(nm$new_P, as.character(nm$cnmf_component))
-cat("namemap sample (old 24->new P21):", namemap["24"], "\n")
-cat("namemap sample (old 31->new P28):", namemap["31"], "\n")
-cat("namemap sample (old 36->new P32):", namemap["36"], "\n")
+stopifnot(nrow(nm) == 54, identical(sort(as.integer(names(namemap))), 1:54))
+cat("namemap sample (retained P21):", namemap["21"], "\n")
 # -----------------------------------------------------------------------
 
 ## ---------- a: lollipop conservation ranking (expr vs neigh, top+bottom) ----------
@@ -60,8 +61,8 @@ pa <- ggplot(sel) +
   geom_point(aes(y=lab, x=expr_cons_auroc, colour="Expression"), size=1.6) +
   geom_point(aes(y=lab, x=neigh_cons_auroc, colour="Co-activation"), size=1.6) +
   scale_colour_manual(values=c(Expression="#2C6FB0", `Co-activation`="#D1495B"), name=NULL) +
-  scale_x_continuous("Conservation AUROC", limits=c(0.5,1), breaks=seq(.5,1,.1)) +
-  labs(y=NULL, title="Program conservation across 14 regions") +
+  scale_x_continuous("AUROC", limits=c(0.5,1), breaks=seq(.5,1,.1)) +
+  labs(y=NULL, title="Conservation") +
   th + theme(legend.position=c(.18,.5), legend.background=element_rect(fill=alpha("white",.7),colour=NA))
 sv(pa, "a_lollipop", 2.41, 2.54)
 
@@ -79,9 +80,9 @@ dd[, auroc := as.numeric(auroc)]
 dd[, rA:=factor(rA,levels=roword)][, rB:=factor(rB,levels=rev(roword))]
 pb <- ggplot(dd, aes(rA, rB, fill=auroc)) +
   geom_tile(colour="white", linewidth=.3) +
-  scale_fill_gradientn("Expr.\nAUROC", colours=c("#3B4CC0","#EAEAEA","#B40426"),
+  scale_fill_gradientn("AUC", colours=c("#3B4CC0","#EAEAEA","#B40426"),
                        values=rescale(c(.85,.93,1)), limits=c(.85,1)) +
-  coord_fixed() + labs(x=NULL,y=NULL,title="Region-pair expression\nconservation") +
+  coord_fixed() + labs(x=NULL,y=NULL,title="Expression conservation\nby region pair") +
   th + theme(plot.title=element_text(size=BASefont, face="bold", lineheight=.95),
              axis.text.x=element_text(angle=90, vjust=.5, hjust=1, size=BASefont-2),
              axis.text.y=element_text(size=BASefont-2),
@@ -103,7 +104,7 @@ pc3 <- ggplot(M, aes(expr_cons_auroc, neigh_cons_auroc)) +
   scale_colour_manual(values=c(`FALSE`="grey65",`TRUE`="#C0392B"), guide="none") +
   scale_size_manual(values=c(`FALSE`=1.1,`TRUE`=2.2), guide="none") +
   coord_fixed(ratio=1, xlim=c(.74,1), ylim=c(.55,.95)) +
-  labs(x="Expression conservation AUROC", y="Co-activation conservation AUROC",
+  labs(x="Expression AUROC", y="Co-activation AUROC",
        title="Expression vs\nneighborhood conservation") +
   th + theme(plot.title=element_text(size=BASefont, face="bold", lineheight=.95))
 sv(pc3, "c_scatter", 1.89, 2.54)
@@ -121,29 +122,20 @@ pd4 <- ggplot(long, aes(dist, auroc, colour=metric)) +
   geom_point(size=1, alpha=.6) +
   geom_smooth(method="lm", se=TRUE, linewidth=.6, alpha=.15) +
   scale_colour_manual(values=c(Expression="#2C6FB0",`Co-activation`="#D1495B"), name=NULL) +
+  scale_x_continuous(expand=expansion(mult=c(.02,.08))) +
   labs(x="Transcriptomic region distance", y="Pairwise conservation AUROC",
        title="Conservation decays with region distance", subtitle=subt) +
   th + theme(plot.subtitle=element_text(size=BASefont-2, colour="grey30"),
-             legend.position=c(.78,.88), aspect.ratio=1,
+             legend.position=c(.78,.88), aspect.ratio=.68,
              legend.background=element_rect(fill=alpha("white",.7),colour=NA))
-sv(pd4, "d_distcurve", 4.74, 4.60)
+sv(pd4, "d_distcurve", 3.50, 2.40)
 
-## ---------- e: hit partner networks — ONE MEDIUM CELL PER HIT (3 cells) ----------
-## Each cell = the hit's co-activation partner network in a representative
-## REWIRING REGION-PAIR: a high-conservation reference region (left) vs the hit's
-## strongest rewiring-target region (right), drawn side-by-side. Shared partners
-## (kept across the pair) are coloured one way; region-specific partners (turnover)
-## another, so the partner reshuffle ("neighborhood rewiring") is the visual point.
-## NOTE (caveat): co-activation = within-cell program co-usage, NOT signalling/causal.
+## ---------- e-g: strict-hit network pairs and spatial fields ----------
 ed <- fread(file.path(OUT,"fig_partner_network_edges.tsv"))
 hits_tab <- fread(file.path(OUT,"m4_rewiring_hits.tsv"))
+panel_plan <- fread(file.path(OUT,"fig_hit_panel_plan.tsv"))
+stopifnot(nrow(panel_plan) == 3, nrow(hits_tab) > 0)
 jacc_of <- setNames(hits_tab$mean_partner_jaccard, hits_tab$program)
-# representative conserved-vs-rewired region pair per hit (chosen from per-region
-# neighborhood self-AUROC: ref = high-conservation region, tgt = lowest for this hit)
-# Keys are OLD cnmf integers (matching the data files); display uses new_P labels.
-PAIRS <- list(`24`=c(ref="M1",    tgt="ITG"),
-              `31`=c(ref="DLPFC", tgt="V1"),
-              `36`=c(ref="M1",    tgt="ITG"))
 TOPK <- 8
 EDGE_BLUE <- "#7FB3D5"
 
@@ -163,9 +155,9 @@ mkpair_df <- function(h, ref, tgt) {
     data.table(partner=sub$partner, corr=sub$corr,
                px=cx + 1.0*cos(ang), py=1.0*sin(ang))
   }
-  rr <- radial(sref, 0); rt <- radial(stgt, 3.4)   # two clusters, x-offset apart
+  rr <- radial(sref, 0); rt <- radial(stgt, 3.2)   # two clusters, x-offset apart
   rr[, reg := ref]; rt[, reg := tgt]
-  hubs <- data.table(reg=c(ref,tgt), hx=c(0,3.4), hy=c(0,0))
+  hubs <- data.table(reg=c(ref,tgt), hx=c(0,3.2), hy=c(0,0))
   list(
     nodes = rbind(
       cbind(rr, role=ifelse(rr$partner %in% shared,"shared","ref_only")),
@@ -173,28 +165,25 @@ mkpair_df <- function(h, ref, tgt) {
     hubs = hubs, shared = shared,
     edges = rbind(
       data.table(reg=ref, x0=0,   y0=0, x1=rr$px, y1=rr$py, w=rr$corr),
-      data.table(reg=tgt, x0=3.4, y0=0, x1=rt$px, y1=rt$py, w=rt$corr)),
+      data.table(reg=tgt, x0=3.2, y0=0, x1=rt$px, y1=rt$py, w=rt$corr)),
     nshare=length(shared), nref=length(pref), ntgt=length(ptgt))
 }
 
 mknet_pair <- function(h, ref, tgt) {
   hubname <- namemap[as.character(h)]
-  # new_P label for the hub node (e.g. "P21" for old cnmf 24)
-  hub_newP <- old2new[as.character(h)]
+  hub_newP <- paste0("P", h)
   D <- mkpair_df(h, ref, tgt)
   nd <- D$nodes; eg <- D$edges; hb <- D$hubs
   turn <- 1 - D$nshare/((D$nref+D$ntgt)/2)   # mean turnover over the two regions
   rolecol <- c(shared="#7D3C98", ref_only="#2C6FB0", tgt_only="#D1495B")
-  # partner node labels: look up new_P for each partner old integer
-  nd[, partner_label := old2new[as.character(partner)]]
-  nd[is.na(partner_label), partner_label := paste0("P",partner)]  # fallback
+  nd[, partner_label := paste0("P", partner)]
   ggplot() +
     geom_segment(data=eg, aes(x=x0,y=y0,xend=x1,yend=y1, linewidth=w, alpha=w),
                  colour=EDGE_BLUE, lineend="round") +
     geom_point(data=hb, aes(hx,hy), size=5.2, colour="#922B21") +
     geom_text(data=hb, aes(hx,hy,label=hub_newP), size=2.0, colour="white", fontface="bold") +
     geom_point(data=nd, aes(px,py, fill=role), shape=21, colour="white", stroke=.3, size=3.4) +
-    geom_text(data=nd, aes(px,py,label=partner_label), size=1.9, colour="grey15") +
+    geom_text(data=nd, aes(px,py,label=partner_label), size=1.6, colour="grey15") +
     geom_text(data=hb, aes(hx, -1.45, label=reg), size=2.4, fontface="bold", colour="grey10") +
     scale_fill_manual(values=rolecol, breaks=c("shared","ref_only","tgt_only"),
                       labels=c("shared","ref-specific","target-specific"), name=NULL) +
@@ -210,18 +199,12 @@ mknet_pair <- function(h, ref, tgt) {
           legend.key.size=unit(2.6,"mm"), legend.box.spacing=unit(0,"mm"),
           plot.margin=margin(1,1,1,1))
 }
-# Output SVG names use NEW P numbers (P21/P28/P32); data lookup still uses old integers
-for (h in c(24,31,36)) {
-  p <- PAIRS[[as.character(h)]]
-  newp <- sub("^P","", old2new[as.character(h)])  # e.g. "21" from "P21"
-  sv(mknet_pair(h, p["ref"], p["tgt"]), sprintf("e%s_netpair", newp), 2.35, 1.68)
+for (i in seq_len(nrow(panel_plan))) {
+  p <- panel_plan[i]
+  sv(mknet_pair(p$program, p$reference, p$target), sprintf("e_netpair_%d", p$slot), 2.35, 1.68)
 }
 
-## ---------- f: hit spatial fields (bin50) ----------
 sf <- fread(file.path(OUT,"fig_hit_spatial_fields.tsv"))
-# plot spatial field for old cnmf 31 (new P28, Axon guidance/cell adhesion L6b)
-# across DLPFC, M1, V1 chips; raw score, no per-bin norm
-# NOTE: spatial TSV columns are named by old cnmf integer (program_31)
 mkfield <- function(reg, prog) {
   s <- sf[region==reg]
   col <- paste0("program_",prog)
@@ -240,11 +223,21 @@ mkfield <- function(reg, prog) {
                                     colour="grey10", margin=margin(t=1)),
           legend.position="none", plot.margin=margin(0,0,0,0))
 }
-# old cnmf 31 = new P28; column name in spatial TSV is "program_31"
-for (reg in c("DLPFC","M1","V1")) sv(mkfield(reg,31), sprintf("f_field_%s",reg), 1.55, 1.62)
+for (i in seq_len(nrow(panel_plan))) {
+  p <- panel_plan[i]
+  sv(mkfield(p$field_region, p$program), sprintf("f_field_%d", p$slot), 1.55, 1.62)
+}
 
 ## ---------- g: multi-step filter funnel ----------
 fn <- fread(file.path(OUT,"m4_filter_funnel.tsv"))
+stage_labels <- c(
+  all_programs="All retained programs",
+  gateA_expr_conserved="Gate A: expression conserved",
+  `+gateB_neigh_low`="+ Gate B: neighborhood low",
+  `+gateC_coact_spatial`="+ Gate C: spatial agreement",
+  `+gateD_anchor_HITS`="+ Gate D: anchored hit"
+)
+fn[, stage := stage_labels[stage]]
 fn[, stage := factor(stage, levels=rev(stage))]
 fn[, lab := sprintf("%s (n=%d)", stage, n)]
 pg <- ggplot(fn, aes(x=n, y=stage)) +

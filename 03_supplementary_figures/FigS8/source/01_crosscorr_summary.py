@@ -260,8 +260,8 @@ print(f"Panel E re-tally: {len(dfp_off)} off-diag pairs → {len(dfp_clean)} aft
 topn = dfp_clean.head(10).iloc[::-1]
 
 # Build y-labels with NEW P numbers (no excluded → no FLAG)
-# mth-MAJ3 fix 2026-06-25: use name_short from program_names.tsv (short_by_old)
-# instead of raw GO term name from TSV nameA/nameB (which is truncated raw GO text)
+# Use name_short from program_names.tsv instead of the truncated raw GO term
+# names in the nameA/nameB columns.
 ylab = []
 for _, row in topn.iterrows():
     a_old = int(row["progA"])

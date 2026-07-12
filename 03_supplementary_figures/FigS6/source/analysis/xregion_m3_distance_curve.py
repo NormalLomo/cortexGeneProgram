@@ -18,13 +18,14 @@ Output (xregion_auroc/):
   m3_distance_curve_points.tsv   regionA,regionB,trans_dist,ap_dist,expr_auroc,neigh_auroc
   m3_distance_curve_stats.tsv    metric,distance,rho,perm_p,ci_lo,ci_hi
 """
-import itertools
+import os, itertools
 import numpy as np
 import pandas as pd
 from scipy.stats import rankdata, spearmanr
 
-BASE = "CORTEX_PROGRAM_ROOT"
-OUT  = f"{BASE}/results/crossregion_v1/xregion_auroc"
+BASE = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
+OUT  = os.environ.get("XREGION_OUTPUT_DIR", f"{BASE}/results/crossregion_v1/xregion_auroc")
+os.makedirs(OUT, exist_ok=True)
 RNG  = np.random.default_rng(0)
 
 def perm_p_spearman(x, y, n=10000):

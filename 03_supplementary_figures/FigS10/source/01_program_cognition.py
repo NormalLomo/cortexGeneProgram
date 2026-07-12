@@ -58,7 +58,7 @@ REGION_MAP = {
 TERMS = ["default mode","working memory","language","attention","semantic",
          "episodic memory","visual","motor","pain","salience","executive","reward"]
 
-# ------------------------------------------------------------------ RENUMBER MAP (added 2026-06-20)
+# ------------------------------------------------------------------ PROGRAM MAP
 RENUM_PATH = f"{BASE}/results/crossregion_v1/program_renumber_map.tsv"
 renum_df = pd.read_csv(RENUM_PATH, sep="\t")
 # old_P (int) -> new_P (int or "EXCLUDED")
@@ -276,7 +276,7 @@ print("[5] rendering figure ...", flush=True)
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -399,11 +399,10 @@ axd.set_title("Neurosynth region x term cognitive atlas (mean z in ROI; *S1E low
 cb2=fig.colorbar(imd, ax=axd, fraction=0.02, pad=0.01); cb2.ax.tick_params(labelsize=5); cb2.set_label("mean z", fontsize=5)
 panel_tag(axd,"d")
 
-fig.suptitle("Fig. S9 | Program-cognition imaging-transcriptomics (Neurosynth DMN), exploratory analysis (n=14 regions)",
+fig.suptitle("Fig. S10 | Program-cognition imaging-transcriptomics (Neurosynth DMN), exploratory analysis (n=14 regions)",
              fontsize=7)
-fig.savefig(f"{FIGD}/fig7_program_cognition.pdf", dpi=400)
-fig.savefig(f"{FIGD}/figS9_cognition.pdf", dpi=400)  # current: FigS9 source = cognition, not disease
-fig.savefig(f"{FIGD}/fig7_program_cognition.png", dpi=300)
-fig.savefig("/tmp/fig7_program_cognition.png", dpi=300)
+fig.savefig(f"{FIGD}/figS10_cognition.pdf", dpi=400)
+fig.savefig(f"{FIGD}/figS10_cognition.png", dpi=300)
+fig.savefig("/tmp/figS10_cognition.png", dpi=300)
 print("    saved figure", flush=True)
 print("DONE", flush=True)

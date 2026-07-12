@@ -45,8 +45,7 @@ class_pal <- c(variable = "#C44E52", stable = "#9AA0A6")
 # cohort + donor ANCOVA control vs which drop out. Robust-7 get a heavier,
 # saturated red (the figure's highlight); cohort-sensitive get a muted warm tone
 # (de-emphasised); the stable bulk stays grey. Source (real files):
-#   results/crossregion_v1/hardening/VERDICTS.json  (M3 survive_both / dropouts)
-#   results/crossregion_v1/hardening/M3_cohort_robust.tsv
+#   results/crossregion_v1/program_variability.tsv and the encoded robust/sensitive sets
 ROBUST7    <- as.character(c(1, 3, 4, 6, 8, 10, 14))
 SENSITIVE7 <- as.character(c(9, 18, 19, 35, 37, 52, 57))
 tier_of <- function(p) factor(
@@ -121,7 +120,7 @@ prog_cv       <- apply(M_mean, 2, function(x) sd(x)/mean(x))
 nm_df <- read.table(file.path(RES, "program_names.tsv"),
                     sep = "\t", header = TRUE, quote = "", comment.char = "",
                     stringsAsFactors = FALSE, check.names = FALSE)
-# program_names.tsv was renumbered (2026-06-20): key column is now cnmf_component
+# program_names.tsv uses cnmf_component as the original component key.
 # (old_P integer 1-60), and new_P column holds "P1"-"P54" or "EXCLUDED".
 # We keep old_P as the lookup key (matching data matrix column names), but
 # generate labels that display the new_P number so every figure panel shows
@@ -504,7 +503,7 @@ cat("panel e done\n")
 ## (regions on shared y-axis; region tick labels only on leftmost facet).
 ## Replaces the prior coord_polar petals (illegible at final size).
 ## =====================================================================
-# CONSISTENCY FIX (2026-06-15): restrict panel-f region-variable examples
+# Restrict panel-f examples to the region-variable programs.
 # to COHORT-ROBUST programs only (ROBUST7 = {old_P 1,3,4,6,8,10,14} = new_P {1,3,4,6,8,9,13});
 # the prior unfiltered top-6-by-eta2 leaked cohort-technical P19/P18/P57 (excluded
 # from biological interpretation). Pick the 6 most region-variable among
@@ -699,7 +698,7 @@ cat("wrote supp_table_region_signatures.tsv (14 regions x top-5 up/down)\n")
 ## =====================================================================
 ## PANEL i — rank-shift alluvial across lobes (top ~10 variable programs)
 ## =====================================================================
-# v6_WorkerA (2026-06-24): top10 must be drawn from the 54 biologically-interpreted programs
+# Draw the top 10 from the 54 retained programs.
 # (drop the 6 cohort-technical EXCLUDED programs: cnmf 9, 18, 19, 35, 52, 57).
 EXCLUDED_CNMF <- as.character(c(9, 18, 19, 35, 52, 57))
 top10 <- var_df %>% filter(!program %in% EXCLUDED_CNMF) %>%
@@ -725,7 +724,7 @@ i_long <- i_long %>% mutate(rankf = factor(rank, levels = nP:1))  # rank1 -> top
 # so rank r sits at y = (nP - r) + 0.5.
 rank_breaks <- (nP - (1:nP)) + 0.5            # y center of each rank slot
 rank_labels <- paste0("rank ", 1:nP)           # rank 1 (top) .. rank nP (bottom)
-# v6_WorkerA (2026-06-24): strata text was raw cnmf_component; remap to new_P display.
+# Convert source component IDs to retained display IDs for strata text.
 i_long <- i_long %>% mutate(lab_pn = unname(prog_pn[as.character(program)]))
 p_i <- ggplot(i_long, aes(x = lobe, y = 1, stratum = rankf, alluvium = program,
                           fill = program, label = lab_pn)) +

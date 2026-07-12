@@ -18,10 +18,10 @@ MAIN panels (5, clean):
 The dense bipartite NETWORK (former d) + N-sensitivity ribbon (former f) are
 moved to Extended Data (see scripts/extended/ed_program_disease_supp.py).
 
-[2026-06-20 renumber] program labels relabelled old_P -> new_P per
-results/crossregion_v1/program_renumber_map.tsv; excluded
-old cNMF {9,18,19,35,52,57} removed physically (= COHORT_TECHNICAL);
-data operations unchanged, only display layer updated.
+Program labels map old_P to new_P through
+results/crossregion_v1/program_renumber_map.tsv. The display excludes
+old cNMF {9,18,19,35,52,57} as COHORT_TECHNICAL while data operations retain
+the canonical component identifiers.
 """
 import os, json
 import numpy as np
@@ -50,7 +50,7 @@ plt.rcParams.update({
     "xtick.major.size": 1.8, "ytick.major.size": 1.8, "axes.edgecolor": "#333333",
     "pdf.use14corefonts": False,
 })
-# minimum on-figure font size (figure_release standard: nothing below 5 pt)
+# Minimum on-figure font size is 5 pt.
 FS_MIN = 5.0
 
 ROOT = "CORTEX_PROGRAM_ROOT"
@@ -208,7 +208,7 @@ REGION_ORDER = ["FPPFC","VLPFC","DLPFC","ACC","M1","S1","S1E","PoCG","SMG","AG",
 rz_sub = rz_sub[[r for r in REGION_ORDER if r in rz_sub.columns]]
 
 # =================== FIGURE LAYOUT ===================
-# figure_release standard: 180 mm page width (matches F1-F6), portrait orientation.
+# Use a 180 mm portrait page width.
 # Only 5 panels now (a/b/c/e/g) -> panel a gets the freed vertical room so the
 # significant biologically-interpreted programs are legible with square cells.
 FW = 180.0 / 25.4                      # 7.087 in == 180 mm

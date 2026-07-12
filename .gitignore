@@ -1,0 +1,49 @@
+# Operating-system and editor artifacts
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Python, R, and local environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.Rhistory
+.RData
+.Rproj.user/
+renv/library/
+
+# Local configuration, credentials, and logs
+.env
+.env.*
+!.env.example
+config/paths.env
+*.pem
+*.key
+*.log
+
+# External scientific data and generated analysis outputs
+/data/
+/inputs/
+/results/
+/outputs/
+/figures/
+*.h5
+*.h5ad
+*.h5seurat
+*.loom
+*.rds
+*.parquet
+*.npz
+*.csv
+*.xlsx
+*.sqlite*
+*.db
+*.zip
+*.tar
+*.tar.gz
+*.tgz

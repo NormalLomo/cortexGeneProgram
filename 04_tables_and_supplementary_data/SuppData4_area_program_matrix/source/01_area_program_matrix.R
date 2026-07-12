@@ -3,7 +3,7 @@
 # Extended Data Fig. 5  —  FULL region x ALL-54-program z-heatmap
 # Transparency companion to Fig.3 (which shows only the curated
 # variable subset). Here: the COMPLETE 14-region x 54-program matrix.
-# RENUMBERED 2026-06-20: excluded P9/18/19/35/52/57 removed; remaining
+# The retained program map excludes P9/18/19/35/52/57 and labels the remaining
 # 54 programs relabelled with new P1-P54 numbers from program_renumber_map.tsv.
 # Native R / ComplexHeatmap, single script, vector PDF + PNG.
 # =====================================================================
@@ -67,7 +67,7 @@ var_df <- read.table(file.path(RES, "program_variability.tsv"),
 nm_df  <- read.table(file.path(RES, "program_names.tsv"),
                      sep = "\t", header = TRUE, quote = "", comment.char = "",
                      stringsAsFactors = FALSE, check.names = FALSE)
-## ---- RENUMBER 2026-06-20: load mapping, exclude, relabel -----------
+## ---- load the retained-program mapping, exclude, and relabel --------
 rmap <- read.table(file.path(RES, "program_renumber_map.tsv"),
                    sep = "\t", header = TRUE, stringsAsFactors = FALSE)
 # old_P (int) -> new_P ("EXCLUDED" or "1".."54")

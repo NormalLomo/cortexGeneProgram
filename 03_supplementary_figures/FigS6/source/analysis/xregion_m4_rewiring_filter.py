@@ -24,20 +24,34 @@ Output (xregion_auroc/):
   m4_program_master_table.tsv   per-program all scores + gates
   m4_rewiring_hits.tsv          hit short table
 """
+import os
 import numpy as np
 import pandas as pd
 
-BASE = "CORTEX_PROGRAM_ROOT"
+BASE = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
 RES  = f"{BASE}/results/crossregion_v1"
-OUT  = f"{RES}/xregion_auroc"
+OUT  = os.environ.get("XREGION_OUTPUT_DIR", f"{RES}/xregion_auroc")
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{BASE}/tables/TableS3_program_annotation.tsv")
+os.makedirs(OUT, exist_ok=True)
 
 def main():
+    mapping = pd.read_csv(RETAIN_MAP, sep="\t")
+    assert len(mapping) == 54
+    mapping["old_int"] = mapping["cnmf_component"].astype(int)
+    mapping["new_int"] = mapping["new_P"].astype(str).str.removeprefix("P").astype(int)
+    assert mapping["new_int"].tolist() == list(range(1, 55))
+    old_to_new = dict(zip(mapping["old_int"], mapping["new_int"]))
     m1 = pd.read_csv(f"{OUT}/m1_expr_conservation_per_program.tsv", sep="\t")
     m2b= pd.read_csv(f"{OUT}/m2b_neighborhood_conservation_per_program.tsv", sep="\t")
     m2a= pd.read_csv(f"{OUT}/m2a_spatial_neighborhood_conservation_per_program.tsv", sep="\t")
     turn=pd.read_csv(f"{OUT}/m2b_partner_turnover.tsv", sep="\t")
     var = pd.read_csv(f"{RES}/program_variability.tsv", sep="\t")[["program","class","eta2_region","fdr"]]
-    names=pd.read_csv(f"{RES}/program_names.tsv", sep="\t")[["program","name_short","name_full","confidence","fdr"]]
+    var["program"] = var["program"].map(old_to_new)
+    var = var.dropna(subset=["program"]); var["program"] = var["program"].astype(int)
+    names=pd.read_csv(f"{RES}/program_names.tsv", sep="\t")[["cnmf_component","name_short","name_full","confidence","fdr"]]
+    names["program"] = names["cnmf_component"].map(old_to_new)
+    names = names.dropna(subset=["program"]); names["program"] = names["program"].astype(int)
+    names = names.drop(columns=["cnmf_component"])
     names=names.rename(columns={"fdr":"name_fdr"})
     sig = pd.read_csv(f"{RES}/supp_table_region_signatures.tsv", sep="\t")
 
@@ -46,7 +60,7 @@ def main():
     M = M.merge(var, on="program", how="left").merge(names, on="program", how="left")
 
     # signature membership
-    sigset = set(sig["program"].unique())
+    sigset = {old_to_new[p] for p in sig["program"].unique() if p in old_to_new}
     M["in_region_signature"] = M["program"].isin(sigset)
 
     # gates
@@ -58,8 +72,14 @@ def main():
     M["rank_neigh"]   = M["neigh_cons_auroc"].rank()           # low rank = low conservation
     M["rank_spatial"] = M["spatial_neigh_cons_auroc"].rank()
     turn_thr = M["partner_turnover"].quantile(2/3)
+    n_programs = len(M)
+    assert n_programs == 54
+    neigh_rank_cut = int(np.ceil(0.50 * n_programs))
+    spatial_rank_cut = int(np.ceil((35 / 60) * n_programs))
     M["gateC_coact_spatial_agree"] = (
-        (M["rank_neigh"] <= 30) & (M["rank_spatial"] <= 35) & (M["partner_turnover"] >= turn_thr)
+        (M["rank_neigh"] <= neigh_rank_cut) &
+        (M["rank_spatial"] <= spatial_rank_cut) &
+        (M["partner_turnover"] >= turn_thr)
     )
     M["gateD_anchor"] = (M["class"]=="variable") | (M["in_region_signature"])
 
@@ -68,11 +88,12 @@ def main():
     M = M.sort_values(["n_gates_pass","rewiring_gap"], ascending=False)
     M.to_csv(f"{OUT}/m4_program_master_table.tsv", sep="\t", index=False)
 
-    # hits = pass all 4 gates (or >=3 with A&B mandatory)
+    # Strict sequential hits. A relaxed result is never substituted after a zero stage.
     hits = M[(M["gateA_expr_conserved"]) & (M["gateB_neigh_low"]) &
              (M["gateC_coact_spatial_agree"]) & (M["gateD_anchor"])].copy()
-    if len(hits)==0:
-        hits = M[(M["gateA_expr_conserved"]) & (M["gateB_neigh_low"]) & (M["n_gates_pass"]>=3)].copy()
+    fallback = M[(M["gateA_expr_conserved"]) & (M["gateB_neigh_low"]) &
+                 (M["n_gates_pass"] >= 3)].copy()
+    fallback.to_csv(f"{OUT}/m4_rewiring_fallback_hits.tsv", sep="\t", index=False)
 
     # target region(s): regions (as regionB) where neighborhood self-AUROC is lowest
     neighlong = pd.read_csv(f"{OUT}/m2b_neigh_program_region_self_auroc.tsv", sep="\t")
@@ -91,7 +112,8 @@ def main():
     hits[cols].to_csv(f"{OUT}/m4_rewiring_hits.tsv", sep="\t", index=False)
 
     print(f"[m4] A_thr(expr>=)={max(A_thr,0.90):.3f}  B_thr(neigh<=)={B_thr:.3f}  turn_thr={turn_thr:.3f}", flush=True)
-    print(f"[m4] n hits = {len(hits)}", flush=True)
+    print(f"[m4] rank cutoffs: neigh<={neigh_rank_cut}, spatial<={spatial_rank_cut}", flush=True)
+    print(f"[m4] strict hits={len(hits)} separate fallback candidates={len(fallback)}", flush=True)
     print(hits[cols].to_string(index=False))
     # funnel counts
     print("\n[m4] FUNNEL:")

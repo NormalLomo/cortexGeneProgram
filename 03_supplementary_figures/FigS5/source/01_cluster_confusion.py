@@ -1,16 +1,12 @@
 #!/usr/bin/env python
 """
-Extended Data: Clustering + "confusion" analysis.
-Tests core claim: gene-program scores cluster by CELL-IDENTITY (subclass / spatial
-domain), NOT by REGION -> programs are an identity-stable backbone region only fine-tunes.
+Extended Data: clustering and identity-versus-region analysis.
 
-4 views, each on the 60-program profile:
-  1. Subclass (22 x 60): mean program score per subclass -> ward/corr cluster + heatmap
-  2. Spatial domain (8 x 60): mean program z per majorDomain -> cluster + heatmap
-  3. Subclass x region (<=308 x 60, >=20 cells): cluster rows; ARI/NMI vs subclass vs region
-  4. Domain x region (<=112 x 60): cluster rows; ARI/NMI vs domain vs region
-Plus variance-partition (identity vs region vs residual) for tables 3 & 4.
-Output: figures/extended/ed_cluster_confusion.{pdf,png}; tables in cluster_confusion/.
+raw 60-component inputs are subset with the retained map before calculation.
+The retained 54-program outputs comprise four views: subclass, spatial domain,
+subclass by region, and domain by region. Each view evaluates whether program
+profiles group more strongly by cellular identity than by region, with a
+per-program identity/region/residual variance partition.
 """
 import os, sys, json
 import numpy as np
@@ -25,15 +21,24 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.colors import to_rgba
 import matplotlib as mpl
 
-ROOT = "CORTEX_PROGRAM_ROOT"
+ROOT = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
 RES  = f"{ROOT}/results/crossregion_v1"
-OUTD = f"{RES}/cluster_confusion"
-FIGD = f"{ROOT}/figures/extended"
+OUTD = os.environ.get("FIGS5_CACHE_DIR", f"{RES}/cluster_confusion")
+FIGD = os.environ.get("FIGS5_OUTPUT_DIR", f"{ROOT}/figures/extended")
 os.makedirs(OUTD, exist_ok=True); os.makedirs(FIGD, exist_ok=True)
 
 MIN_CELLS = 20
-PROG = [str(i) for i in range(1, 61)]
-PROG_SP = [f"program_{i}" for i in range(1, 61)]
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{ROOT}/tables/TableS3_program_annotation.tsv")
+MAP = pd.read_csv(RETAIN_MAP, sep="\t")
+assert len(MAP) == 54
+MAP["new_int"] = MAP["new_P"].astype(str).str.removeprefix("P").astype(int)
+MAP["old_int"] = MAP["cnmf_component"].astype(int)
+assert MAP["new_int"].tolist() == list(range(1, 55))
+assert set(range(1, 61)) - set(MAP["old_int"]) == {9, 18, 19, 35, 52, 57}
+OLD_PROG = MAP["old_int"].astype(str).tolist()
+PROG = MAP["new_int"].astype(str).tolist()
+OLD_TO_NEW = dict(zip(OLD_PROG, PROG))
+PROG_SP = [f"program_{i}" for i in MAP["old_int"]]
 
 # ---- font / style: >=5pt, vector-friendly ----
 mpl.rcParams.update({
@@ -44,9 +49,9 @@ mpl.rcParams.update({
 })
 
 # ---------------- program short names ----------------
-nm = pd.read_csv(f"{RES}/program_names.tsv", sep="\t")
-nm["program"] = nm["program"].astype(str)
-short = dict(zip(nm["program"], nm["name_short"]))
+nm = MAP.copy()
+nm["program"] = nm["new_int"].astype(str)
+short = dict(zip(nm["program"], nm["functional_name"]))
 conf  = dict(zip(nm["program"], nm["confidence"]))
 def plabel(p):
     s = short.get(p, p)
@@ -96,17 +101,23 @@ print("loading cell-level...", flush=True)
 cell = pd.read_parquet(f"{RES}/cell_program_region_subclass.parquet")
 cell.columns = [str(c) for c in cell.columns]
 # view 1: subclass means
-sub_mean = cell.groupby("subclass")[PROG].mean()
+missing_cell = set(OLD_PROG) - set(cell.columns)
+assert not missing_cell, f"cell parquet missing retained old components: {sorted(missing_cell)}"
+sub_mean = cell.groupby("subclass")[OLD_PROG].mean().rename(columns=OLD_TO_NEW)
+assert sub_mean.shape[1] == 54
 sub_mean.to_csv(f"{OUTD}/view1_subclass_mean.tsv", sep="\t")
 # view 3: subclass x region means, >=20 cells
 gsize = cell.groupby(["subclass", "region"]).size()
 keep = gsize[gsize >= MIN_CELLS].index
-sr_mean = cell.groupby(["subclass", "region"])[PROG].mean().loc[keep]
+sr_mean = cell.groupby(["subclass", "region"])[OLD_PROG].mean().loc[keep].rename(columns=OLD_TO_NEW)
+assert sr_mean.shape[1] == 54
 sr_mean.to_csv(f"{OUTD}/view3_subclass_region_mean.tsv", sep="\t")
 print(f"  subclass={sub_mean.shape[0]} | subclass*region rows={sr_mean.shape[0]}", flush=True)
 
 # variance partition (subclass x region) -- on raw cells for proper SS
-vp3 = var_partition(cell, "subclass", "region", PROG)
+vp3 = var_partition(cell, "subclass", "region", OLD_PROG)
+vp3["program"] = vp3["program"].map(OLD_TO_NEW)
+assert len(vp3) == 54
 vp3.to_csv(f"{OUTD}/varpart_subclass_region.tsv", sep="\t", index=False)
 
 del cell  # free RAM
@@ -115,20 +126,23 @@ del cell  # free RAM
 print("loading spatial (SCT)...", flush=True)
 sp = pd.read_parquet(f"{RES}/spatial_bin50_program_score_SCT.parquet",
                      columns=["majorDomain", "region"] + PROG_SP)
-ren = {f"program_{i}": str(i) for i in range(1, 61)}
+ren = {f"program_{old}": str(new) for old, new in zip(MAP["old_int"], MAP["new_int"])}
 sp = sp.rename(columns=ren)
 sp = sp.dropna(subset=["majorDomain", "region"])
 # view 2: domain means
 dom_mean = sp.groupby("majorDomain")[PROG].mean()
+assert dom_mean.shape[1] == 54
 dom_mean.to_csv(f"{OUTD}/view2_domain_mean.tsv", sep="\t")
 # view 4: domain x region means, >=20 bins
 dsize = sp.groupby(["majorDomain", "region"]).size()
 dkeep = dsize[dsize >= MIN_CELLS].index
 dr_mean = sp.groupby(["majorDomain", "region"])[PROG].mean().loc[dkeep]
+assert dr_mean.shape[1] == 54
 dr_mean.to_csv(f"{OUTD}/view4_domain_region_mean.tsv", sep="\t")
 print(f"  domain={dom_mean.shape[0]} | domain*region rows={dr_mean.shape[0]}", flush=True)
 
 vp4 = var_partition(sp, "majorDomain", "region", PROG)
+assert len(vp4) == 54
 vp4.to_csv(f"{OUTD}/varpart_domain_region.tsv", sep="\t", index=False)
 del sp
 
@@ -263,8 +277,9 @@ def panel_confusion(subgs, M_df, Z, order, res, ident_lut, title, letter):
     axs2.set_xlabel("reg", fontsize=4, rotation=90, labelpad=1)
     axh = fig.add_subplot(inner[0, 3])
     im = axh.imshow(Mz, aspect="auto", cmap=CMAP, vmin=-2.5, vmax=2.5, interpolation="nearest")
-    axh.set_yticks([]); axh.set_xticks(range(0, 60, 5))
-    axh.set_xticklabels([f"P{cord[j]+1}" for j in range(0, 60, 5)], fontsize=3.6, rotation=90)
+    ticks = list(range(0, len(PROG), 5))
+    axh.set_yticks([]); axh.set_xticks(ticks)
+    axh.set_xticklabels([f"P{cord[j]+1}" for j in ticks], fontsize=3.6, rotation=90)
     axh.tick_params(length=1, pad=1)
     ann = (f"ARI(identity)={res['ARI_identity']:.2f}  ARI(region)={res['ARI_region']:.2f}\n"
            f"NMI(id)={res['NMI_identity']:.2f}  NMI(reg)={res['NMI_region']:.2f}")
@@ -295,7 +310,7 @@ for i in range(len(groups)):
     axe.text(ident_pct[i]+reg_pct[i]/2, y[i], f"{reg_pct[i]:.0f}%", ha="center",
              va="center", fontsize=5.5, color="white", fontweight="bold")
 axe.set_yticks(y); axe.set_yticklabels(groups, fontsize=6)
-axe.set_xlabel("mean variance explained across 60 programs (%)", fontsize=6)
+axe.set_xlabel("mean variance explained across 54 retained programs (%)", fontsize=6)
 axe.set_xlim(0, 100); axe.set_title("e  Variance partition: identity vs region",
                                     fontsize=7, loc="left", fontweight="bold", pad=3)
 axe.legend(fontsize=5, loc="lower right", frameon=False, ncol=3)

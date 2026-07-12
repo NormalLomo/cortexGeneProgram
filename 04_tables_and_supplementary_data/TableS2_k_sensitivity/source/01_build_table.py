@@ -42,7 +42,7 @@ legend_lines = [
     "K = 60 (reference) values are shown for comparison; 8 of 54 programs are",
     "region-variable and 39 of 54 programs have spatial top cell-type matching their",
     "single-nucleus dominant subclass at K = 60 (Fig. S1, Fig. S7; Methods).",
-    "Sources: Fig. S1 legend and Methods (Choice of K) in the main figure_release.",
+    "Sources: Fig. S1 legend and Methods (Choice of K) in the main figure documentation.",
 ]
 for i, line in enumerate(legend_lines, start=1):
     cell = ws.cell(row=i, column=1, value=line)

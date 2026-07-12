@@ -6,7 +6,7 @@ suppressMessages({
 FIG <- "CORTEX_PROGRAM_ROOT/figures/fig4"
 RES <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1"
 
-# ---- RENUMBER 2026-06-20: old cNMF index -> new P1-P54 ----
+# Map raw cNMF indices to retained P1-P54 labels.
 # program_renumber_map.tsv: old_P (int) -> new_P ("EXCLUDED" or "1".."54")
 .rmap <- read.delim(file.path(RES, "program_renumber_map.tsv"), stringsAsFactors = FALSE)
 .EXCLUDED_OLD <- .rmap$old_P[.rmap$new_P == "EXCLUDED"]  # 9,18,19,35,52,57

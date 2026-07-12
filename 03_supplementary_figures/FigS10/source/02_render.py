@@ -1,15 +1,12 @@
 #!/usr/bin/env python
-"""Fig7 RE-RENDER ONLY — loads cached matrices, rebuilds the figure with fixed layout.
-No Neurosynth / no permutations (those are cached on disk from the full run).
+"""Render Fig. S10 from canonical cognition matrices with the retained-program layout.
 
-RENUMBER PATCH (2026-06-20):
-- All program labels updated from old cNMF component numbers (1-60)
-  to submission new_P numbers (P1-P54) per program_renumber_map.tsv.
-- Excluded programs (old 9/18/19/35/52/57) dropped from all panels.
-- Fixed name_short lookup bug: was reading names["program"] which did not exist
-  (column is new_P in format "P1"..."P54"); now correctly maps via cnmf_component.
+Program labels map from old cNMF component numbers (1-60) to new_P numbers
+(P1-P54) through program_renumber_map.tsv. Excluded programs
+(old 9/18/19/35/52/57) are omitted from all panels, and name_short is read
+through cnmf_component.
 
-NOTE on renumber map format:
+Program map format:
   program_renumber_map.tsv: old_P (int), new_P (int or "EXCLUDED")
   program_names.tsv: new_P in format "P1"..."P54" or "EXCLUDED"
   Mapping: old cNMF int -> new int -> "P{new_int}" for name lookup
@@ -23,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 from scipy.cluster.hierarchy import linkage, leaves_list
 from scipy.spatial.distance import pdist
-# figure_release page standard (match F1-F8): 180 mm wide, portrait, Liberation Sans, nothing < 5 pt.
+# Use a 180 mm portrait page with Liberation Sans and a 5 pt minimum font size.
 FS_MIN = 5.0
 matplotlib.rcParams["pdf.fonttype"] = 42      # embed TrueType, no Type3
 matplotlib.rcParams["ps.fonttype"] = 42
@@ -193,9 +190,9 @@ axd.set_yticks(range(len(RTp.index))); axd.set_yticklabels(ylabs,fontsize=5.5); 
 axd.set_title("Neurosynth region x term cognitive atlas\n(mean z in ROI; *S1E low-conf)",fontsize=6,pad=3)
 cb2=fig.colorbar(imd,ax=axd,fraction=0.018,pad=0.01); cb2.ax.tick_params(labelsize=5); cb2.set_label("mean z",fontsize=5); tag(axd,"d",dx=-0.085,dy=1.16)
 
-fig.suptitle("Fig. 7 | Gene-program association with cognitive functional architecture (Neurosynth, n=14 regions)", fontsize=7)
-fig.savefig(f"{FIGD}/fig7_program_cognition.pdf",dpi=400); fig.savefig(f"{FIGD}/fig7_program_cognition.png",dpi=300)
-fig.savefig(f"{FIGD}/fig7_full.pdf",dpi=400); fig.savefig(f"{FIGD}/fig7_full.png",dpi=320)
-fig.savefig("/tmp/fig7_full.png",dpi=320)
-fig.savefig("/tmp/fig7_full.svg")
+fig.suptitle("Fig. S10 | Gene-program association with cognitive functional architecture (Neurosynth, n=14 regions)", fontsize=7)
+fig.savefig(f"{FIGD}/figS10_cognition.pdf",dpi=400); fig.savefig(f"{FIGD}/figS10_cognition.png",dpi=300)
+fig.savefig(f"{FIGD}/figS10_full.pdf",dpi=400); fig.savefig(f"{FIGD}/figS10_full.png",dpi=320)
+fig.savefig("/tmp/figS10_full.png",dpi=320)
+fig.savefig("/tmp/figS10_full.svg")
 print("RENDER_DONE")

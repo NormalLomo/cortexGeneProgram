@@ -44,11 +44,11 @@ F_RCTD = os.path.join(RESDIR, "spatial_bin50_rctd_weights.parquet")
 CELLTYPES = ['AST','CHANDELIER','ENDO','ET','L2-L3 IT LINC00507','L3-L4 IT RORB',
              'L4-L5 IT RORB','L6 CAR3','L6 CT','L6 IT','L6B','LAMP5','MICRO','NDNF',
              'NP','OLIGO','OPC','PAX6','PVALB','SST','VIP','VLMC']  # 22
-# programs 1..54 are used in the figure_release (spec §5); NPZ has 60; we use 54
+# The public analysis retains 54 mapped programs from the 60-column NPZ input.
 N_PROG_SPEC = 54
 PROGRAMS = [f'program_{i}' for i in range(1, N_PROG_SPEC + 1)]  # 54
 PROGRAMS_60 = [f'program_{i}' for i in range(1, 61)]            # for parquet load
-# Tier-0 fix 2026-06-26 (羅老師): the 54 programs after merge-out are cnmf {1..60}\{9,18,19,35,52,57}
+# The retained program set is cnmf {1..60}\{9,18,19,35,52,57}.
 EXCLUDED_CNMF = {9, 18, 19, 35, 52, 57}
 KEPT_CNMF = [i for i in range(1, 61) if i not in EXCLUDED_CNMF]
 KEPT_PROGRAMS = [f'program_{i}' for i in KEPT_CNMF]  # 54 columns aligned with TableS1.new_P P1..P54
@@ -305,7 +305,7 @@ def load_marks(mode: str, logfn=print):
 
     chip_arr = meta.chip.values
     xy = np.column_stack([meta.x.values, meta.y.values]).astype(np.float64)
-    # Tier-0 fix 2026-06-26: load only the 54 KEPT programs directly (avoid the wrong [:, :54] slice that takes cnmf [1..54])
+    # Load the retained 54 programs by component ID rather than positional slicing.
     Wct   = np.clip(np.nan_to_num(rctd[CELLTYPES].values.astype(np.float32), nan=0.0), 0, None)
     Wprog54 = np.clip(sct[KEPT_PROGRAMS].values.astype(np.float32), 0, None)
     assert Wprog54.shape[1] == N_PROG_SPEC, f'Wprog54 shape mismatch: {Wprog54.shape}'

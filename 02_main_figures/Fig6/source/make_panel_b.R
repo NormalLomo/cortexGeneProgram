@@ -2,7 +2,7 @@
 # Fig.10 panel b — REDESIGN per ART_SPEC §2.b
 # zero-margin vector SVG via svglite
 # Aesthetic-only redesign. Science/numbers untouched.
-#   - 60 human-K60 programs ranked by human->macaque cosine (h_mac_cosine)
+#   - 54 retained human-K60 programs ranked by human->macaque cosine (h_mac_cosine)
 #   - grouped into func_class strips (ART_SPEC §1.3 七大類 aggregation)
 #   - per-strip horizontal lanes sharing x = cosine; points = func-class colour
 #   - name ONLY top-6 + bottom-6 (P8/P1/P15/P24/P7/P56 high; P18/P52/P35/P4/P58/P48 low)
@@ -24,11 +24,10 @@ out_dir  <- file.path(base_dir, "svg_panels")
 dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 
 # ---- single naming + renumber authority ----
-# [2026-06-20 restore] 還原提交版排版 + 套 54-program 新編號。
-# 兩張權威表 (crossregion_v1):
-#   program_renumber_map.tsv : old_P -> new_P (status; excluded 6 = cNMF 9/18/19/35/52/57)
+# Two authority tables (crossregion_v1):
+#   program_renumber_map.tsv : source ID -> retained ID (excluded source IDs 9/18/19/35/52/57)
 #   program_names.tsv        : new_P -> name_short / confidence(brain-weak whitelist)
-# 各 data csv 的 program 欄 = 舊 P 號(=cNMF號)。策略: 按舊號 join, 顯示一律 new_P + 新名。
+# Input program columns contain source cNMF IDs; display labels use retained IDs.
 renum_authority <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1/program_renumber_map.tsv"
 names_authority <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1/program_names.tsv"
 renum <- read_tsv(renum_authority, show_col_types = FALSE)
@@ -51,13 +50,15 @@ auth_map <- old2new %>% left_join(new2name, by = "new_id")
 # ---------------------------------------------------------------- load
 lol  <- read_csv(file.path(data_dir, "panelB_lollipop.csv"), show_col_types = FALSE)
 # func_class_curated.csv used ONLY for the seven-class grouping enum (function_class),
-# NOT for any display name (its name columns are a forbidden stale source).
+# Display names come only from program_names.tsv.
 curc <- read_csv(file.path(data_dir, "func_class_curated.csv"), show_col_types = FALSE)
 
 df <- lol %>%
   select(program, h_mac_cosine, order) %>%
   left_join(curc %>% select(program, function_class), by = "program") %>%
   left_join(auth_map, by = "program")
+df <- df %>% filter(!is.na(new_id))
+stopifnot(nrow(df) == 54L, dplyr::n_distinct(df$new_id) == 54L)
 
 # ---- aggregate fine func_class -> ART_SPEC §1.3 seven big classes ----
 agg_map <- c(
@@ -88,11 +89,7 @@ class_cols <- c(
   "Unresolved"         = "#9AA0A6"   # 中灰 (弱類)
 )
 
-# strip order: FIXED to the submitted master's row order (top -> bottom).
-# [2026-06-20 criticfix] The data-driven median sort flipped the top two strips
-# after the 6-program exclusion (Cytoskeleton median edged above Microglia/immune);
-# the submitted figure has Microglia/immune on top. Pin the order to the master so
-# the restored figure matches; per-class n is still computed from the (54-row) data.
+# Fixed top-to-bottom strip order; per-class n is computed from retained data.
 class_order_top <- c("Microglia/immune", "Cytoskeleton", "Glia (oligo/astro)",
                      "Synaptic", "Vascular", "Neuropeptide/IEG", "Unresolved")
 class_n <- df %>% group_by(big_class) %>% summarise(n = n(), .groups = "drop")
@@ -110,17 +107,14 @@ df <- df %>% group_by(big_class) %>%
   ungroup()
 
 # ---- programs to name: top-6 + bottom-6 by cosine ----
-# [2026-06-20 fig54甲] 改為資料驅動 (取代寫死的 60-母體名單; 與 panel e 同邏輯):
-# 在 54 母體 (panelB_lollipop.csv 已剔 6) 按 h_mac_cosine 動態取 top6/bottom6.
-# 舊寫死名單含 P18/P52/P35 (已剔除), 故必改; top6 仍為 P8/P1/P15/P24/P7/P56,
-# bottom6 = 54 母體最低 6 個 (P4/P58/P55/P16/P34/P48 一類).
+# Select the top and bottom six programs from the retained 54-program table.
 ord_b     <- df$program[order(df$h_mac_cosine)]
 named_bot <- as.character(head(ord_b, 6))
 named_top <- as.character(tail(ord_b, 6))
 named_set <- c(named_top, named_bot)
 df$is_named <- df$program %in% named_set
 # display label = NEW P-id + authority name_short; star ONLY if brain-weak (24-whitelist)
-# [restore] 顯示用 new_id (新 54 編號), 不用 df$program (舊 cNMF 號).
+# Display retained IDs; source cNMF IDs remain provenance keys only.
 df$nm_lab <- ifelse(
   df$is_named,
   paste0(df$new_id, " ",

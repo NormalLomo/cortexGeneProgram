@@ -19,7 +19,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -155,7 +155,7 @@ cb = fig.colorbar(sca, cax=cax, orientation="horizontal")
 cb.set_label("gene-spectra match corr", fontsize=5.6)
 cb.ax.tick_params(labelsize=5.2)
 
-# editfig_r1: figure-level suptitle removed (now in figure_release Figure legends)
+# The figure-level title is supplied by the public figure legend.
 
 pdf = f"{FIGD}/ed_fig3_k_robustness.pdf"
 png = f"{FIGD}/ed_fig3_k_robustness.png"

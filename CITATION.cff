@@ -1,19 +1,57 @@
 cff-version: 1.2.0
-message: This candidate source release has no version-specific Zenodo DOI yet. It will be archived as a new version under the concept DOI; use the repository URL until Zenodo mints the matching version DOI.
+message: If you use this software, please cite it using this metadata.
 title: Human Cortical Gene Program Source Code
 type: software
 authors:
   - family-names: Luo
     given-names: Meng
     orcid: https://orcid.org/0000-0003-0622-9060
-version: 2026.07.11
-date-released: 2026-07-11
+    email: slaket0625@hotmail.com
+  - family-names: Liu
+    given-names: Hongxin
+  - family-names: Huang
+    given-names: Peng
+  - family-names: Cai
+    given-names: Yideng
+  - family-names: Yang
+    given-names: Wenyi
+  - family-names: Wu
+    given-names: Jiaxi
+  - family-names: Que
+    given-names: Jinhao
+  - family-names: Sun
+    given-names: Haoxiu
+  - family-names: Li
+    given-names: Chenyang
+  - family-names: Li
+    given-names: Wenxuan
+  - family-names: Tan
+    given-names: Renjie
+  - family-names: Wang
+    given-names: Pingping
+  - family-names: Xu
+    given-names: Zhaocun
+  - family-names: Huang
+    given-names: Guoxing
+  - family-names: Zhou
+    given-names: Wenyang
+  - family-names: Wei
+    given-names: Songren
+  - family-names: Jiang
+    given-names: Qinghua
+abstract: Source code for identifying and evaluating coordinated human cortical gene programs across single-nucleus, spatial, cross-species, and trait-association analyses.
+keywords:
+  - human cortex
+  - gene programs
+  - cNMF
+  - single-nucleus RNA-seq
+  - spatial transcriptomics
+  - cross-species
+version: 2026.07.12
+date-released: 2026-07-12
 repository-code: https://github.com/NormalLomo/cortexGeneProgram
 license: MIT
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21245200
     description: Concept DOI for the collection of archived versions of this software.
-  - type: doi
-    value: 10.5281/zenodo.21245201
-    description: Versioned DOI for the initial archived software snapshot; it does not identify this 2026.07.11 candidate.

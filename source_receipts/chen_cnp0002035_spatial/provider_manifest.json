@@ -1,0 +1,1405 @@
+{
+  "dataset_id": "1663381185152036865",
+  "dataCode": "7cae09e7b7494af988cadcc7999e20c6",
+  "projectId": "1663090382139699202",
+  "createUser": "159131-1002407",
+  "dataTitle": "猕猴皮层空间转录组的细胞类型注释结果数据集",
+  "dataTitleEn": "Cell type annotation dataset for the spatial transcriptome of the macaque cortex",
+  "fileNum": 174,
+  "fileSizeSum": 577704.9,
+  "total_bytes": 605767495166,
+  "files": [
+    {
+      "id": "1839599677520470017",
+      "type": "tsv",
+      "name": "ST.CellID.CellType.3monkeys.all.tsv",
+      "size": 1582385587,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/ST.CellID.CellType.3monkeys.all.tsv",
+      "dir": "/ST_result/ST.CellID.CellType.3monkeys.all.tsv"
+    },
+    {
+      "id": "1839599677520470018",
+      "type": "xlsx",
+      "name": "cytpe_region_ration.xlsx",
+      "size": 425767,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/cytpe_region_ration.xlsx",
+      "dir": "/ST_result/cytpe_region_ration.xlsx"
+    },
+    {
+      "id": "1839599677524664321",
+      "type": "csv",
+      "name": "regions-macaque1.csv",
+      "size": 538261,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/regions-macaque1.csv",
+      "dir": "/ST_result/regions-macaque1.csv"
+    },
+    {
+      "id": "1839599677524664322",
+      "type": "csv",
+      "name": "regions-macaque2.csv",
+      "size": 31078,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/regions-macaque2.csv",
+      "dir": "/ST_result/regions-macaque2.csv"
+    },
+    {
+      "id": "1839599677528858626",
+      "type": "csv",
+      "name": "regions-macaque3.csv",
+      "size": 102001,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/regions-macaque3.csv",
+      "dir": "/ST_result/regions-macaque3.csv"
+    },
+    {
+      "id": "1839599677528858627",
+      "type": "txt",
+      "name": "total_gene_T100.type20230503-macaque1-contour2.round.txt",
+      "size": 2701691653,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T100.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T100.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677533052929",
+      "type": "txt",
+      "name": "total_gene_T101.type20230503-macaque1-contour2.round.txt",
+      "size": 1526543257,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T101.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T101.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677533052930",
+      "type": "txt",
+      "name": "total_gene_T102.type20230503-macaque1-contour2.round.txt",
+      "size": 1587069038,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T102.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T102.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677537247233",
+      "type": "txt",
+      "name": "total_gene_T103.type20230503-macaque1-contour2.round.txt",
+      "size": 3645714167,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T103.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T103.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677537247234",
+      "type": "txt",
+      "name": "total_gene_T104.type20230503-macaque1-contour2.round.txt",
+      "size": 3871892644,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T104.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T104.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677541441537",
+      "type": "txt",
+      "name": "total_gene_T105.type20230503-macaque1-contour2.round.txt",
+      "size": 2202931556,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T105.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T105.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677541441538",
+      "type": "txt",
+      "name": "total_gene_T106.type20230503-macaque1-contour2.round.txt",
+      "size": 2932555136,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T106.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T106.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677545635841",
+      "type": "txt",
+      "name": "total_gene_T107.type20230503-macaque1-contour2.round.txt",
+      "size": 2091675144,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T107.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T107.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677545635842",
+      "type": "txt",
+      "name": "total_gene_T108.type20230503-macaque1-contour2.round.txt",
+      "size": 2927899268,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T108.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T108.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677549830146",
+      "type": "txt",
+      "name": "total_gene_T109.type20230503-macaque1-contour2.round.txt",
+      "size": 2740347605,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T109.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T109.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677549830147",
+      "type": "txt",
+      "name": "total_gene_T110.type20230503-macaque1-contour2.round.txt",
+      "size": 6017055210,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T110.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T110.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677554024449",
+      "type": "txt",
+      "name": "total_gene_T111.type20230503-macaque1-contour2.round.txt",
+      "size": 1883096336,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T111.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T111.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677554024450",
+      "type": "txt",
+      "name": "total_gene_T112.type20230503-macaque1-contour2.round.txt",
+      "size": 6419876250,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T112.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T112.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677558218754",
+      "type": "txt",
+      "name": "total_gene_T113.type20230503-macaque1-contour2.round.txt",
+      "size": 1829033100,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T113.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T113.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677558218755",
+      "type": "txt",
+      "name": "total_gene_T114.type20230503-macaque1-contour2.round.txt",
+      "size": 4615053890,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T114.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T114.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677562413057",
+      "type": "txt",
+      "name": "total_gene_T115.type20230503-macaque1-contour2.round.txt",
+      "size": 2327958599,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T115.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T115.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677562413058",
+      "type": "txt",
+      "name": "total_gene_T116.type20230503-macaque1-contour2.round.txt",
+      "size": 3780637168,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T116.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T116.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677566607361",
+      "type": "txt",
+      "name": "total_gene_T117.type20230503-macaque1-contour2.round.txt",
+      "size": 2375769974,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T117.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T117.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677566607362",
+      "type": "txt",
+      "name": "total_gene_T118.type20230503-macaque1-contour2.round.txt",
+      "size": 4647593959,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T118.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T118.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677570801666",
+      "type": "txt",
+      "name": "total_gene_T119.type20230503-macaque1-contour2.round.txt",
+      "size": 2807954463,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T119.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T119.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677570801667",
+      "type": "txt",
+      "name": "total_gene_T120.type20230503-macaque1-contour2.round.txt",
+      "size": 5663134900,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T120.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T120.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677574995970",
+      "type": "txt",
+      "name": "total_gene_T121.type20230503-macaque1-contour2.round.txt",
+      "size": 1782240577,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T121.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T121.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677574995971",
+      "type": "txt",
+      "name": "total_gene_T122.type20230503-macaque1-contour2.round.txt",
+      "size": 4911556010,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T122.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T122.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677579190274",
+      "type": "txt",
+      "name": "total_gene_T123.type20230503-macaque1-contour2.round.txt",
+      "size": 2133491017,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T123.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T123.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677579190275",
+      "type": "txt",
+      "name": "total_gene_T124.type20230503-macaque1-contour2.round.txt",
+      "size": 6287933592,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T124.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T124.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677583384577",
+      "type": "txt",
+      "name": "total_gene_T125.type20230503-macaque1-contour2.round.txt",
+      "size": 2455973273,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T125.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T125.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677583384578",
+      "type": "txt",
+      "name": "total_gene_T126.type20230503-macaque1-contour2.round.txt",
+      "size": 292615999,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T126.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T126.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677587578881",
+      "type": "txt",
+      "name": "total_gene_T127.type20230503-macaque1-contour2.round.txt",
+      "size": 2036923169,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T127.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T127.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677587578882",
+      "type": "txt",
+      "name": "total_gene_T128.type20230503-macaque1-contour2.round.txt",
+      "size": 1454547435,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T128.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T128.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677591773186",
+      "type": "txt",
+      "name": "total_gene_T129.type20230503-macaque1-contour2.round.txt",
+      "size": 1783351227,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T129.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T129.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677591773187",
+      "type": "txt",
+      "name": "total_gene_T130.type20230503-macaque1-contour2.round.txt",
+      "size": 1391516913,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T130.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T130.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677595967489",
+      "type": "txt",
+      "name": "total_gene_T131.type20230503-macaque1-contour2.round.txt",
+      "size": 2842789323,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T131.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T131.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677595967490",
+      "type": "txt",
+      "name": "total_gene_T132.type20230503-macaque1-contour2.round.txt",
+      "size": 3845329817,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T132.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T132.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677600161794",
+      "type": "txt",
+      "name": "total_gene_T133.type20230503-macaque1-contour2.round.txt",
+      "size": 1184890755,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T133.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T133.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677604356097",
+      "type": "txt",
+      "name": "total_gene_T134.type20230503-macaque1-contour2.round.txt",
+      "size": 5150895450,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T134.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T134.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677604356098",
+      "type": "txt",
+      "name": "total_gene_T135.type20230503-macaque1-contour2.round.txt",
+      "size": 1620267920,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T135.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T135.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677608550402",
+      "type": "txt",
+      "name": "total_gene_T136.type20230503-macaque1-contour2.round.txt",
+      "size": 3369222155,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T136.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T136.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677608550403",
+      "type": "txt",
+      "name": "total_gene_T137.type20230503-macaque1-contour2.round.txt",
+      "size": 1900692928,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T137.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T137.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677612744705",
+      "type": "txt",
+      "name": "total_gene_T138.type20230503-macaque1-contour2.round.txt",
+      "size": 1283196640,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T138.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T138.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677612744706",
+      "type": "txt",
+      "name": "total_gene_T139.type20230503-macaque1-contour2.round.txt",
+      "size": 1610347528,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T139.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T139.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677616939009",
+      "type": "txt",
+      "name": "total_gene_T140.type20230503-macaque1-contour2.round.txt",
+      "size": 1428686721,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T140.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T140.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677616939010",
+      "type": "txt",
+      "name": "total_gene_T141.type20230503-macaque1-contour2.round.txt",
+      "size": 2028903469,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T141.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T141.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677621133314",
+      "type": "txt",
+      "name": "total_gene_T142.type20230503-macaque1-contour2.round.txt",
+      "size": 1061241347,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T142.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T142.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677621133315",
+      "type": "txt",
+      "name": "total_gene_T143.type20230503-macaque1-contour2.round.txt",
+      "size": 2481482261,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T143.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T143.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677625327617",
+      "type": "txt",
+      "name": "total_gene_T144.type20230503-macaque1-contour2.round.txt",
+      "size": 1745728247,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T144.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T144.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677625327618",
+      "type": "txt",
+      "name": "total_gene_T147.type20230503-macaque1-contour2.round.txt",
+      "size": 431981688,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T147.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T147.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677629521922",
+      "type": "txt",
+      "name": "total_gene_T149.type20230503-macaque1-contour2.round.txt",
+      "size": 968931262,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T149.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T149.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677629521923",
+      "type": "txt",
+      "name": "total_gene_T151.type20230503-macaque1-contour2.round.txt",
+      "size": 1455687166,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T151.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T151.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677633716226",
+      "type": "txt",
+      "name": "total_gene_T153.type20230503-macaque1-contour2.round.txt",
+      "size": 678397273,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T153.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T153.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677633716227",
+      "type": "txt",
+      "name": "total_gene_T155.type20230503-macaque1-contour2.round.txt",
+      "size": 452235594,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T155.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T155.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677637910529",
+      "type": "txt",
+      "name": "total_gene_T25.type20230503-macaque1-contour2.round.txt",
+      "size": 5419721794,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T25.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T25.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677637910530",
+      "type": "txt",
+      "name": "total_gene_T27.type20230503-macaque1-contour2.round.txt",
+      "size": 3560127114,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T27.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T27.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677642104834",
+      "type": "txt",
+      "name": "total_gene_T28.type20230503-macaque1-contour2.round.txt",
+      "size": 1955941149,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T28.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T28.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677642104835",
+      "type": "txt",
+      "name": "total_gene_T29.type20230503-macaque1-contour2.round.txt",
+      "size": 3360117620,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T29.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T29.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677646299137",
+      "type": "txt",
+      "name": "total_gene_T30.type20230503-macaque1-contour2.round.txt",
+      "size": 8700753549,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T30.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T30.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677646299138",
+      "type": "txt",
+      "name": "total_gene_T31.type20230503-macaque1-contour2.round.txt",
+      "size": 4952610655,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T31.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T31.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677650493441",
+      "type": "txt",
+      "name": "total_gene_T32.type20230503-macaque1-contour2.round.txt",
+      "size": 6510727426,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T32.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T32.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677650493442",
+      "type": "txt",
+      "name": "total_gene_T33.type20230503-macaque1-contour2.round.txt",
+      "size": 7612709359,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T33.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T33.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677654687746",
+      "type": "txt",
+      "name": "total_gene_T34.type20230503-macaque1-contour2.round.txt",
+      "size": 5408151356,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T34.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T34.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677654687747",
+      "type": "txt",
+      "name": "total_gene_T36.type20230503-macaque1-contour2.round.txt",
+      "size": 9518293675,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T36.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T36.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677658882049",
+      "type": "txt",
+      "name": "total_gene_T37.type20230503-macaque1-contour2.round.txt",
+      "size": 2513976169,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T37.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T37.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677658882050",
+      "type": "txt",
+      "name": "total_gene_T38.type20230503-macaque1-contour2.round.txt",
+      "size": 4833438886,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T38.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T38.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677663076354",
+      "type": "txt",
+      "name": "total_gene_T39.type20230503-macaque1-contour2.round.txt",
+      "size": 5757145056,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T39.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T39.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677663076355",
+      "type": "txt",
+      "name": "total_gene_T40.type20230503-macaque1-contour2.round.txt",
+      "size": 3636850275,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T40.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T40.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677667270658",
+      "type": "txt",
+      "name": "total_gene_T41.type20230503-macaque1-contour2.round.txt",
+      "size": 2353521815,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T41.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T41.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677667270659",
+      "type": "txt",
+      "name": "total_gene_T42.type20230503-macaque1-contour2.round.txt",
+      "size": 7077890577,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T42.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T42.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677671464961",
+      "type": "txt",
+      "name": "total_gene_T43.type20230503-macaque1-contour2.round.txt",
+      "size": 3488905328,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T43.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T43.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677671464962",
+      "type": "txt",
+      "name": "total_gene_T44.type20230503-macaque1-contour2.round.txt",
+      "size": 5857015721,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T44.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T44.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677675659266",
+      "type": "txt",
+      "name": "total_gene_T45.type20230503-macaque1-contour2.round.txt",
+      "size": 3783271958,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T45.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T45.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677675659267",
+      "type": "txt",
+      "name": "total_gene_T47.type20230503-macaque1-contour2.round.txt",
+      "size": 3400572648,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T47.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T47.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677679853569",
+      "type": "txt",
+      "name": "total_gene_T48.type20230503-macaque1-contour2.round.txt",
+      "size": 5683758255,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T48.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T48.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677679853570",
+      "type": "txt",
+      "name": "total_gene_T49.type20230503-macaque1-contour2.round.txt",
+      "size": 3583635857,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T49.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T49.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677684047874",
+      "type": "txt",
+      "name": "total_gene_T50.type20230503-macaque1-contour2.round.txt",
+      "size": 6592895116,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T50.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T50.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677684047875",
+      "type": "txt",
+      "name": "total_gene_T51.type20230503-macaque1-contour2.round.txt",
+      "size": 1476088630,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T51.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T51.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677688242177",
+      "type": "txt",
+      "name": "total_gene_T52.type20230503-macaque1-contour2.round.txt",
+      "size": 7095036374,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T52.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T52.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677688242178",
+      "type": "txt",
+      "name": "total_gene_T53.type20230503-macaque1-contour2.round.txt",
+      "size": 3834622480,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T53.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T53.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677692436482",
+      "type": "txt",
+      "name": "total_gene_T54.type20230503-macaque1-contour2.round.txt",
+      "size": 4994311789,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T54.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T54.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677692436483",
+      "type": "txt",
+      "name": "total_gene_T55.type20230503-macaque1-contour2.round.txt",
+      "size": 2547162449,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T55.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T55.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677696630785",
+      "type": "txt",
+      "name": "total_gene_T56.type20230503-macaque1-contour2.round.txt",
+      "size": 4881230152,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T56.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T56.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677696630786",
+      "type": "txt",
+      "name": "total_gene_T57.type20230503-macaque1-contour2.round.txt",
+      "size": 2598218712,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T57.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T57.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677705019395",
+      "type": "txt",
+      "name": "total_gene_T576.type20230619-macaque2-contour2.round.txt",
+      "size": 3876994030,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T576.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T576.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677709213697",
+      "type": "txt",
+      "name": "total_gene_T577.type20230619-macaque2-contour2.round.txt",
+      "size": 7624103227,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T577.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T577.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677709213698",
+      "type": "txt",
+      "name": "total_gene_T578.type20230619-macaque2-contour2.round.txt",
+      "size": 5854815165,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T578.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T578.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677713408003",
+      "type": "txt",
+      "name": "total_gene_T58.type20230503-macaque1-contour2.round.txt",
+      "size": 3543264374,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T58.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T58.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677730185218",
+      "type": "txt",
+      "name": "total_gene_T586.type20230619-macaque2-contour2.round.txt",
+      "size": 4293247636,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T586.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T586.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677734379521",
+      "type": "txt",
+      "name": "total_gene_T587.type20230619-macaque2-contour2.round.txt",
+      "size": 6051702684,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T587.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T587.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677734379522",
+      "type": "txt",
+      "name": "total_gene_T589.type20230619-macaque2-contour2.round.txt",
+      "size": 8946232341,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T589.type20230619-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T589.type20230619-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1839599677738573825",
+      "type": "txt",
+      "name": "total_gene_T59.type20230503-macaque1-contour2.round.txt",
+      "size": 2501057534,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T59.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T59.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677746962434",
+      "type": "txt",
+      "name": "total_gene_T60.type20230503-macaque1-contour2.round.txt",
+      "size": 4122391218,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T60.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T60.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677746962435",
+      "type": "txt",
+      "name": "total_gene_T61.type20230503-macaque1-contour2.round.txt",
+      "size": 2282057604,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T61.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T61.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677751156737",
+      "type": "txt",
+      "name": "total_gene_T62.type20230503-macaque1-contour2.round.txt",
+      "size": 2705332910,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T62.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T62.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677751156738",
+      "type": "txt",
+      "name": "total_gene_T63.type20230503-macaque1-contour2.round.txt",
+      "size": 2432194563,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T63.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T63.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677755351041",
+      "type": "txt",
+      "name": "total_gene_T64.type20230503-macaque1-contour2.round.txt",
+      "size": 7724698456,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T64.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T64.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677755351042",
+      "type": "txt",
+      "name": "total_gene_T65.type20230503-macaque1-contour2.round.txt",
+      "size": 4390433548,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T65.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T65.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677759545345",
+      "type": "txt",
+      "name": "total_gene_T66.type20230503-macaque1-contour2.round.txt",
+      "size": 6274462500,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T66.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T66.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677759545346",
+      "type": "txt",
+      "name": "total_gene_T67.type20230503-macaque1-contour2.round.txt",
+      "size": 3401374752,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T67.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T67.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677763739650",
+      "type": "txt",
+      "name": "total_gene_T68.type20230503-macaque1-contour2.round.txt",
+      "size": 6891108769,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T68.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T68.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677763739651",
+      "type": "txt",
+      "name": "total_gene_T71.type20230503-macaque1-contour2.round.txt",
+      "size": 1768064670,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T71.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T71.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677767933953",
+      "type": "txt",
+      "name": "total_gene_T72.type20230503-macaque1-contour2.round.txt",
+      "size": 4337423092,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T72.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T72.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677767933954",
+      "type": "txt",
+      "name": "total_gene_T73.type20230503-macaque1-contour2.round.txt",
+      "size": 1530131288,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T73.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T73.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677772128258",
+      "type": "txt",
+      "name": "total_gene_T74.type20230503-macaque1-contour2.round.txt",
+      "size": 2859362099,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T74.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T74.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677772128259",
+      "type": "txt",
+      "name": "total_gene_T75.type20230503-macaque1-contour2.round.txt",
+      "size": 2355957825,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T75.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T75.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677776322562",
+      "type": "txt",
+      "name": "total_gene_T76.type20230503-macaque1-contour2.round.txt",
+      "size": 2247373365,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T76.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T76.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677776322563",
+      "type": "txt",
+      "name": "total_gene_T77.type20230503-macaque1-contour2.round.txt",
+      "size": 2581790482,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T77.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T77.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677780516866",
+      "type": "txt",
+      "name": "total_gene_T78.type20230503-macaque1-contour2.round.txt",
+      "size": 3897674105,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T78.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T78.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677780516867",
+      "type": "txt",
+      "name": "total_gene_T79.type20230503-macaque1-contour2.round.txt",
+      "size": 3176285311,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T79.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T79.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677784711169",
+      "type": "txt",
+      "name": "total_gene_T80.type20230503-macaque1-contour2.round.txt",
+      "size": 4575389648,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T80.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T80.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677784711170",
+      "type": "txt",
+      "name": "total_gene_T81.type20230503-macaque1-contour2.round.txt",
+      "size": 2693465995,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T81.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T81.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677788905474",
+      "type": "txt",
+      "name": "total_gene_T82.type20230503-macaque1-contour2.round.txt",
+      "size": 4735148901,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T82.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T82.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677788905475",
+      "type": "txt",
+      "name": "total_gene_T825.type20230619-macaque3-MQ121.round.txt",
+      "size": 6923039855,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T825.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T825.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677793099778",
+      "type": "txt",
+      "name": "total_gene_T826.type20230619-macaque3-MQ121.round.txt",
+      "size": 5081681878,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T826.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T826.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677793099779",
+      "type": "txt",
+      "name": "total_gene_T83.type20230503-macaque1-contour2.round.txt",
+      "size": 3471534301,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T83.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T83.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677797294082",
+      "type": "txt",
+      "name": "total_gene_T837.type20230619-macaque3-MQ121.round.txt",
+      "size": 6083356772,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T837.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T837.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677797294083",
+      "type": "txt",
+      "name": "total_gene_T838.type20230619-macaque3-MQ121.round.txt",
+      "size": 9768093374,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T838.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T838.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677801488386",
+      "type": "txt",
+      "name": "total_gene_T84.type20230503-macaque1-contour2.round.txt",
+      "size": 2927598801,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T84.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T84.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677801488387",
+      "type": "txt",
+      "name": "total_gene_T849.type20230619-macaque3-MQ121.round.txt",
+      "size": 3215705238,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T849.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T849.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677805682689",
+      "type": "txt",
+      "name": "total_gene_T85.type20230503-macaque1-contour2.round.txt",
+      "size": 2424962032,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T85.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T85.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677805682690",
+      "type": "txt",
+      "name": "total_gene_T850.type20230619-macaque3-MQ121.round.txt",
+      "size": 2834494169,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T850.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T850.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677809876993",
+      "type": "txt",
+      "name": "total_gene_T858.type20230619-macaque3-MQ121.round.txt",
+      "size": 2350253558,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T858.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T858.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677809876994",
+      "type": "txt",
+      "name": "total_gene_T859.type20230619-macaque3-MQ121.round.txt",
+      "size": 6443501351,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T859.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T859.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677814071298",
+      "type": "txt",
+      "name": "total_gene_T860.type20230619-macaque3-MQ121.round.txt",
+      "size": 3426344835,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T860.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T860.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677814071299",
+      "type": "txt",
+      "name": "total_gene_T861.type20230619-macaque3-MQ121.round.txt",
+      "size": 3974594360,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T861.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T861.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677818265602",
+      "type": "txt",
+      "name": "total_gene_T862.type20230619-macaque3-MQ121.round.txt",
+      "size": 4905688509,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T862.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T862.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677818265603",
+      "type": "txt",
+      "name": "total_gene_T863.type20230619-macaque3-MQ121.round.txt",
+      "size": 4358127023,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T863.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T863.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677822459906",
+      "type": "txt",
+      "name": "total_gene_T864.type20230619-macaque3-MQ121.round.txt",
+      "size": 5586910412,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T864.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T864.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677822459907",
+      "type": "txt",
+      "name": "total_gene_T865.type20230619-macaque3-MQ121.round.txt",
+      "size": 4255793820,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T865.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T865.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677826654209",
+      "type": "txt",
+      "name": "total_gene_T866.type20230619-macaque3-MQ121.round.txt",
+      "size": 4941275389,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T866.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T866.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677826654210",
+      "type": "txt",
+      "name": "total_gene_T867.type20230619-macaque3-MQ121.round.txt",
+      "size": 1489206764,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T867.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T867.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677830848514",
+      "type": "txt",
+      "name": "total_gene_T868.type20230619-macaque3-MQ121.round.txt",
+      "size": 2946825457,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T868.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T868.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677830848515",
+      "type": "txt",
+      "name": "total_gene_T869.type20230619-macaque3-MQ121.round.txt",
+      "size": 1878684549,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T869.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T869.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677881180161",
+      "type": "txt",
+      "name": "total_gene_T87.type20230503-macaque1-contour2.round.txt",
+      "size": 1559209954,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T87.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T87.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677885374466",
+      "type": "txt",
+      "name": "total_gene_T871.type20230619-macaque3-MQ121.round.txt",
+      "size": 348206368,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T871.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T871.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677885374467",
+      "type": "txt",
+      "name": "total_gene_T872.type20230619-macaque3-MQ121.round.txt",
+      "size": 1479343013,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T872.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T872.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677889568769",
+      "type": "txt",
+      "name": "total_gene_T873.type20230619-macaque3-MQ121.round.txt",
+      "size": 499746649,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T873.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T873.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677889568770",
+      "type": "txt",
+      "name": "total_gene_T874.type20230619-macaque3-MQ121.round.txt",
+      "size": 1288154636,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T874.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T874.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677893763073",
+      "type": "txt",
+      "name": "total_gene_T875.type20230619-macaque3-MQ121.round.txt",
+      "size": 1818362929,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T875.type20230619-macaque3-MQ121.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T875.type20230619-macaque3-MQ121.round.txt"
+    },
+    {
+      "id": "1839599677893763074",
+      "type": "txt",
+      "name": "total_gene_T88.type20230503-macaque1-contour2.round.txt",
+      "size": 1489282653,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T88.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T88.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677897957378",
+      "type": "txt",
+      "name": "total_gene_T89.type20230503-macaque1-contour2.round.txt",
+      "size": 2126974974,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T89.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T89.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677897957379",
+      "type": "txt",
+      "name": "total_gene_T90.type20230503-macaque1-contour2.round.txt",
+      "size": 4616926672,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T90.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T90.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677902151682",
+      "type": "txt",
+      "name": "total_gene_T91.type20230503-macaque1-contour2.round.txt",
+      "size": 1596357432,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T91.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T91.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677902151683",
+      "type": "txt",
+      "name": "total_gene_T92.type20230503-macaque1-contour2.round.txt",
+      "size": 1684296330,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T92.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T92.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677906345986",
+      "type": "txt",
+      "name": "total_gene_T93.type20230503-macaque1-contour2.round.txt",
+      "size": 2090645619,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T93.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T93.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677906345987",
+      "type": "txt",
+      "name": "total_gene_T94.type20230503-macaque1-contour2.round.txt",
+      "size": 2391495019,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T94.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T94.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677910540289",
+      "type": "txt",
+      "name": "total_gene_T95.type20230503-macaque1-contour2.round.txt",
+      "size": 2092684859,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T95.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T95.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677910540290",
+      "type": "txt",
+      "name": "total_gene_T96.type20230503-macaque1-contour2.round.txt",
+      "size": 3208994639,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T96.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T96.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677914734593",
+      "type": "txt",
+      "name": "total_gene_T97.type20230503-macaque1-contour2.round.txt",
+      "size": 2055615852,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T97.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T97.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677914734594",
+      "type": "txt",
+      "name": "total_gene_T98.type20230503-macaque1-contour2.round.txt",
+      "size": 3352836209,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T98.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T98.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677918928897",
+      "type": "txt",
+      "name": "total_gene_T99.type20230503-macaque1-contour2.round.txt",
+      "size": 1565521835,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T99.type20230503-macaque1-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T99.type20230503-macaque1-contour2.round.txt"
+    },
+    {
+      "id": "1839599677918928898",
+      "type": "rds",
+      "name": "snRNA.metadata.2monkeys.rds",
+      "size": 31466747,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/snRNA_result/snRNA.metadata.2monkeys.rds",
+      "dir": "/snRNA_result/snRNA.metadata.2monkeys.rds"
+    },
+    {
+      "id": "1839599677923123202",
+      "type": "rds",
+      "name": "snRNA.sparseMatrix_Monkey1.counts.rds",
+      "size": 4129681166,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/snRNA_result/snRNA.sparseMatrix_Monkey1.counts.rds",
+      "dir": "/snRNA_result/snRNA.sparseMatrix_Monkey1.counts.rds"
+    },
+    {
+      "id": "1839599677923123203",
+      "type": "rds",
+      "name": "snRNA.sparseMatrix_Monkey2.counts.rds",
+      "size": 3544696257,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/snRNA_result/snRNA.sparseMatrix_Monkey2.counts.rds",
+      "dir": "/snRNA_result/snRNA.sparseMatrix_Monkey2.counts.rds"
+    },
+    {
+      "id": "1916810575024726017",
+      "type": "tsv",
+      "name": "ST.CellID.quality.3monkeys.all.tsv",
+      "size": 1633411242,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/ST.CellID.quality.3monkeys.all.tsv",
+      "dir": "/ST_result/ST.CellID.quality.3monkeys.all.tsv"
+    },
+    {
+      "id": "1942887169719263233",
+      "type": "txt",
+      "name": "total_gene_T573.type20250709-macaque2-contour2.round.txt",
+      "size": 8469137746,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T573.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T573.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169727651842",
+      "type": "txt",
+      "name": "total_gene_T574.type20250709-macaque2-contour2.round.txt",
+      "size": 4787442986,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T574.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T574.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169727651843",
+      "type": "txt",
+      "name": "total_gene_T575.type20250709-macaque2-contour2.round.txt",
+      "size": 8187619289,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T575.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T575.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169731846145",
+      "type": "txt",
+      "name": "total_gene_T579.type20250709-macaque2-contour2.round.txt",
+      "size": 5423763761,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T579.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T579.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169731846146",
+      "type": "txt",
+      "name": "total_gene_T580.type20250709-macaque2-contour2.round.txt",
+      "size": 4369212390,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T580.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T580.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169736040449",
+      "type": "txt",
+      "name": "total_gene_T581.type20250709-macaque2-contour2.round.txt",
+      "size": 6493203756,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T581.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T581.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169740234754",
+      "type": "txt",
+      "name": "total_gene_T582.type20250709-macaque2-contour2.round.txt",
+      "size": 3558853000,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T582.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T582.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169740234755",
+      "type": "txt",
+      "name": "total_gene_T583.type20250709-macaque2-contour2.round.txt",
+      "size": 9245317749,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T583.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T583.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169744429057",
+      "type": "txt",
+      "name": "total_gene_T584.type20250709-macaque2-contour2.round.txt",
+      "size": 5973439005,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T584.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T584.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169744429058",
+      "type": "txt",
+      "name": "total_gene_T585.type20250709-macaque2-contour2.round.txt",
+      "size": 13711694387,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T585.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T585.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169748623362",
+      "type": "txt",
+      "name": "total_gene_T590.type20250709-macaque2-contour2.round.txt",
+      "size": 2178995249,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T590.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T590.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942887169752817665",
+      "type": "txt",
+      "name": "total_gene_T591.type20250709-macaque2-contour2.round.txt",
+      "size": 4729927098,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T591.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T591.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942902296347123713",
+      "type": "txt",
+      "name": "total_gene_T592.type20250709-macaque2-contour2.round.txt",
+      "size": 1834976027,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/total_gene_T592.type20250709-macaque2-contour2.round.txt",
+      "dir": "/ST_result/20230503-macaque1-sct/total_gene_T592.type20250709-macaque2-contour2.round.txt"
+    },
+    {
+      "id": "1942917391118229506",
+      "type": "csv",
+      "name": "regions-macaque2.type20250709-macaque2-contour2.csv",
+      "size": 34157,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/regions-macaque2.type20250709-macaque2-contour2.csv",
+      "dir": "/ST_result/regions-macaque2.type20250709-macaque2-contour2.csv"
+    },
+    {
+      "id": "1943189245405945857",
+      "type": "md5",
+      "name": "chips.md5",
+      "size": 14513,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/20230503-macaque1-sct/chips.md5",
+      "dir": "/ST_result/20230503-macaque1-sct/chips.md5"
+    },
+    {
+      "id": "1945031377192214529",
+      "type": "xlsx",
+      "name": "SliceID_EBZ_info.xlsx",
+      "size": 13095,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/ST_result/SliceID_EBZ_info.xlsx",
+      "dir": "/ST_result/SliceID_EBZ_info.xlsx"
+    },
+    {
+      "id": "1990329770973847554",
+      "type": "md",
+      "name": "README-update20251117.md",
+      "size": 4654,
+      "path": "https://www.braindatacenter.cn/resource/1629164258869/dataset/1663090382139699202/159131-1002407/7cae09e7b7494af988cadcc7999e20c6/README-update20251117.md",
+      "dir": "/README-update20251117.md"
+    }
+  ]
+}

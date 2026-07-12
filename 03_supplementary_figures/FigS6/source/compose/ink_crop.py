@@ -38,9 +38,9 @@ import sys
 import tempfile
 
 SVG_DIMS_RE = {
-    "viewBox": re.compile(r'viewBox\s*=\s*"([\-\d.eE ]+)"'),
-    "width": re.compile(r'\bwidth\s*=\s*"([\d.eE]+)(?:pt|px)?"'),
-    "height": re.compile(r'\bheight\s*=\s*"([\d.eE]+)(?:pt|px)?"'),
+    "viewBox": re.compile(r'''viewBox\s*=\s*["']([\-\d.eE ]+)["']'''),
+    "width": re.compile(r'''\bwidth\s*=\s*["']([\d.eE]+)(?:pt|px)?["']'''),
+    "height": re.compile(r'''\bheight\s*=\s*["']([\d.eE]+)(?:pt|px)?["']'''),
 }
 
 

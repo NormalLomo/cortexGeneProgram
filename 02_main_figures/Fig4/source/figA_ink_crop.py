@@ -87,7 +87,7 @@ def crop_one(pid):
 
 def main():
     results = {}
-    # ATTEMPT2 2026-06-27: current Fig. 4 crops a-l. Keep title band t on
+    # Crop Fig. 4 panels a-l while preserving the title band t on
     # its full canvas; cropping t can make svgutils/Cairo drop text in PDF.
     # Legacy m/n panels remain traceability-only and are not cropped/composed.
     for pid in list("abcdefghijkl"):

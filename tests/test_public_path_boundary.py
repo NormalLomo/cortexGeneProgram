@@ -10,6 +10,7 @@ TEXT_SUFFIXES = {".py", ".R", ".r", ".sh", ".md", ".txt", ".tsv", ".yaml", ".yml
 FORBIDDEN = (
     re.compile(r"PROJECT_ROOT"),
     re.compile(r"(?<!CORTEX_PROGRAM_)DATA_ROOT"),
+    re.compile(r"__PRIVATE_CANONICAL_ROOT__"),
     re.compile(r"/Users/|/home/|/mnt/|192\\.168\\.|fsfy|gpuserver|luomeng@"),
 )
 

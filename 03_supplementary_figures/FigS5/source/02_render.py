@@ -1,17 +1,9 @@
 #!/usr/bin/env python
 """
-RENDER-ONLY re-layout of figures/extended/ed_cluster_confusion.{pdf,png}.
-Reads CACHED tables + summary JSON from results/.../cluster_confusion/ (NO recompute
-of the reported numbers). Dendrogram/column ordering are re-derived deterministically
-from the cached means for display only (same corr/ward as the producer script).
+Render the retained-program FigS5 composite from cached producer outputs.
 
-Layout fixes vs original:
-  - panels a/b: heatmap aspect='auto' (was 'equal') so rows fill the cell and ALIGN
-    with the left dendrogram -> row labels stop overlapping; dendrogram height matched.
-  - panel b title no longer clipped (wrapped + extra right margin headroom).
-  - dead vertical whitespace removed (figsize shorter, height_ratios + hspace tuned).
-  - all text labels >= 5pt; program column labels thinned (every-other) + 5pt.
-  - colorbars made compact/inside so they don't shove the heatmap off-page.
+The renderer derives deterministic display orderings from the cached means and
+writes vector and raster figure outputs.
 """
 import os, json
 from pathlib import Path
@@ -22,7 +14,7 @@ from scipy.spatial.distance import pdist
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a portable sans-serif font stack for vector and raster output.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -39,10 +31,17 @@ import cairosvg
 
 ROOT = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
 RES  = f"{ROOT}/results/crossregion_v1"
-OUTD = f"{RES}/cluster_confusion"
+OUTD = os.environ.get("FIGS5_CACHE_DIR", f"{RES}/cluster_confusion")
 FIGD = os.environ.get("FIGS5_OUTPUT_DIR", f"{ROOT}/figures/extended")
 
-PROG = [str(i) for i in range(1, 61)]
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{ROOT}/tables/TableS3_program_annotation.tsv")
+MAP = pd.read_csv(RETAIN_MAP, sep="\t")
+assert len(MAP) == 54
+MAP["new_int"] = MAP["new_P"].astype(str).str.removeprefix("P").astype(int)
+MAP["old_int"] = MAP["cnmf_component"].astype(int)
+assert MAP["new_int"].tolist() == list(range(1, 55))
+assert set(range(1, 61)) - set(MAP["old_int"]) == {9, 18, 19, 35, 52, 57}
+PROG = MAP["new_int"].astype(str).tolist()
 
 mpl.rcParams.update({
     "pdf.fonttype": 42, "ps.fonttype": 42, "svg.fonttype": "none",
@@ -52,9 +51,9 @@ mpl.rcParams.update({
 })
 
 # ---------------- program short names ----------------
-nm = pd.read_csv(f"{RES}/program_names.tsv", sep="\t")
-nm["new_P"] = nm["new_P"].astype(str).str.lstrip("P")
-short = dict(zip(nm["new_P"], nm["name_short"]))
+nm = MAP.copy()
+nm["new_P"] = nm["new_int"].astype(str)
+short = dict(zip(nm["new_P"], nm["functional_name"]))
 conf  = dict(zip(nm["new_P"], nm["confidence"]))
 def plabel(p):
     s = short.get(p, p)
@@ -202,8 +201,9 @@ def panel_confusion(subgs, M_df, Z, order, res, ident_lut, title, letter):
     axh = fig.add_subplot(inner[0, 3])
     im = axh.imshow(Mz, aspect="auto", cmap=CMAP, vmin=-2.5, vmax=2.5,
                     interpolation="nearest")
-    axh.set_yticks([]); axh.set_xticks(range(0, 60, 5))
-    axh.set_xticklabels([f"P{cord[j]+1}" for j in range(0, 60, 5)], fontsize=5,
+    ticks = list(range(0, len(PROG), 5))
+    axh.set_yticks([]); axh.set_xticks(ticks)
+    axh.set_xticklabels([f"P{cord[j]+1}" for j in ticks], fontsize=5,
                         rotation=90)
     axh.tick_params(length=1, pad=1.2)
     ann = (f"ARI(identity)={res['ARI_identity']:.2f}   ARI(region)={res['ARI_region']:.2f}\n"
@@ -240,7 +240,7 @@ for i in range(len(groups)):
         axe.text(ident_pct[i]+reg_pct[i]+0.8, y[i], f"{reg_pct[i]:.0f}%", ha="left",
                  va="center", fontsize=6, color="#d95f0e", fontweight="bold")
 axe.set_yticks(y); axe.set_yticklabels(groups, fontsize=6)
-axe.set_xlabel("mean variance explained across 60 programs (%)", fontsize=6)
+axe.set_xlabel("mean variance explained across 54 retained programs (%)", fontsize=6)
 axe.set_xlim(0, 100)
 axe.set_title("e  Variance partition: identity vs region", fontsize=6.5, loc="left",
               fontweight="bold", pad=4)

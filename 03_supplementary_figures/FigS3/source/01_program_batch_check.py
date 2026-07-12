@@ -2,9 +2,8 @@
 """
 Extended Data — cNMF program BATCH (cohort) robustness check.
 
-QUESTION (external_assessor-risk): are the 60 cNMF programs strongly driven by the
-COHORT confound (us = in-house S-donors vs edlein = Allen H-donors), rather
-than by real biology / cross-region structure?
+QUESTION: are retained cNMF programs driven by cohort after accounting for
+subclass identity and regional structure?
 
 KEY CONFOUND (from ed_fig2_cohort_qc): region x cohort is PARTIALLY confounded
 (7 us-only regions, 7 mixed, edlein never alone) AND the two cohorts have
@@ -26,21 +25,21 @@ METHOD (per program, on all 1,036,039 cells):
   Depth check: Pearson corr of each program usage vs log10(nCount_RNA), and the
   cohort mean-usage gap, to flag depth/QC axes.
 
-RSS for an additive categorical model is computed exactly via a cheap
-normal-equations solve on the one-hot design (drop reference level), all 60
-programs solved at once (X'X is tiny; X'Y is (p x 60)).
+RSS for an additive categorical model is computed by a normal-equations solve
+on the one-hot design (drop reference level) for the 54 retained programs.
 
 Outputs:
   results/crossregion_v1/program_cohort_eta2.tsv
   figures/extended/ed_program_batch_check.{pdf,png}
 """
 import os
+import zipfile
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 mpl.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a portable sans-serif font stack for vector and raster output.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -63,13 +62,14 @@ mpl.rcParams.update({
     "axes.edgecolor": "#333333", "savefig.dpi": 600,
 })
 
-PROJ = "CORTEX_PROGRAM_ROOT"
+PROJ = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
 SCORES = os.path.join(PROJ, "results/cnmf_snrna_joint_full1M_v1/snrna_joint_full1M_v1_k60_cell_scores.tsv")
 OBS = os.path.join(PROJ, "inputs/snRNA_1M_obs.csv")
 NAMES = os.path.join(PROJ, "results/crossregion_v1/program_names.tsv")
 VARI = os.path.join(PROJ, "results/crossregion_v1/program_variability.tsv")
-RENUMBER = os.path.join(PROJ, "results/crossregion_v1/program_renumber_map.tsv")
-OUTDIR = os.path.join(PROJ, "figures/extended")
+RETAIN_MAP = os.environ.get("RETAIN_MAP", os.path.join(PROJ, "tables/TableS3_program_annotation.tsv"))
+SUMMARY_ZIP = os.environ.get("PROGRAM_SUMMARY_ZIP")
+OUTDIR = os.environ.get("FIGS3_OUTPUT_DIR", os.path.join(PROJ, "figures/extended"))
 RESDIR = os.path.join(PROJ, "results/crossregion_v1")
 os.makedirs(OUTDIR, exist_ok=True)
 
@@ -81,32 +81,23 @@ SIGCOL = {"brain-sig": "#2E6E4E", "brain-weak": "#B0883B"}  # green vs amber
 #   kept programs: "P{new_P}"  (new_P is the new integer 1-54)
 #   excluded programs (old 9/18/19/35/52/57): "cNMF component {old_P}"
 # ----------------------------------------------------------------------
-_rmap_df = pd.read_csv(RENUMBER, sep="\t")
+_map_df = pd.read_csv(RETAIN_MAP, sep="\t")
+assert len(_map_df) == 54, f"retained map must contain 54 rows, got {len(_map_df)}"
+_map_df["new_int"] = _map_df["new_P"].astype(str).str.removeprefix("P").astype(int)
+_map_df["old_int"] = _map_df["cnmf_component"].astype(int)
+assert _map_df["new_int"].tolist() == list(range(1, 55))
+assert set(range(1, 61)) - set(_map_df["old_int"]) == {9, 18, 19, 35, 52, 57}
 # Build dict: old_P_int -> display_label
-_OLD_TO_LABEL = {}
-for _, row in _rmap_df.iterrows():
-    old_p = int(row["old_P"])
-    new_p = str(row["new_P"])
-    if new_p == "EXCLUDED":
-        _OLD_TO_LABEL[old_p] = "cNMF component %d" % old_p
-    else:
-        _OLD_TO_LABEL[old_p] = "P%s" % new_p
-
-EXCLUDED_OLD = set(int(row["old_P"]) for _, row in _rmap_df.iterrows()
-                   if str(row["new_P"]) == "EXCLUDED")
+_OLD_TO_LABEL = dict(zip(_map_df["old_int"], "P" + _map_df["new_int"].astype(str)))
+EXCLUDED_OLD = set(range(1, 61)) - set(_OLD_TO_LABEL)
 
 # Load confidence (brain-weak) for asterisk display
 # program_names.tsv new_P format: "P4", "P12", etc. (NOT bare int)
-_names_df = pd.read_csv(NAMES, sep="\t")
+_names_df = _map_df[["new_int", "confidence"]].rename(columns={"new_int": "new_P"})
 # Key: new_P integer -> confidence string (strip "P" prefix)
 _CONF_MAP = {}
 for _, row in _names_df.iterrows():
-    np_str = str(row["new_P"])
-    if np_str not in ("EXCLUDED", "nan") and np_str.startswith("P"):
-        try:
-            _CONF_MAP[int(np_str[1:])] = str(row["confidence"])
-        except (ValueError, TypeError):
-            pass
+    _CONF_MAP[int(row["new_P"])] = str(row["confidence"])
 
 def _star_for_old(old_p):
     """Return '*' if new_P for this old_p is brain-weak, else ''."""
@@ -125,11 +116,33 @@ def prog_label(old_p):
     return base + _star_for_old(old_p)
 
 # ----------------------------------------------------------------------
-# REPLOT_ONLY: skip the heavy 1M-cell load + ANCOVA, rebuild `tab` from the
-# already-saved results table. Use for layout-only re-renders (fix_figS3).
+# REPLOT_ONLY: skip the heavy 1M-cell load and use the saved results table.
 #   REPLOT_ONLY=1 python program_batch_check.py
 # ----------------------------------------------------------------------
 REPLOT_ONLY = os.environ.get("REPLOT_ONLY", "0") == "1"
+
+def _build_tab_from_summary():
+    """Released-summary path: genuine retained-program metrics, no 1M-cell reload."""
+    if not SUMMARY_ZIP:
+        raise RuntimeError("PROGRAM_SUMMARY_ZIP is required for released-summary mode")
+    with zipfile.ZipFile(SUMMARY_ZIP) as zf:
+        with zf.open("programs_master.tsv") as fh:
+            master = pd.read_csv(fh, sep="\t")
+    required = {
+        "program", "name_short", "confidence", "cohort_partial_eta2",
+        "region_partial_eta2", "subclass_eta2",
+        "cohort_gap_us_minus_edlein_SD", "f3_region_variable",
+    }
+    missing = required - set(master.columns)
+    assert not missing, f"programs_master.tsv missing columns: {sorted(missing)}"
+    master["program"] = master["program"].astype(int)
+    tab = master[master["program"].isin(_OLD_TO_LABEL)].copy()
+    assert tab["program"].nunique() == 54
+    tab["depth_corr_log10nCount"] = np.nan
+    tab["f3_region_variable"] = tab["f3_region_variable"].astype(str).str.lower().eq("true")
+    tab = tab.set_index("program").sort_values("cohort_partial_eta2", ascending=False)
+    print(f"[summary] retained rows={len(tab)} excluded={sorted(EXCLUDED_OLD)}", flush=True)
+    return tab
 
 def _build_tab_from_data():
     """Heavy path: load 1M-cell scores + obs, fit ANCOVA, assemble + save table."""
@@ -137,7 +150,9 @@ def _build_tab_from_data():
     S = pd.read_csv(SCORES, sep="\t", index_col=0)
     S.columns = [int(c) for c in S.columns]
     S = S.sort_index(axis=1)
+    S = S.loc[:, sorted(_OLD_TO_LABEL)]
     PROGS = list(S.columns)
+    assert PROGS == sorted(_OLD_TO_LABEL)
     print("  scores:", S.shape, "progs:", PROGS[:3], "...", PROGS[-1], flush=True)
 
     print("[load] obs ...", flush=True)
@@ -253,6 +268,7 @@ def _build_tab_from_data():
         "cohort_gap_us_minus_edlein_SD": gap,
         "f3_region_variable": [p in F3_VARIABLE for p in PROGS],
     }).set_index("program")
+    assert tab.shape[0] == 54
     tab = tab.sort_values("cohort_partial_eta2", ascending=False)
     OUTTAB = os.path.join(RESDIR, "program_cohort_eta2.tsv")
     tab.to_csv(OUTTAB, sep="\t")
@@ -263,10 +279,15 @@ def _build_tab_from_data():
 # ----------------------------------------------------------------------
 # Dispatch: replot-only (read saved table) vs full compute
 # ----------------------------------------------------------------------
-if REPLOT_ONLY:
+if SUMMARY_ZIP:
+    tab = _build_tab_from_summary()
+elif REPLOT_ONLY:
     OUTTAB = os.path.join(RESDIR, "program_cohort_eta2.tsv")
     print("[replot-only] loading saved table:", OUTTAB, flush=True)
     tab = pd.read_csv(OUTTAB, sep="\t").set_index("program")
+    tab.index = tab.index.astype(int)
+    tab = tab.loc[sorted(_OLD_TO_LABEL)]
+    assert tab.shape[0] == 54
 else:
     tab = _build_tab_from_data()
 
@@ -275,7 +296,7 @@ else:
 # Console summary
 # ----------------------------------------------------------------------
 ce = tab["cohort_partial_eta2"]
-print("\n===== COHORT partial-eta^2 distribution (n=60) =====", flush=True)
+print("\n===== COHORT partial-eta^2 distribution (n=%d) =====" % len(tab), flush=True)
 print("  median = %.4f" % ce.median(), flush=True)
 print("  mean   = %.4f" % ce.mean(), flush=True)
 print("  max    = %.4f  (program %s, %s)" % (ce.max(), ce.idxmax(), tab.loc[ce.idxmax(),"name_short"]), flush=True)
@@ -289,7 +310,8 @@ for p in ce.head(8).index:
              r["depth_corr_log10nCount"], r["cohort_gap_us_minus_edlein_SD"],
              r["name_short"], "  [F3-var]" if r["f3_region_variable"] else ""), flush=True)
 
-print("\n  14 F3 region-VARIABLE programs (cohort vs region partial-eta^2):", flush=True)
+print("\n  Retained F3 region-VARIABLE programs (n=%d; cohort vs region partial-eta^2):" %
+      int(tab["f3_region_variable"].sum()), flush=True)
 sub14 = tab[tab["f3_region_variable"]].sort_values("region_partial_eta2", ascending=False)
 for p in sub14.index:
     r = sub14.loc[p]
@@ -312,16 +334,14 @@ for p in dflag.index:
 # ----------------------------------------------------------------------
 print("\n[plot] building figure ...", flush=True)
 fig = plt.figure(figsize=(7.2, 7.6))
-# fix_figS3: bottom raised 0.075 -> 0.175 so panel-c 40-deg rotated program-name
-# x-tick labels have vertical room and their leading words are not clipped by the
-# figure bottom edge (was: "ort to cytosol" / "rocyte/myelin").
+# Leave room for the rotated program labels in panel c.
 gs = GridSpec(3, 1, figure=fig, height_ratios=[1.35, 1.0, 1.05],
               hspace=0.62, left=0.10, right=0.965, top=0.945, bottom=0.175)
 
 def sigc(p):
     return SIGCOL.get(tab.loc[p, "confidence"], "#888888")
 
-# ---- (a) cohort vs region partial-eta^2 scatter (60 dots) ----
+# ---- (a) cohort vs region partial-eta^2 scatter ----
 axa = fig.add_subplot(gs[0, 0])
 xr = tab["region_partial_eta2"].values
 yc = tab["cohort_partial_eta2"].values
@@ -341,8 +361,7 @@ for thr, lab in [(0.05, "0.05"), (0.10, "0.10")]:
     axa.text(mx*0.995, thr, " cohort=%s" % lab, fontsize=4.6, color="#C24C4C",
              va="bottom", ha="right")
 # label offenders (top cohort) + all F3 dots
-# fix_figS3 current (2026-06-27): use adjustText to prevent P9/P3 (and similar
-# near-collisions) from rendering as overlapping "P9 P3" duplicate-label visual artifacts.
+# Resolve crowded program labels before rendering.
 to_label = set(ce.head(6).index) | set(tab.index[isf3])
 try:
     from adjustText import adjust_text
@@ -372,11 +391,11 @@ axa.set_title("(a)  Per-program cohort vs region effect, controlling for subclas
 leg = [Patch(fc=SIGCOL["brain-sig"], label="brain-sig"),
        Patch(fc=SIGCOL["brain-weak"], label="brain-weak"),
        plt.Line2D([0],[0], marker="o", ls="", mfc="#ccc", mec="#111", mew=0.9, ms=5,
-                  label="F3 region-variable (n=14)")]
+                  label="F3 region-variable (n=%d)" % int(isf3.sum()))]
 axa.legend(handles=leg, loc="upper left", frameon=False, fontsize=5.0, handletextpad=0.4,
            borderaxespad=0.2)
 
-# ---- (b) ranked bar of cohort partial-eta^2 for all 60 ----
+# ---- (b) ranked bar of cohort partial-eta^2 for retained programs ----
 axb = fig.add_subplot(gs[1, 0])
 order = tab.index.tolist()  # already sorted desc by cohort eta2
 vals = tab["cohort_partial_eta2"].values
@@ -395,11 +414,11 @@ axb.set_xticks(xpos)
 axb.set_xticklabels([prog_label(p) for p in order], rotation=90, fontsize=4.2)
 axb.set_xlim(-0.7, len(order)-0.3)
 axb.set_ylabel("Cohort partial-$\\eta^2$")
-axb.set_title("(b)  All 54 programs ranked by cohort partial-$\eta^2$  "
+axb.set_title(r"(b)  All 54 programs ranked by cohort partial-$\eta^2$  "
               "(outlined = F3 region-variable; color = brain-sig/weak)", loc="left", pad=4)
 axb.margins(y=0.12)
 
-# ---- (c) the 14 F3 region-variable programs: region vs cohort grouped bars ----
+# ---- (c) retained F3 region-variable programs: region vs cohort grouped bars ----
 axc = fig.add_subplot(gs[2, 0])
 s14 = tab[tab["f3_region_variable"]].sort_values("region_partial_eta2", ascending=False)
 p14 = s14.index.tolist()
@@ -420,9 +439,9 @@ axc.set_ylabel("partial-$\\eta^2$")
 # how many of the 14 are region-dominated vs cohort-dominated?
 n_regdom = int((s14["region_partial_eta2"] > s14["cohort_partial_eta2"]).sum())
 n_cohdom = len(s14) - n_regdom
-axc.set_title("(c)  F3 region-variable programs: %d/14 region-dominated, "
-              "%d/14 cohort-dominated (orange>blue = batch-sensitive, flag)"
-              % (n_regdom, n_cohdom), loc="left", pad=4)
+axc.set_title("(c)  Retained F3 region-variable programs: %d/%d region-dominated, "
+              "%d/%d cohort-dominated (orange>blue = batch-sensitive, flag)"
+              % (n_regdom, len(s14), n_cohdom, len(s14)), loc="left", pad=4)
 # mark the cohort-dominated (batch-sensitive) ones with a red dot above the pair
 ymax_c = max(s14["region_partial_eta2"].max(), s14["cohort_partial_eta2"].max())
 for i, p in enumerate(p14):
@@ -431,17 +450,12 @@ for i, p in enumerate(p14):
 axc.legend(loc="upper right", frameon=False, fontsize=5.2, handletextpad=0.4)
 axc.margins(y=0.12)
 
-# fix_figS3 / editfig_r1: verdict footnote removed (relegated to the figure_release
-# Figure legend). It previously spanned the full width at the figure bottom and
-# was the cause of the right-edge clip; keeping it out also frees the bottom band
-# for the panel-c rotated labels.
-
 OUTPDF = os.path.join(OUTDIR, "ed_program_batch_check.pdf")
 OUTPNG = os.path.join(OUTDIR, "ed_program_batch_check.png")
 OUTSVG = os.path.join(OUTDIR, "ed_program_batch_check.svg")
 fig.savefig(OUTPDF)
 fig.savefig(OUTPNG, dpi=300)
-fig.savefig(OUTSVG)  # fix_figS3: svg for SUBMISSION sync
+fig.savefig(OUTSVG)
 print("[write]", OUTPDF, flush=True)
 print("[write]", OUTPNG, flush=True)
 print("[write]", OUTSVG, flush=True)

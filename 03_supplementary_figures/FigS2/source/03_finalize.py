@@ -16,14 +16,14 @@ print("EN panel-ref replaced:",c)
 # 2) supp-material boxed sentence L303: remove native, use contiguous numbering wording
 old_sm = ("supplementary figures (K-robustness, spatial cross-correlation, identity-backbone "
           "cluster-confusion, cohort QC, cNMF K-selection diagnostic; final numbering by figure assembly)")
-new_sm = ("supplementary figures (Fig. S1 K-robustness; Fig. S2 cohort/donor-ANCOVA hardening; "
+new_sm = ("supplementary figures (Fig. S1 K-robustness; Fig. S2 cohort/donor-ANCOVA classification; "
           "Fig. S3 multi-criterion K-selection; Fig. S4 spatial cross-correlation; Fig. S5 "
           "identity-backbone cluster-confusion; Fig. S6 program–disease recall with N-sensitivity)")
 if old_sm in t: t=t.replace(old_sm,new_sm); n+=1; print("EN supp-material sentence updated")
 else: print("WARN EN supp-material sentence not found")
 
 # 3) insert S2 (ANCOVA) bullet into in-text list between S1 and S3 bullets
-s2_bullet_en = ("\n- **Fig. S2: Cohort/donor-ANCOVA hardening of the region-variable set.** "
+s2_bullet_en = ("\n- **Fig. S2: Cohort/donor-ANCOVA classification of the region-variable set.** "
  "The 14 region-variable programs (per-cell ANOVA, R3) are re-assessed by ANCOVA controlling "
  "for source cohort and donor: seven remain cohort-robust (P1, P3, P4, P6, P8, P10, P14) and "
  "seven are cohort-sensitive (P9, P18, P19, P35, P37, P52, P57); the cohort-robust set is the "

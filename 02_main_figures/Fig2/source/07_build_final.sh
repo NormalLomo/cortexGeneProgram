@@ -1,39 +1,59 @@
 #!/usr/bin/env bash
-# =====================================================================
-# Re-render Fig.3 -> fig3_full_v12.{svg,pdf}  (panel-d shrink, OPTION B)
-# Approach B (per 羅老師): shrink panel d by changing only its reference
-# rendering (line-end label = capped short name, bottom 1-row lobe legend,
-# smaller right x-expand, squarer canvas) so its cropped natural_aspect
-# drops ~1.24 -> ~1.0-1.15.  The tangram LAYOUT-SPEC is UNCHANGED from v10:
-#   V[a,H[b,c,d,e],f,H[g,h,i]]   (d stays in row-2 original slot; a-i order kept)
-# With d's aspect lowered, the packer naturally gives d a normal width and
-# b/c/e recover normal widths too.
-# NO data/science/program-name/robust-7-highlight change; only panel d render.
-# Does NOT overwrite v10 or v11.
-# =====================================================================
+# Build the Fig. 2 regional program matrix from an external analysis root.
 set -euo pipefail
-PROJ=__PRIVATE_CANONICAL_ROOT__
-F3=$PROJ/scripts/fig3
-COMP=$PROJ/figures/fig3/_compose
-RSCRIPT=/opt/R/4.5.0/bin/Rscript
-LAYOUT='V[a,H[b,c,d,e],f,H[g,h,i]]'        # SAME original layout as v10
+
+PROJ="${CORTEX_PROGRAM_CANONICAL_ROOT:-}"
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --canonical-root)
+      PROJ="$2"
+      shift 2
+      ;;
+    --help)
+      printf 'Usage: %s [--canonical-root PATH]\n' "$0"
+      printf 'Uses --canonical-root or CORTEX_PROGRAM_CANONICAL_ROOT.\n'
+      exit 0
+      ;;
+    *)
+      printf 'Unknown argument: %s\n' "$1" >&2
+      exit 2
+      ;;
+  esac
+done
+
+if [ -z "$PROJ" ]; then
+  printf '%s\n' 'Set --canonical-root or CORTEX_PROGRAM_CANONICAL_ROOT.' >&2
+  exit 2
+fi
+
+export CORTEX_PROGRAM_CANONICAL_ROOT="$PROJ"
+F2="$PROJ/scripts/fig2"
+F3="$PROJ/scripts/fig3"
+COMP="$PROJ/figures/fig2/_compose"
+RSCRIPT="${RSCRIPT:-Rscript}"
+LAYOUT='V[a,H[b,c,d,e],f,H[g,h,i]]'
+
+if [ ! -d "$F2" ] || [ ! -d "$F3" ]; then
+  printf '%s\n' 'The canonical root must contain scripts/fig2 and scripts/fig3.' >&2
+  exit 2
+fi
 
 echo "[1/4] panels (R)"
-"$RSCRIPT" "$F3/fig3_svg_panels.R"
+"$RSCRIPT" "$F2/fig2_svg_panels.R"
 
 echo "[2/4] ink-crop (py)"
-python3 "$F3/fig3_ink_crop.py"
+python3 "$F2/fig2_ink_crop.py"
 
 echo "[3/4] gutter-0 template (py)"
 python3 "$F3/make_template_nested.py" "$COMP" --layout "$LAYOUT" --out "$COMP"
 
 echo "[4/4] compose -> vector PDF (py)"
 python3 "$F3/compose_svgutils_skill.py" "$COMP" "$COMP/layout_template.json" \
-    --out-svg "$PROJ/figures/fig3/fig3_full_v12.svg" \
-    --out-pdf "$PROJ/figures/fig3/fig3_full_v12.pdf" \
+    --out-svg "$PROJ/figures/fig2/Figure_2.svg" \
+    --out-pdf "$PROJ/figures/fig2/Figure_2.pdf" \
     --rscript "$RSCRIPT"
 
 echo "[png] contact sheet (rsvg, 200dpi)"
-"$RSCRIPT" -e "rsvg::rsvg_png('$PROJ/figures/fig3/fig3_full_v12.svg', '$PROJ/figures/fig3/fig3_full_v12.png', width = round(193/25.4*200))"
+"$RSCRIPT" -e "rsvg::rsvg_png('$PROJ/figures/fig2/Figure_2.svg', '$PROJ/figures/fig2/Figure_2.png', width = round(193/25.4*200))"
 
-echo "DONE fig3_full_v12"
+echo "DONE Figure_2"

@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
-# Fig.10 panel g worker candidate — program x laminar heatmap.
-# Candidate goal: closer to Fig4A via functional-class blocks, visible group
-# boundaries, and a compact top annotation strip. Science values stay unchanged.
+# Fig. 6 panel g program-by-laminar heatmap.
+# Functional-class blocks and a compact top annotation strip organize the panel.
 
 suppressPackageStartupMessages({
   library(ggplot2)

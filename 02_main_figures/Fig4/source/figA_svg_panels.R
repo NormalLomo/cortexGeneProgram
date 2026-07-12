@@ -68,7 +68,7 @@ r25 <- pairs[ring_um == 25]
 r25[, plab := plab_map[B]]
 r25[, ct := A]
 
-# BETWEENCHIP NULL UPDATE (2026-06-25):
+# Between-chip null-model input:
 # Use between-chip Stouffer q (318 headline pairs, q<0.05 and |log2g|>0.32)
 # to define headline_progs while displaying the current 54-program namespace.
 BTWNDIR <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1/markcorr_betweenchip_v1"
@@ -552,7 +552,7 @@ avoid2_block <- wrap_elements(full = avoid2_block)
 
 # =====================================================================
 # UNUSED LEGACY CO-LOCALIZATION HEROES (positive niches) retained for traceability.
-# They are no longer composed into Fig. 4; current figure_release panels use f/g/h/i.
+# The public Fig. 4 composition uses panels f/g/h/i.
 #   m : L6 IT (+) P49 Microglial complement/MHC   (M1 A01186A4, +0.41, fss=1.0, LOGO J=0.01)
 #   n : VIP   (+) P30 Cholinergic synapse         (AG C00841F3, +0.75, fss=1.0, LOGO survives)
 #   each : [L6 IT weight] [program SCT] [L6 IT weight + program hi-zone overlay (blue)]
@@ -626,13 +626,9 @@ coloc2_block <- (ncap | n_l6 | n_p17 | n_ov) +
 coloc2_block <- wrap_elements(full = coloc2_block)
 
 # =====================================================================
-# SVGUTILS RELAYOUT export tail : write standalone ZERO-MARGIN SVGs.
-# Reuses ALL panel objects built above (content FROZEN). Each panel is
-# rendered to its OWN tight svglite SVG at near-natural size; ink-crop
-# (fig2 sibling) then trims to true bbox; make_template_nested packs them
-# in a gutter-0 tangram; compose_svgutils_skill stitches to vector PDF.
-# ATTEMPT2 2026-06-27: a/d are re-emitted from the current 54-program data;
-# g is restored from the current zoom block; legacy m/n are not composed.
+# SVG export tail: write standalone zero-margin SVGs from the panel objects
+# defined above. Each panel is rendered at its natural size, ink-cropped, and
+# assembled into the vector composite by the published compose step.
 #   emit-ids -> final printed tag (compose --tag-sequential, reading order, skip t):
 #   a=pa(54-program heatmap)->a  b=pb(forest)->b  c=pc(g(r))->c  d=pd(volcano)->d
 #   e=pe(LOGO)->e  f=hero_block->f  g=zoom_block->g  h=avoid1->h

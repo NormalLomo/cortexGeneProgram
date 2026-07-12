@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""ED Fig 1 (renumbered 2026-06-20): cross-chip spatial reproducibility of 14 representative programs (SCT smoothed).
+"""ED Fig 1: cross-chip spatial reproducibility of 14 representative programs (SCT smoothed).
 
 Layout: 14 programs (ROWS) x 14 chips (COLS) of per-bin x,y scatters
 colored by per-chip KNN-median smoothed program-z.
@@ -19,7 +19,7 @@ import pyarrow.parquet as pq
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -42,7 +42,7 @@ os.makedirs(OUT_DIR, exist_ok=True)
 # Selected for breadth across cell classes + high cross-chip spatial reproducibility
 # (spatial_score from fig2b) + distinct spatial signature (program-program z-corr).
 #
-# RENUMBER 2026-06-20: display labels updated (P{old} → P{new}) per program_renumber_map.tsv.
+# Map display labels from P{old} to P{new} through program_renumber_map.tsv.
 # Parquet keys = program_{cNMF_component} = program_{old_P} — unchanged.
 # old_P(cNMF) → new_P(display): 5→5, 8→8, 34→31, 7→7, 20→17, 29→26, 37→33, 43→39,
 #                                 15→14, 51→47, 53→48, 40→36, 54→49, 56→51

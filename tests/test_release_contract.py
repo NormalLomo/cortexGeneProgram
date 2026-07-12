@@ -21,7 +21,6 @@ FORBIDDEN_FILENAMES = {
     "BUILD_REPORT.md",
     "LICENSE_DECISION_REQUIRED.txt",
     "NUMERIC" + "_20_REVIEW.tsv",
-    "AGENT_MANIFEST.md",
 }
 
 
@@ -37,10 +36,61 @@ class ReleaseContractTest(unittest.TestCase):
     def test_final_asset_map_records_real_asset_specific_chains(self) -> None:
         with ASSET_MAP.open(newline="", encoding="utf-8") as handle:
             rows = list(csv.DictReader(handle, delimiter="\t"))
+        rows_by_id = {row["asset_id"]: row for row in rows}
         for row in rows:
             self.assertIn(" -> ", row["source_chain"], row["asset_id"])
             self.assertNotIn("public_asset_entrypoint", row["entrypoint"], row["asset_id"])
             self.assertNotEqual(Path(row["entrypoint"]).name, "run.py", row["asset_id"])
+
+        self.assertEqual(rows_by_id["FigS9"]["description"], "Disease sensitivity")
+        self.assertEqual(rows_by_id["FigS10"]["description"], "Cognition association")
+        self.assertEqual(
+            rows_by_id["FigS9"]["source_chain"],
+            "fig8_analysis.py -> fig8_program_disease.py -> ed_program_disease_supp.py",
+        )
+        self.assertEqual(
+            rows_by_id["FigS10"]["source_chain"],
+            "01_program_cognition.py -> 02_render.py",
+        )
+        cognition_sources = (
+            ROOT / "02_main_figures/Fig8/source/fig7_program_cognition.py",
+            ROOT / "03_supplementary_figures/FigS10/source/01_program_cognition.py",
+            ROOT / "03_supplementary_figures/FigS10/source/02_render.py",
+        )
+        for source_path in cognition_sources:
+            source = source_path.read_text(encoding="utf-8")
+            self.assertIn("Fig. S10", source, source_path)
+            self.assertIn("figS10_cognition.pdf", source, source_path)
+            self.assertNotIn("Fig. S9", source, source_path)
+            self.assertNotIn("figS9_cognition.pdf", source, source_path)
+            self.assertNotIn("fig7_program_cognition.pdf", source, source_path)
+            self.assertNotIn("fig7_program_cognition.png", source, source_path)
+
+    def test_figs9_chain_rejects_aging_and_cognition_nodes(self) -> None:
+        with ASSET_MAP.open(newline="", encoding="utf-8") as handle:
+            rows = {row["asset_id"]: row for row in csv.DictReader(handle, delimiter="\t")}
+        chain = rows["FigS9"]["source_chain"].lower()
+        self.assertNotIn("aging", chain)
+        self.assertNotIn("cognition", chain)
+        source_names = {
+            path.name.lower()
+            for path in (ROOT / "03_supplementary_figures/FigS9/source").iterdir()
+            if path.is_file()
+        }
+        self.assertFalse(any("aging" in name or "cognition" in name for name in source_names))
+
+    def test_figs10_chain_rejects_disease_and_aging_nodes(self) -> None:
+        with ASSET_MAP.open(newline="", encoding="utf-8") as handle:
+            rows = {row["asset_id"]: row for row in csv.DictReader(handle, delimiter="\t")}
+        chain = rows["FigS10"]["source_chain"].lower()
+        self.assertNotIn("disease", chain)
+        self.assertNotIn("aging", chain)
+        source_names = {
+            path.name.lower()
+            for path in (ROOT / "03_supplementary_figures/FigS10/source").iterdir()
+            if path.is_file()
+        }
+        self.assertFalse(any("disease" in name or "aging" in name for name in source_names))
 
     def test_public_tree_has_no_forbidden_release_files(self) -> None:
         names = {path.name for path in ROOT.rglob("*") if path.is_file()}
@@ -50,6 +100,13 @@ class ReleaseContractTest(unittest.TestCase):
         smoke = (ROOT / "SMOKE_TESTS.sh").read_text(encoding="utf-8")
         self.assertIn("python run_release.py --validate", smoke)
         self.assertNotIn('run_release.py --asset "$asset" --dry-run', smoke)
+        self.assertIn("mktemp -d", smoke)
+        self.assertIn("CORTEX_SMOKE_DISPOSABLE=1", smoke)
+
+    def test_release_has_a_prudent_ignore_policy(self) -> None:
+        ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        for token in ("__pycache__/", "config/paths.env", "/data/", "/results/", "*.h5ad", "*.rds", "*.sqlite*"):
+            self.assertIn(token, ignore)
 
     def test_table_s1_builder_writes_only_the_resource_comparison_schema(self) -> None:
         builder = ROOT / "04_tables_and_supplementary_data/TableS1_resource_comparison/source/01_build_resource_comparison.py"

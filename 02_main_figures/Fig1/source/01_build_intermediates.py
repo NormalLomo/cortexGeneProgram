@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 # =====================================================================
-# Fig.1 stage-0 (REPRODUCIBLE REBUILD of the cached _intermediate CSVs)
-#
-# WHY: the 9 Fig.1 "_intermediate" CSVs below are read by the LIVE Fig.1
-# panel scripts (b / c / f / i / j) but their ONLY producer was lost in a
-# project migration (it lived in scripts/fig1/_deprecated and was never
-# re-authored -- see _void_20260527/.../REBUILD_NEEDED.txt). This script
-# RESTORES an in-tree, self-contained, seeded producer recovered from the
-# cached CSV schemas + the surviving stage1.log 7-step recipe.
+# Fig. 1 stage 0 builds deterministic intermediate CSVs from documented
+# in-tree inputs for the panel scripts.
 #
 # PRODUCES (into an output dir; default = a _verify dir, NOT the working one):
 #   subclass_class.csv               subclass -> class map
@@ -40,12 +34,12 @@
 #   EXTERNAL    CORTEX_PROGRAM_DATA_ROOT/neuropeptide_cortex/data/human/snrna/
 #                    snRNA_1M.h5ad  (raw int counts; intentional shared atlas)
 #
-# NORMALIZATION (recovered + bit-exact verified against the cached CSV):
+# NORMALIZATION:
 #   marker expression = log1p( raw_count / cell_total_counts * 1e4 )
 #   i.e. scanpy normalize_total(target_sum=1e4) then log1p. Per-cell totals
 #   use the cell's FULL transcriptome counts (all 32,649 atlas genes).
 #
-# SPECIFICITY metric (recovered, verified ~1e-7 vs cache):
+# SPECIFICITY metric:
 #   on the program x subclass MEAN matrix m[p, :]:
 #     entropy = -sum(P*ln P)/ln(n_subclass)   with P = m[p]/sum(m[p])
 #     gini    = standard Gini of the subclass-mean vector
@@ -53,12 +47,9 @@
 #
 # SEED: 0 everywhere. All params hardcoded below. Deterministic given inputs.
 #
-# NOTE ON program_program_corr.csv: the original was computed on the
-# stage-1 150k SUBSAMPLE (stage1.log step [5]). That exact subsample seed
-# was lost when umap_embedding.csv was later rebuilt (dualpca, then harmony).
-# We therefore recompute corr on the CURRENT umap_embedding.csv 150k
-# barcodes -- the canonical, reproducible definition going forward. This is
-# expected NOT to bit-match the stale cache (older subsample); see report.
+# NOTE ON program_program_corr.csv: this is computed on the 150k barcodes in
+# the current umap_embedding.csv so downstream marker values remain row-aligned
+# with the UMAP panel.
 # =====================================================================
 import os, sys, json, time, argparse
 import numpy as np

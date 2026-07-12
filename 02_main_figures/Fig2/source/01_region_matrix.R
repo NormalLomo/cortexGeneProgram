@@ -93,7 +93,7 @@ prog_cv       <- apply(M_mean, 2, function(x) sd(x)/mean(x))
 nm_df <- read.table(file.path(RES, "program_names.tsv"),
                     sep = "\t", header = TRUE, quote = "", comment.char = "",
                     stringsAsFactors = FALSE, check.names = FALSE)
-# v6_WorkerA (2026-06-24): program_names.tsv has columns (new_P, cnmf_component, name_short,
+# program_names.tsv has columns (new_P, cnmf_component, name_short,
 # confidence, ...). All upstream data tables (M_z / M_mean / var_df) key on the LEGACY
 # cnmf_component string (1..60). So our lookups must be keyed by cnmf_component but DISPLAY
 # the new_P tag ("P{new_int}").
@@ -514,7 +514,7 @@ cat("panel h done\n")
 ## =====================================================================
 ## PANEL i — rank-shift alluvial across lobes (top ~10 variable programs)
 ## =====================================================================
-# v6_WorkerA (2026-06-24): top10 must be drawn from the 54 biologically-interpreted programs
+# Draw the top 10 from the 54 retained programs.
 # (drop the 6 cohort-technical EXCLUDED programs: cnmf 9, 18, 19, 35, 52, 57).
 EXCLUDED_CNMF <- as.character(c(9, 18, 19, 35, 52, 57))
 top10 <- var_df %>% filter(!program %in% EXCLUDED_CNMF) %>%
@@ -540,7 +540,7 @@ i_long <- i_long %>% mutate(rankf = factor(rank, levels = nP:1))  # rank1 -> top
 # so rank r sits at y = (nP - r) + 0.5.
 rank_breaks <- (nP - (1:nP)) + 0.5            # y center of each rank slot
 rank_labels <- paste0("rank ", 1:nP)           # rank 1 (top) .. rank nP (bottom)
-# v6_WorkerA fix (2026-06-24): strata text was showing raw cnmf_component (1-60, "14", "10"...);
+# Convert source component IDs to retained display IDs for strata text;
 # remap to new_P display ("P13", "P9"...) using prog_pn lookup. The `program` factor levels stay as
 # cnmf strings (so alluvium fill/data join is intact); add a new `lab_pn` column for the strata text.
 i_long <- i_long %>% mutate(lab_pn = unname(prog_pn[as.character(program)]))

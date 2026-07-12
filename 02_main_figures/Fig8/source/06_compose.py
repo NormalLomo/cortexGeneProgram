@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Compact candidate Fig. 8: disease and aging relevance of cortical programs.
+"""Compose Fig. 8: disease and aging relevance of cortical programs.
 
-This composition writes only to the public figure output directory and does not
-overwrite the current SUBMIT Fig. 8.
+This composition writes to the canonical public figure output directory.
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -25,16 +26,33 @@ from scipy.spatial.distance import pdist
 from statsmodels.stats.multitest import multipletests
 
 
-ROOT = Path("__PRIVATE_CANONICAL_ROOT__")
-PD_DIR = ROOT / "results/crossregion_v1/program_disease"
-AGE_DIR = ROOT / "results/crossregion_v1/program_aging"
-LOAD = ROOT / "results/cnmf_snrna_joint_full1M_v1/snrna_joint_full1M_v1_k60_factor_loadings.tsv"
-NAMES = ROOT / "results/crossregion_v1/program_names.tsv"
-RENUM = ROOT / "results/crossregion_v1/program_renumber_map.tsv"
-RZ = ROOT / "results/crossregion_v1/program_region_zscore.tsv"
-BB = ROOT / "data/brainbase/disease_gene_associations.txt"
-OUT = ROOT / "figures/Fig8/outputs"
-OUT.mkdir(parents=True, exist_ok=True)
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+from workflow.root_contract import add_canonical_root_argument, resolve_canonical_root
+
+ROOT: Path
+PD_DIR: Path
+AGE_DIR: Path
+LOAD: Path
+NAMES: Path
+RENUM: Path
+RZ: Path
+BB: Path
+OUT: Path
+
+
+def configure_paths(canonical_root: Path) -> None:
+    global ROOT, PD_DIR, AGE_DIR, LOAD, NAMES, RENUM, RZ, BB, OUT
+    ROOT = canonical_root
+    PD_DIR = ROOT / "results/crossregion_v1/program_disease"
+    AGE_DIR = ROOT / "results/crossregion_v1/program_aging"
+    LOAD = ROOT / "results/cnmf_snrna_joint_full1M_v1/snrna_joint_full1M_v1_k60_factor_loadings.tsv"
+    NAMES = ROOT / "results/crossregion_v1/program_names.tsv"
+    RENUM = ROOT / "results/crossregion_v1/program_renumber_map.tsv"
+    RZ = ROOT / "results/crossregion_v1/program_region_zscore.tsv"
+    BB = ROOT / "data/brainbase/disease_gene_associations.txt"
+    OUT = ROOT / "figures/Fig8/outputs"
+    OUT.mkdir(parents=True, exist_ok=True)
 
 PRIMARY_N = 150
 FDR_SIG = 0.05
@@ -442,7 +460,7 @@ def draw_aging_dotplot(ax, plot_df, set_order, row_labels, row_index):
     ax.set_yticks(range(len(row_labels)))
     ax.set_yticklabels(row_labels, fontsize=4.8)
     ax.tick_params(length=1)
-    ax.set_title("Aging gene-set recovery", loc="left", pad=3)
+    ax.set_title("Aging gene-set enrichment", loc="left", pad=3)
     cb = plt.colorbar(sc, cax=ax.inset_axes([0.970, 0.57, 0.018, 0.30]))
     cb.set_label("-log10 FDR", fontsize=4.8, labelpad=1)
     cb.ax.tick_params(labelsize=4.8, length=1)
@@ -588,7 +606,12 @@ def draw_aging_gene_cards(ax, sig):
         ax.text(x0 + 0.03, y0 + 0.26, body, fontsize=4.0, ha="left", va="top", color="#222222", linespacing=1.0)
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_canonical_root_argument(parser)
+    parser.epilog = "Uses --canonical-root or CORTEX_PROGRAM_CANONICAL_ROOT."
+    args = parser.parse_args(argv)
+    configure_paths(resolve_canonical_root(args.canonical_root))
     old_to_new, names, label_func = load_program_maps()
     dis_long, sub_nl, sub_or, sig_dis, cat_of, prog_labels, best, dom, rz_sub = load_disease_data(label_func)
     _, age_sig, age_plot, age_set_order, age_row_labels, age_row_index = load_aging_data()
@@ -621,12 +644,12 @@ def main() -> None:
     draw_aging_gene_cards(axes["j"], age_sig)
 
     for ext in ["pdf", "png", "svg"]:
-        path = OUT / f"Fig8_imagegen_layout_v17.{ext}"
+        path = OUT / f"Figure_8_composite.{ext}"
         if ext == "png":
             fig.savefig(path, dpi=450)
         else:
             fig.savefig(path)
-    print("SAVED", OUT / "Fig8_imagegen_layout_v17.pdf")
+    print("SAVED", OUT / "Figure_8_composite.pdf")
     print("page_mm", 180, 222)
     print("disease_matrix", sub_nl.shape, "aging_pairs", len(age_sig))
 

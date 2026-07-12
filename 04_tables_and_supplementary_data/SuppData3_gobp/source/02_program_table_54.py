@@ -16,7 +16,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -36,9 +36,8 @@ os.makedirs(FIGDIR, exist_ok=True)
 
 # ---------------------------------------------------------------- load
 names = pd.read_csv(os.path.join(CR, "program_names.tsv"), sep="\t")
-# bio-MAJ1 fix 2026-06-25: program_annotation.tsv P01 stale (inh/SST);
-# use TableS1_program_annotation.tsv which has correct dominant_class/dominant_subclass
-SUPP_DIR = "CORTEX_PROGRAM_ROOT/figure_release/SUBMISSION_final/supplementary"
+# TableS1_program_annotation.tsv supplies dominant class and subclass annotations.
+SUPP_DIR = os.path.join(ROOT, "results", "crossregion_v1")
 ann   = pd.read_csv(os.path.join(SUPP_DIR, "TableS1_program_annotation.tsv"), sep="	")
 gobp  = pd.read_csv(os.path.join(CR, "program_annotation_gobp.tsv"), sep="\t")
 
@@ -55,7 +54,7 @@ print(f"Excluded old-component ids: {sorted(excluded_old)}")
 def old_pid(x):
     return int(re.sub(r"[^0-9]", "", str(x)))
 
-# TableS1 already has cnmf_component column; old conversion not needed (bio-MAJ1 fix)
+# TableS1 uses cnmf_component directly as its program identifier.
 # gobp has integer program column
 gobp["cnmf_component"] = gobp["program"].astype(int)
 

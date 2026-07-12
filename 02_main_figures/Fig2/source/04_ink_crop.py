@@ -86,7 +86,7 @@ def crop_one(pid):
 
 def main():
     results = {}
-    for pid in "abcdefghi":  # h dropped (merged into e) per user FB v6
+    for pid in "abcdefghi":
         r = crop_one(pid)
         results[pid] = r
         print(f"panel {pid}: canvas {r['canvas_pt']} -> cropped {r['cropped_pt']} "

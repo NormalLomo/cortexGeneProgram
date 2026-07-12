@@ -2,8 +2,9 @@
 """
 Metric 2b: Co-activation neighborhood conservation AUROC (within-human, cross-region).
 
-From cell-level program scores (1.036M cells x 60 programs) with region label,
-compute per-region program x program co-activation (Spearman across cells).
+From raw 60-component inputs (1.036M cells with region labels), select the
+retained 54-program analysis set before computing per-region program x program
+co-activation (Spearman across cells).
 For each program p, its "neighborhood" = top-k (k=10) co-activation partners in a
 reference region. Conservation = how well that neighborhood (ranking of partners)
 is preserved in another region, scored as a background-rank AUROC:
@@ -17,23 +18,26 @@ is preserved in another region, scored as a background-rank AUROC:
 
 Co-activation uses Spearman on cell-level scores within each region.
 
-Input : cell_program_region_subclass.parquet  (cols '1'..'60', 'region', 'subclass')
+Input : raw 60-component inputs in cell_program_region_subclass.parquet
+        (cols '1'..'60', 'region', 'subclass')
 Output (xregion_auroc/):
-  m2b_coact_corr_<REGION>.tsv            per-region 60x60 spearman co-activation
+  m2b_coact_corr_<REGION>.tsv            per-region retained 54 by 54 spearman co-activation
   m2b_neighborhood_conservation_per_program.tsv   program, neigh_cons_auroc, n_pairs
   m2b_neigh_pairwise_auroc_matrix.tsv    14x14 region-pair mean self-AUROC
   m2b_neigh_program_region_self_auroc.tsv  program x region-pair AUROC (long)
   m2b_partner_turnover.tsv               program, mean Jaccard of top-k partner sets across regions
 """
-import sys, itertools
+import os, sys, itertools
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 from scipy.stats import rankdata
 
-BASE = "CORTEX_PROGRAM_ROOT"
-OUT  = f"{BASE}/results/crossregion_v1/xregion_auroc"
+BASE = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
+OUT  = os.environ.get("XREGION_OUTPUT_DIR", f"{BASE}/results/crossregion_v1/xregion_auroc")
 PARQ = f"{BASE}/results/crossregion_v1/cell_program_region_subclass.parquet"
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{BASE}/tables/TableS3_program_annotation.tsv")
+os.makedirs(OUT, exist_ok=True)
 K = 10
 
 def spearman_corr_matrix(X):
@@ -53,14 +57,19 @@ def spearman_corr_matrix(X):
     return C
 
 def main():
-    progs = [str(i) for i in range(1, 61)]
-    print("[m2b] reading parquet (region + 60 program cols)...", flush=True)
+    mapping = pd.read_csv(RETAIN_MAP, sep="\t")
+    assert len(mapping) == 54
+    mapping["old_int"] = mapping["cnmf_component"].astype(int)
+    mapping["new_int"] = mapping["new_P"].astype(str).str.removeprefix("P").astype(int)
+    assert mapping["new_int"].tolist() == list(range(1, 55))
+    progs = mapping["old_int"].astype(str).tolist()
+    print("[m2b] reading parquet (region + 54 retained old-component columns)...", flush=True)
     tbl = pq.read_table(PARQ, columns=progs + ["region"])
     df = tbl.to_pandas()
     print(f"[m2b] cells={len(df)} regions={df['region'].nunique()}", flush=True)
     regions = sorted(df["region"].unique())
-    P = 60
-    progint = list(range(1, 61))
+    P = len(progs)
+    progint = mapping["new_int"].tolist()
 
     # per-region co-activation matrix
     C = {}
@@ -112,6 +121,7 @@ def main():
     perprog = selfdf.groupby("program")["self_auroc"].agg(["mean","count"]).reset_index()
     perprog.columns = ["program","neigh_cons_auroc","n_pairs"]
     perprog = perprog.sort_values("neigh_cons_auroc", ascending=False)
+    assert len(perprog) == 54
     perprog.to_csv(f"{OUT}/m2b_neighborhood_conservation_per_program.tsv", sep="\t", index=False)
 
     with np.errstate(invalid="ignore"):

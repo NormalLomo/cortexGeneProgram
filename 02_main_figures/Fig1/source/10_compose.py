@@ -10,7 +10,7 @@ then converts to a VECTOR PDF.
 
 SCHEMA: reads BOTH flat and nested layout_template.json shapes:
   FLAT (older): page.{w_mm,h_mm}, panels[].{id, x_mm, y_mm, w_mm, h_mm}
-  NESTED (current builders, incl. _deprecated/fig1_make_template.py):
+  NESTED (current builders):
     page.{w,h}, panels[].{panel, box:{x,y,w,h}}, plus optional cropped_aspects
 The reader dispatches on field presence (see page_size_mm / panel_box_mm).
 
@@ -24,11 +24,8 @@ THREE GOTCHAS THIS HANDLES:
      title flush in the top-left corner, so a tag placed there collides. We nudge
      each tag OUT into the gutter/margin band (left+up of the box corner).
   3. Page-size pt unit: sc.Figure(width, height) writes width/height verbatim;
-     we pass them with the "pt" suffix so cairo/rsvg yields a MediaBox in pt
-     (524.41pt = 185mm) rather than treating a bare number ambiguously. This is
-     the analogue of the cairo "pt-as-mm" bug that lived in the deprecated
-     compose_svgutils.py (lines 66-67 wrote bare numbers; result: 185x228 pt
-     MediaBox instead of 185x229 mm).
+     this composer passes the "pt" suffix so cairo/rsvg preserves the intended
+     millimetre page dimensions.
 
 SVG->PDF: use R rsvg::rsvg_pdf (reliable). cairosvg mis-scales the page by 0.75
 (96<->72 dpi confusion) — do NOT use it. Verify vector with `pdffonts` after.

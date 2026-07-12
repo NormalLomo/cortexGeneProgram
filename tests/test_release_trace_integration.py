@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReleaseTraceIntegrationTest(unittest.TestCase):
-    def test_final_suppdata_rows_have_recovered_finalization_chains(self) -> None:
+    def test_final_suppdata_rows_have_documented_finalization_chains(self) -> None:
         with (ROOT / "final_asset_map.tsv").open(newline="", encoding="utf-8") as handle:
             rows = {row["asset_id"]: row for row in csv.DictReader(handle, delimiter="\t")}
 
@@ -21,7 +21,7 @@ class ReleaseTraceIntegrationTest(unittest.TestCase):
         }
         for asset_id, finalizer in expected.items():
             row = rows[asset_id]
-            self.assertEqual(row["source_status"], "RECOVERED_CHAIN")
+            self.assertEqual(row["source_status"], "SOURCE_CHAIN_DOCUMENTED")
             self.assertIn(finalizer, row["source_chain"])
             self.assertTrue((ROOT / row["directory"] / "source" / finalizer).is_file())
             self.assertNotEqual(row["default_output"], "MISSING")

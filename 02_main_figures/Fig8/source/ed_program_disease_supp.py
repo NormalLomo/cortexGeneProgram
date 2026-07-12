@@ -80,7 +80,7 @@ long_df["fdr"] = bh_fdr(long_df["pval"].values)
 long_df["program"] = long_df["program"].map(_old2new)
 
 # Recompute N-sensitivity in the same retained-program testing universe used for
-# figure_release/Fig. 8 counts. The source n_sensitivity.tsv is the older raw-K60
+# Fig. 8 counts. The source n_sensitivity.tsv is the older raw-K60
 # summary (49/72/97) and therefore overstates the primary retained count.
 sens_rows = []
 for _top_n in (100, 150, 200):

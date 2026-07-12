@@ -1,10 +1,6 @@
 #!/usr/bin/env Rscript
 # =====================================================================
 # Fig.1 -- render EACH of 10 panels (a-j) to a STANDALONE VECTOR SVG.
-# Owner content revision (2026-05-25):
-#   * supplement panels d,e,f,g re-instated into MAIN -> 10 panels total
-#   * panel a redesigned: rich GRAPHICAL ABSTRACT (not generic pipeline)
-#   * panel c (UMAP): + per-subclass density contours + centroid labels
 # Panel mapping (owner spec):
 #   a = graphical abstract banner       (wide)
 #   b = program x subclass heatmap      (ComplexHeatmap, vector)

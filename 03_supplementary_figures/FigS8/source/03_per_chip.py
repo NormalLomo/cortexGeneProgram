@@ -5,7 +5,7 @@ Per-chip lattice-ring program x program spatial MARK CROSS-CORRELATION (Stoyan k
 For ONE chip (one parquet row group):
   points = bins at lattice (ix,iy)=(x-xmin)/50 ; marks = 60 program-z vectors (SCT).
   For each ring r-bin k in {1..R} lattice units (k*50 um), gather all bin PAIRS (i,j)
-  separated by Euclidean lattice distance ~= k, and compute the full 60x60 cross-product
+  separated by Euclidean lattice distance ~= k, and compute the raw 60-component cross-product
   matrix in ONE matmul:  S_k = sum_pairs  z_i (outer) z_j  ,  count n_k = #pairs.
   We accumulate BOTH directions (offset and its negative) so S_k is symmetrized over
   ordered pairs; thus k_mm is symmetric in A,B at the pair level.

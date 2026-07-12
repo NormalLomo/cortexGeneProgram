@@ -70,7 +70,7 @@ r25 <- pairs[ring_um == 25]
 r25[, plab := plab_map[B]]
 r25[, ct := A]
 
-# BETWEENCHIP NULL UPDATE (2026-06-25):
+# Between-chip null-model input:
 # Use between-chip Stouffer q (318 headline pairs, q<0.05 AND |log2g|>0.32 AND frac_same>=0.85)
 # to define headline_progs. Replaces old within-chip |g|>=0.32 + LOGO-survival logic.
 BTWNDIR <- "CORTEX_PROGRAM_ROOT/results/crossregion_v1/markcorr_betweenchip_v1"
@@ -113,7 +113,7 @@ col_pos <- "#B2182B"; col_neg <- "#2166AC"; col_grey <- "grey75"
 M <- dcast(r25, A ~ B, value.var="log2_median_g")
 rn <- M$A; M$A <- NULL
 Mm <- as.matrix(M); rownames(Mm) <- rn
-COHORT_TECH_A <- paste0("program_", c(9,18,19,35,52,57))  # exclude cohort-technical (P0 consistency)
+COHORT_TECH_A <- paste0("program_", c(9,18,19,35,52,57))
 ord_cols <- paste0("program_", 1:60)
 ord_cols <- ord_cols[ord_cols %in% colnames(Mm) & !(ord_cols %in% COHORT_TECH_A)]  # 54 biological only
 Mm <- Mm[, ord_cols]

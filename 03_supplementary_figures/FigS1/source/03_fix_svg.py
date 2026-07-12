@@ -6,7 +6,7 @@
 #   "Figure S1 | cNMF K-robustness of cross-region variability & cell drivers"
 import re, fitz
 
-SVG = "CORTEX_PROGRAM_ROOT/figure_release/SUBMISSION_v8/supplementary_figures/FigS1.svg"
+SVG = "CORTEX_PROGRAM_ROOT/figures/extended/FigS1.svg"
 TTF = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 FONT_SIZE = 9.0
 

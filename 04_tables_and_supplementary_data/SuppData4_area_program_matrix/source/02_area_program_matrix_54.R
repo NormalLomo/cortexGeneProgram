@@ -236,9 +236,10 @@ HM_H_IN <- (HM_BODY_H_MM + 2.6 + 9 + 12 + 44) / 25.4
 BAR_H_IN <- 2.7
 PAD_IN   <- 0.30
 TITLE_IN <- 0.62
+OUTER_TITLE_IN <- 0.38
 
 FIG_W <- HM_W_IN + 2*PAD_IN
-FIG_H <- TITLE_IN + HM_H_IN + BAR_H_IN + 2*PAD_IN + 0.25
+FIG_H <- OUTER_TITLE_IN + TITLE_IN + HM_H_IN + BAR_H_IN + 2*PAD_IN + 0.25
 
 png_path <- file.path(OUT, "ed_fig5_full_region_heatmap_54.png")
 pdf_path <- file.path(OUT, "ed_fig5_full_region_heatmap_54.pdf")
@@ -249,15 +250,24 @@ draw_fig <- function() {
                         width  = unit(FIG_W - 2*PAD_IN, "in"),
                         height = unit(FIG_H - 2*PAD_IN, "in"),
                         just = c("left","bottom")))
-  lay <- grid.layout(nrow = 4, ncol = 1,
-                     heights = unit.c(unit(TITLE_IN, "in"),
+  lay <- grid.layout(nrow = 5, ncol = 1,
+                     heights = unit.c(unit(OUTER_TITLE_IN, "in"),
+                                      unit(TITLE_IN, "in"),
                                       unit(HM_H_IN, "in"),
                                       unit(0.18, "in"),
                                       unit(BAR_H_IN, "in")))
   pushViewport(viewport(layout = lay))
 
   pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
-  grid.text("Fig. S6 |  Full region × program activity matrix (54 cNMF programs)",
+  grid.text("Supplementary Data 4. Full area-by-program region heatmap",
+            x = unit(0, "npc"), y = unit(0.70, "npc"), just = c("left","center"),
+            gp = gpar(fontsize = 10, fontfamily = "Helvetica"))
+  grid.lines(x = unit(c(0, 1), "npc"), y = unit(c(0.08, 0.08), "npc"),
+             gp = gpar(col = "grey75", lwd = 0.5))
+  popViewport()
+
+  pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1))
+  grid.text("Supplementary Data 4 |  Full region x program activity matrix (54 cNMF programs)",
             x = unit(0, "npc"), y = unit(0.72, "npc"), just = c("left","center"),
             gp = gpar(fontsize = 10, fontface = "bold", fontfamily = "Helvetica"))
   grid.text(paste0("Complete 14-region x 54-program z-score matrix and variability ranking. ",
@@ -267,7 +277,7 @@ draw_fig <- function() {
             gp = gpar(fontsize = 7.2, col = "grey30", fontfamily = "Helvetica"))
   popViewport()
 
-  pushViewport(viewport(layout.pos.row = 2, layout.pos.col = 1))
+  pushViewport(viewport(layout.pos.row = 3, layout.pos.col = 1))
   grid.text("a", x = unit(0, "npc"), y = unit(1, "npc"), just = c("left","top"),
             gp = gpar(fontsize = 9, fontface = "bold", fontfamily = "Helvetica"))
   pushViewport(viewport(x = unit(2.2, "mm"), width = unit(1, "npc") - unit(2.2, "mm"),
@@ -275,12 +285,11 @@ draw_fig <- function() {
   draw(ht, newpage = FALSE,
        heatmap_legend_side = "right", annotation_legend_side = "right",
        merge_legend = TRUE,
-       column_title = sprintf("54 cortical gene programs (cNMF K=60, 6 cohort-technical excluded), ordered by cross-region variability (%s²)",
-                              "η"),
+       column_title = "54 retained cortical gene programs (six cohort-technical components excluded), ordered by cross-region variability (eta-squared)",
        column_title_gp = gpar(fontsize = 7, fontface = "bold"))
   popViewport(2)
 
-  pushViewport(viewport(layout.pos.row = 4, layout.pos.col = 1))
+  pushViewport(viewport(layout.pos.row = 5, layout.pos.col = 1))
   grid.text("b", x = unit(0, "npc"), y = unit(1, "npc"), just = c("left","top"),
             gp = gpar(fontsize = 9, fontface = "bold", fontfamily = "Helvetica"))
   grid.text(sprintf("Cross-region variability of 54 programs (%s² ranking)", "η"),

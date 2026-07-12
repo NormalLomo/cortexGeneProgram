@@ -3,11 +3,13 @@
 Aggregate per-chip lattice-ring program x program spatial mark cross-correlation into
 per-REGION tensors, test region-dependence, and make an Extended-Data figure.
 
-Inputs : results/crossregion_v1/spatial_crosscorr/_perchip/<chip>.npz  (C:(10,60,60) cross-cov per ring, npairs, mu, sd)
+Inputs : raw 60-component tensor in results/crossregion_v1/spatial_crosscorr/_perchip/<chip>.npz
+         (C:(10,60,60) cross-cov per ring, npairs, mu, sd)
          results/crossregion_v1/spatial_crosscorr/_chipmap.json
          results/crossregion_v1/program_names.tsv
-Outputs: results/crossregion_v1/spatial_crosscorr/region_<REGION>.npz   (per-region C tensor, npairs)
-         results/crossregion_v1/spatial_crosscorr/region_tensor_all.npz (stacked: regions x 10 x 60 x 60)
+Outputs: retained 54 by 54 outputs after the retained map subsets both program axes.
+         results/crossregion_v1/spatial_crosscorr/region_<REGION>.npz   (per-region C tensor, npairs)
+         results/crossregion_v1/spatial_crosscorr/region_tensor_all.npz (stacked raw tensor: regions x 10 x 60 x 60)
          results/crossregion_v1/spatial_crosscorr/top_region_variable_pairs.tsv
          results/crossregion_v1/spatial_crosscorr/region_similarity.tsv
          figures/extended/ed_spatial_crosscorr_byregion.{pdf,png}
@@ -20,7 +22,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -44,93 +46,58 @@ mpl.rcParams.update({
     "xtick.major.size": 2, "ytick.major.size": 2,
 })
 
-ROOT = "CORTEX_PROGRAM_ROOT"
+ROOT = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
 CCDIR = f"{ROOT}/results/crossregion_v1/spatial_crosscorr"
 PERCHIP = f"{CCDIR}/_perchip"
-FIGDIR = f"{ROOT}/figures/extended"
+OUTDIR = os.environ.get("FIGS8_CACHE_DIR", CCDIR)
+FIGDIR = os.environ.get("FIGS8_OUTPUT_DIR", f"{ROOT}/figures/extended")
+REGION_TENSOR = os.environ.get("REGION_TENSOR", f"{CCDIR}/region_tensor_all.npz")
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{ROOT}/tables/TableS3_program_annotation.tsv")
+os.makedirs(OUTDIR, exist_ok=True)
 os.makedirs(FIGDIR, exist_ok=True)
-NPROG = 60; NRING = 10; LAT = 50
+NRING = 10; LAT = 50
 R_UM = np.arange(1, NRING+1) * LAT  # 50..500
 
-# ---- program names + renumber map (W-tier2 patch 2026-06-26) ----
-# Load renumber map: build cNMF(int, 1-based) -> new_P(int) or EXCLUDED
-_rmap = pd.read_csv(f"{ROOT}/results/crossregion_v1/program_renumber_map.tsv", sep="\t")
-cnmf2new = {}     # cNMF int (1-based) -> new_P int  (kept programs only)
-EXCLUDED_CNMF0 = set()  # 0-based cNMF idx for excluded programs
-for _, r in _rmap.iterrows():
-    old_int = int(r["old_P"])
-    new_val = str(r["new_P"])
-    if new_val.upper() == "EXCLUDED":
-        EXCLUDED_CNMF0.add(old_int - 1)
-    else:
-        cnmf2new[old_int] = int(new_val)
+# ---- retained program map ----
+# Map source cNMF component IDs to contiguous retained program IDs.
+_rmap = pd.read_csv(RETAIN_MAP, sep="\t")
+assert len(_rmap) == 54
+_rmap["old_int"] = _rmap["cnmf_component"].astype(int)
+_rmap["new_int"] = _rmap["new_P"].astype(str).str.removeprefix("P").astype(int)
+assert _rmap["new_int"].tolist() == list(range(1, 55))
+assert set(range(1, 61)) - set(_rmap["old_int"]) == {9, 18, 19, 35, 52, 57}
+KEEP0 = (_rmap["old_int"].to_numpy() - 1).astype(int)
+NPROG = len(KEEP0)
 
 # program_names: keyed by new_P int -> name_short
-pn = pd.read_csv(f"{ROOT}/results/crossregion_v1/program_names.tsv", sep="\t"); pn = pn[pn["new_P"].astype(str).str.startswith("P")]
-short = {int(str(r.new_P).lstrip("P")): str(r.name_short) for _, r in pn.iterrows()}
-conf  = {int(str(r.new_P).lstrip("P")): str(r.confidence) for _, r in pn.iterrows()}
+short = dict(zip(_rmap["new_int"], _rmap["functional_name"].astype(str)))
+conf  = dict(zip(_rmap["new_int"], _rmap["confidence"].astype(str)))
 
-def plab(i):  # i is 0-based cNMF index (0..59)
-    """Translate 0-based cNMF idx -> 'P{new_P} {name_short}'; EXCLUDED -> 'P?(excl)'."""
-    cnmf_1based = i + 1
-    if i in EXCLUDED_CNMF0 or cnmf_1based not in cnmf2new:
-        return f"cNMF{cnmf_1based} (excl)"
-    new_p = cnmf2new[cnmf_1based]
+def plab(i):
+    """Translate retained 0-based index to contiguous display identifier."""
+    new_p = i + 1
     return f"P{new_p} {short.get(new_p, '?')}"
 
 def cnmf0_to_newP(i):
-    """0-based cNMF idx -> new_P int (or None if EXCLUDED)."""
-    if i in EXCLUDED_CNMF0:
-        return None
-    return cnmf2new.get(i + 1)
+    return i + 1
 
-# ---- chip map ----
-cmap = json.load(open(f"{CCDIR}/_chipmap.json"))
-order = cmap["order"]  # [chip, region, rg]
-chip2reg = {c: r for c, r, _ in order}
-regions = sorted(set(r for _, r, _ in order))
-
-# ---- aggregate per region (weighted by npairs per ring) ----
-reg_chips = {}
-for c, r, _ in order:
-    reg_chips.setdefault(r, []).append(c)
-
-region_C = {}          # region -> (NRING,60,60) weighted-mean cross-cov
-region_npairs = {}     # region -> (NRING,) total pairs
-region_nchip = {}
-for r in regions:
-    acc = np.zeros((NRING, NPROG, NPROG))
-    wsum = np.zeros(NRING)
-    nch = 0
-    for c in reg_chips[r]:
-        f = f"{PERCHIP}/{c}.npz"
-        if not os.path.exists(f):
-            print(f"WARNING missing {f}"); continue
-        d = np.load(f, allow_pickle=True)
-        C = d["C"].astype(np.float64)        # (NRING,60,60)
-        npr = d["npairs"].astype(np.float64) # (NRING,)
-        for k in range(NRING):
-            if npr[k] > 0:
-                acc[k] += C[k] * npr[k]
-                wsum[k] += npr[k]
-        nch += 1
-    for k in range(NRING):
-        if wsum[k] > 0:
-            acc[k] /= wsum[k]
-    region_C[r] = acc
-    region_npairs[r] = wsum
-    region_nchip[r] = nch
-    np.savez_compressed(f"{CCDIR}/region_{r}.npz",
-                        C=acc.astype(np.float32), npairs=wsum.astype(np.float64),
-                        nchip=nch, region=r)
-    print(f"region {r:6s}: nchip={nch}  pairs(r=50)={wsum[0]:.3e}")
-
-# stacked tensor
-Rg = regions
-T = np.stack([region_C[r] for r in Rg], axis=0)   # (nreg, NRING, 60, 60)
-np.savez_compressed(f"{CCDIR}/region_tensor_all.npz",
+# ---- load compact canonical region tensor and subset both program axes ----
+tensor = np.load(REGION_TENSOR, allow_pickle=True)
+required_keys = {"T", "regions", "r_um", "nchip"}
+assert required_keys.issubset(tensor.files), tensor.files
+T60 = tensor["T"].astype(np.float64)
+assert T60.ndim == 4 and T60.shape[1:] == (10, 60, 60), T60.shape
+T = T60[:, :, KEEP0, :][:, :, :, KEEP0]
+Rg = tensor["regions"].astype(str).tolist()
+R_UM = tensor["r_um"].astype(int)
+nchip_values = tensor["nchip"].astype(int)
+assert T.shape == (len(Rg), 10, 54, 54), T.shape
+region_nchip = dict(zip(Rg, nchip_values))
+np.savez_compressed(f"{OUTDIR}/region_tensor_retained54.npz",
                     T=T.astype(np.float32), regions=np.array(Rg),
-                    r_um=R_UM, nchip=np.array([region_nchip[r] for r in Rg]))
+                    r_um=R_UM, nchip=nchip_values,
+                    old_components=_rmap["old_int"].to_numpy(),
+                    new_programs=_rmap["new_int"].to_numpy())
 nreg = len(Rg)
 print("region tensor:", T.shape)
 
@@ -155,8 +122,8 @@ pair_var_150 = M150[:, iu, ju].var(axis=0)
 
 dfp = pd.DataFrame({
     "progA": iu+1, "progB": ju+1,
-    "nameA": [short.get(cnmf2new.get(int(a)+1, -1), "?") for a in iu],
-    "nameB": [short.get(cnmf2new.get(int(b)+1, -1), "?") for b in ju],
+    "nameA": [short.get(int(a)+1, "?") for a in iu],
+    "nameB": [short.get(int(b)+1, "?") for b in ju],
     "is_self": iu==ju,
     "mean_g50": pair_mean_50,
     "var_g50": pair_var_50,
@@ -170,12 +137,8 @@ dfp["min_region"] = [Rg[i] for i in amin]
 dfp["max_region"] = [Rg[i] for i in amax]
 dfp["min_g50"] = pair_vals_50.min(axis=0)
 dfp["max_g50"] = pair_vals_50.max(axis=0)
-# W-tier2 patch 2026-06-26: drop EXCLUDED programs (cNMF 9/18/19/35/52/57) before ranking
-_excl_1based = {i + 1 for i in EXCLUDED_CNMF0}  # progA/B in dfp are 1-based cNMF
-dfp = dfp[~dfp["progA"].isin(_excl_1based) & ~dfp["progB"].isin(_excl_1based)].reset_index(drop=True)
-
 dfp_sorted = dfp.sort_values("var_g50", ascending=False).reset_index(drop=True)
-dfp_sorted.to_csv(f"{CCDIR}/top_region_variable_pairs.tsv", sep="\t", index=False)
+dfp_sorted.to_csv(f"{OUTDIR}/top_region_variable_pairs.tsv", sep="\t", index=False)
 print("\n=== TOP 15 region-variable program pairs (var of g(r=50um) across 14 regions) ===")
 print(dfp_sorted.head(15)[["progA","nameA","progB","nameB","var_g50","range_g50","min_region","min_g50","max_region","max_g50"]].to_string(index=False))
 
@@ -187,6 +150,7 @@ print(dfp_off.head(12)[["progA","nameA","progB","nameB","var_g50","min_region","
 # (b) region x region similarity by g(r=50um) fingerprint (off-diagonal flattened)
 io, jo = np.triu_indices(NPROG, k=1)           # strictly off-diagonal
 FP = M50[:, io, jo]                            # (nreg, n_offpair) fingerprint
+assert FP.shape[1] == 1431, FP.shape
 # correlation across regions
 Rmat = np.corrcoef(FP)                         # (nreg,nreg)
 # distance for clustering
@@ -199,7 +163,7 @@ leaf_order = dn["ivl"]
 leaf_idx = [Rg.index(l) for l in leaf_order]
 clusters = fcluster(Z, t=2, criterion="maxclust")
 sim_df = pd.DataFrame(Rmat, index=Rg, columns=Rg)
-sim_df.to_csv(f"{CCDIR}/region_similarity.tsv", sep="\t")
+sim_df.to_csv(f"{OUTDIR}/region_similarity.tsv", sep="\t")
 print("\n=== Region clustering (g(r=50um) fingerprint, 2-cluster cut) ===")
 for cl in sorted(set(clusters)):
     print(f"  cluster {cl}: {[Rg[i] for i in range(nreg) if clusters[i]==cl]}")
@@ -211,26 +175,14 @@ o = np.argsort(offdiag)
 print(f"  MOST similar regions: {Rg[ii[o[-1]]]}-{Rg[jj[o[-1]]]} r={offdiag[o[-1]]:.3f}")
 print(f"  LEAST similar regions: {Rg[ii[o[0]]]}-{Rg[jj[o[0]]]} r={offdiag[o[0]]:.3f}")
 
-# Quantify region-dependence: fraction of pairs whose across-region SD exceeds a threshold
-# relative to a within-region noise floor (use range across chips within multi-chip regions as floor)
-multi = [r for r in Rg if region_nchip[r] >= 3]
-# build per-chip M50 to estimate within-region scatter for floor
-chip_M50 = {}
-for c, r, _ in order:
-    f=f"{PERCHIP}/{c}.npz"
-    if os.path.exists(f):
-        d=np.load(f,allow_pickle=True); chip_M50[c]=d["C"].astype(np.float64)[0]
-within_sd=[]
-for r in multi:
-    arr=np.stack([chip_M50[c][io,jo] for c in reg_chips[r] if c in chip_M50],axis=0)
-    within_sd.append(arr.std(axis=0))
-within_floor=np.median(np.concatenate(within_sd)) if within_sd else np.nan
+# The compact tensor has region aggregates but not per-chip matrices. The retained
+# panels are recomputed exactly from those aggregates; the optional within-chip noise
+# diagnostic is therefore explicitly unavailable in this tensor-only route.
+within_floor = np.nan
 across_sd_off = FP.std(axis=0)
-n_var = int((across_sd_off > 2*within_floor).sum())
 print(f"\nwithin-region SD floor (median, off-diag pairs)={within_floor:.4f}")
 print(f"across-region SD of off-diag pairs: median={np.median(across_sd_off):.4f} max={across_sd_off.max():.4f}")
-print(f"# off-diag pairs with across-region SD > 2x within-region floor: {n_var} / {len(io)} "
-      f"({100*n_var/len(io):.1f}%)")
+print("within-chip threshold count: not computed from region-tensor-only input")
 
 # ================= FIGURE =================
 fig = plt.figure(figsize=(7.2, 8.6))
@@ -274,7 +226,7 @@ for pi, (a, b) in enumerate(ex_pairs):
         ls = "-" if region_nchip[r] >= 3 else ":"
         ax.plot(R_UM, curve, color=reg_colors[r], lw=lw, ls=ls,
                 label=r if region_nchip[r] >= 3 else None)
-    ax.set_title(f"{plab(ai)}\nx {plab(bi)}", fontsize=5.2, loc="left")
+    ax.set_title(f"P{a} × P{b}", fontsize=5.2, loc="left")
     ax.set_xlabel("r (µm)", fontsize=5); ax.set_ylabel("g(r)", fontsize=5)
     ax.tick_params(labelsize=4.5)
     ax.axhline(0, color="0.7", lw=0.4, zorder=0)
@@ -283,34 +235,36 @@ for pi, (a, b) in enumerate(ex_pairs):
         ax.legend(ncol=2, fontsize=4, frameon=False, loc="upper right",
                   handlelength=1.0, columnspacing=0.6, labelspacing=0.2)
 # panel-c title (place above the 2x2 block)
-fig.text(0.085, 0.635, "c  Exemplar cross-program g(r): one line per region "
+fig.text(0.085, 0.655, "c  Exemplar cross-program g(r): one line per region "
          "(solid = ≥3 chips, dotted = ≤2 chips)",
          fontsize=7, fontweight="bold", ha="left")
 
-# ---- Panel d: top region-variable pair matrix (SD of g(r=50) across regions, 60x60) ----
+# ---- Panel d: retained-program SD matrix ----
 axD = fig.add_subplot(gs[2, 0])
 SDmat = np.zeros((NPROG, NPROG))
 SDmat[iu, ju] = np.sqrt(pair_var_50)
 SDmat[ju, iu] = np.sqrt(pair_var_50)
+assert SDmat.shape == (54, 54)
 imd = axD.imshow(SDmat, cmap="magma", aspect="equal",
                  vmax=np.percentile(np.sqrt(pair_var_50), 99))
-axD.set_title("d  Across-region SD of g(r=50 µm), 60×60 cNMF pairs (incl. 6 excluded)", loc="left", fontweight="bold")
+axD.set_title("d  Across-region SD of g(r=50 µm), retained 54×54", loc="left", fontweight="bold")
 axD.set_xlabel("program"); axD.set_ylabel("program")
-axD.set_xticks([0,14,29,44,59]); axD.set_xticklabels([1,15,30,45,60], fontsize=4.5)
-axD.set_yticks([0,14,29,44,59]); axD.set_yticklabels([1,15,30,45,60], fontsize=4.5)
+ticks = [0, 13, 26, 39, 53]
+axD.set_xticks(ticks); axD.set_xticklabels([1,14,27,40,54], fontsize=4.5)
+axD.set_yticks(ticks); axD.set_yticklabels([1,14,27,40,54], fontsize=4.5)
 cbd = fig.colorbar(imd, ax=axD, fraction=0.046, pad=0.02)
 cbd.set_label("SD across 14 regions", fontsize=5); cbd.ax.tick_params(labelsize=4)
 
 # ---- Panel e: barh of top region-variable cross-program pairs ----
 axE = fig.add_subplot(gs[2, 1])
 topn = dfp_off.head(12).iloc[::-1]
-ylab = [f"P{cnmf2new[int(a)]}×P{cnmf2new[int(b)]}\n{na[:16]} × {nb[:16]}"
+ylab = [f"P{int(a)}×P{int(b)}\n{na[:16]} × {nb[:16]}"
         for a,b,na,nb in zip(topn.progA, topn.progB, topn.nameA, topn.nameB)]
 yy = np.arange(len(topn))
 axE.barh(yy, topn["range_g50"], color="#3b6ea5", height=0.7)
 axE.set_yticks(yy); axE.set_yticklabels(ylab, fontsize=4.2)
 axE.set_xlabel("max−min g(r=50 µm) across regions", fontsize=5)
-axE.set_title("e  Top region-divergent cross-program pairs", loc="left", fontweight="bold")
+axE.set_title("e  Top region-divergent pairs", loc="left", fontweight="bold")
 axE.tick_params(labelsize=4.5)
 axE.spines[["top","right"]].set_visible(False)
 for i,(rg_min,rg_max) in enumerate(zip(topn.min_region, topn.max_region)):

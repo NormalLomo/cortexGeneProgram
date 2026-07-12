@@ -8,20 +8,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReleaseMetadataTest(unittest.TestCase):
-    def test_cff_preserves_doi_lineage_without_claiming_old_record_as_current(self) -> None:
+    def test_cff_has_release_identity_and_all_software_creators(self) -> None:
         cff = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
-        self.assertNotIn("doi: 10.5281/zenodo.21245201", cff)
         self.assertIn("identifiers:", cff)
         self.assertIn("10.5281/zenodo.21245200", cff)
-        self.assertIn("10.5281/zenodo.21245201", cff)
         self.assertIn("Concept DOI for the collection", cff)
-        self.assertIn("initial archived software snapshot", cff)
-        self.assertIn("does not identify this 2026.07.11 candidate", cff)
+        self.assertIn("version: 2026.07.12", cff)
+        self.assertIn("date-released: 2026-07-12", cff)
+        self.assertIn("license: MIT", cff)
+        self.assertEqual(cff.count("family-names:"), 17)
+        self.assertLess(cff.index("family-names: Luo"), cff.index("family-names: Liu"))
+        self.assertIn("email: slaket0625@hotmail.com", cff)
 
     def test_default_conda_environment_uses_the_verified_source_installation_route(self) -> None:
         environment = (ROOT / "environment/environment.yml").read_text(encoding="utf-8")
+        requirements = (ROOT / "environment/requirements.txt").read_text(encoding="utf-8")
         self.assertNotIn("r-seuratdisk=", environment)
         self.assertNotIn("r-spacexr=", environment)
+        self.assertIn("statsmodels=0.14.2", environment)
+        self.assertIn("statsmodels==0.14.2", requirements)
         installer = ROOT / "environment/install_spatial_r_packages.R"
         self.assertTrue(installer.is_file())
         source = installer.read_text(encoding="utf-8")

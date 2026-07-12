@@ -1,8 +1,7 @@
 #!/usr/bin/env Rscript
-# Fig.10 panel f worker candidate — program x subclass enrichment heatmap.
-# Candidate goal: closer to Fig4A at full-figure scale via explicit subclass
-# grouping, visible boundaries, and a compact bottom legend. Science values stay
-# unchanged; only order/annotation/layout are adjusted.
+# Fig. 6 panel f program-by-subclass enrichment heatmap.
+# Explicit subclass grouping, visible boundaries, and a compact legend organize
+# the retained-program values.
 
 suppressPackageStartupMessages({
   library(ggplot2)

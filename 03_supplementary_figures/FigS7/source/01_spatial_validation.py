@@ -31,7 +31,7 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-# FONT UNIFY (W-figfont-unify 2026-06-26): Nimbus Sans cross-engine
+# Use a shared sans-serif font stack across renderers.
 import matplotlib as _mpl_font
 _mpl_font.rcParams["font.family"] = "sans-serif"
 _mpl_font.rcParams["font.sans-serif"] = ["Nimbus Sans", "Liberation Sans", "DejaVu Sans"]
@@ -57,7 +57,7 @@ MD_ORDER = ["L1", "L2", "L3", "L4", "L5", "L6", "WM", "ARACHNOID"]
 GM = ["L1", "L2", "L3", "L4", "L5", "L6"]
 
 # ---- program picks, grouped by cell class (verified from program_celltype_coloc.tsv) ----
-# renumbered 2026-06-20: old_P -> new_P via results/crossregion_v1/program_renumber_map.tsv
+# Map old_P to new_P via results/crossregion_v1/program_renumber_map.tsv.
 # inhibitory interneuron programs (GM-high)
 INH = [7, 26, 29]          # old[7,29,32]->new[7,26,29] | P7 Cation channel (interneuron), P26 Glutamate-receptor (postsyn.), P29 Ionotropic glutamate receptors
 # oligodendrocyte / myelin programs (WM-high)
@@ -268,7 +268,7 @@ def md_colors(idx):
 
 
 def pshort(p):
-    # cln-N3 fix 2026-06-25: PNAMES index is 'P7' string (new_P format),
+    # PNAMES uses 'P7' string keys in the new_P display format,
     # but caller passes integer p; must convert to 'P{p}' to avoid KeyError
     # which previously caused fallback f'P{p}' → double-label 'P7 P7'.
     key = f"P{p}"

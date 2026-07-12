@@ -9,7 +9,7 @@
 # (NOT dismissal). bin50 = 25um, NOT dense mixing -> NO co-density-floor argument.
 #
 # Order: PAN-REGIONAL commonality first
-#   a  60x60 co-org heatmap (r=25um)
+#   a  retained-program co-org heatmap (r=25um)
 #   b  co-org vs gene-cosine scatter
 #   SP1 spatial grounding grid: 3 chips x [Myelination P45 | Oligodendrocyte dev. P13 | Neurofilament cytoskeleton P8]
 #       (2 oligodendroglial programs co-distribute; neurofilament-cytoskeleton P8 avoids)
@@ -39,7 +39,7 @@ ROOT  <- "CORTEX_PROGRAM_ROOT"
 MC    <- file.path(ROOT, "results/crossregion_v1/markcorr_v2")
 FIN   <- file.path(MC, "final"); SIM <- file.path(MC, "similarity"); RIG <- file.path(MC, "rigor")
 SPR   <- file.path(MC, "spatial_for_R")
-# BETWEENCHIP NULL UPDATE (2026-06-25):
+# Between-chip null-model input:
 # Load between-chip Stouffer q for progprog (1208 headline pairs).
 BTWNDIR <- file.path(ROOT, "results/crossregion_v1/markcorr_betweenchip_v1")
 sq_pp <- read.delim(file.path(BTWNDIR, "betweenchip_progprog_stouffer_q.tsv"),
@@ -47,7 +47,6 @@ sq_pp <- read.delim(file.path(BTWNDIR, "betweenchip_progprog_stouffer_q.tsv"),
 sq_pp_hl <- sq_pp[sq_pp$is_headline, ]  # 1208 headline pairs
 sq_pp_hl$pa <- as.integer(sub("program_", "", sq_pp_hl$A_name))
 sq_pp_hl$pb <- as.integer(sub("program_", "", sq_pp_hl$B_name))
-bt_keys_from_sq <- paste(sq_pp_hl$pa, sq_pp_hl$pb)
 OUT   <- file.path(ROOT, "figures/markcorr_B")
 dir.create(OUT, showWarnings = FALSE, recursive = TRUE)
 
@@ -81,9 +80,7 @@ lab <- read.delim(file.path(ROOT,"results/crossregion_v1/program_labels.tsv"),
 ann <- read.delim(file.path(ROOT,"results/crossregion_v1/program_annotation.tsv"),
                   check.names=FALSE, stringsAsFactors=FALSE)
 
-# AUTHORITATIVE FDR table = results/crossregion_v1/program_names.tsv (brain_term_NES FDR;
-# same table Figure A's editor used). program_annotation_gobp.tsv is STALE — do NOT use.
-# Star = confidence of the DISPLAYED curated functional name -> bind to that program's FDR.
+# Functional names and annotation confidence use program_names.tsv.
 nmfdr <- read.delim(file.path(ROOT,"results/crossregion_v1/program_names.tsv"),
                     check.names=FALSE, stringsAsFactors=FALSE)
 {
@@ -91,61 +88,61 @@ nmfdr <- read.delim(file.path(ROOT,"results/crossregion_v1/program_names.tsv"),
   nmfdr$program <- .prog_col  # ensure $program alias exists
   nmfdr$pid <- as.integer(sub("^P", "", .prog_col))  # strip "P" prefix if present
 }
-# STAR AUTHORITY 20260615: weak-annotation star = program_names.tsv confidence column
-# (the 24 "brain-weak" programs), NOT the raw fdr>0.05 numeric. The fdr>0.05 set
-# diverged from the curated brain-weak whitelist (over/under-starred); confidence is
-# the single source of truth for which displayed functional names are weak.
-FDR_WEAK <- setNames(nmfdr$confidence == "brain-weak", nmfdr$pid)   # TRUE if brain-weak (weak annotation)
-star_pid <- function(p) {
-  # p = old pid; FDR_WEAK keyed by new pid
-  np <- op2np(p)
-  if (is.na(np)) return("")
-  ifelse(isTRUE(FDR_WEAK[[as.character(np)]]), "*", "")
-}  # trailing * if weak (RENUMBER 20260620)
-# label a "Pn" token (e.g. used in pair strings "P8 x P13") with its FDR star
-star_lab <- function(p) {
-  np <- op2np(p)
-  if (is.na(np)) return(paste0("P", p, "(excl)"))
-  paste0("P", np, star_pid(p))
-}  # display new pid (RENUMBER 20260620)
 ann$pid <- as.integer(sub("^P","",ann$program))
 lab$pid <- as.integer(lab$program)
-meta <- merge(lab[,c("pid","label_short","confidence")], ann[,c("pid","class")], by="pid")
-meta <- meta[order(meta$pid),]
+source_meta <- merge(lab[,c("pid","label_short","confidence")], ann[,c("pid","class")], by="pid")
+source_meta <- source_meta[order(source_meta$pid),]
+stopifnot(nrow(source_meta) == 60L, identical(source_meta$pid, 1:60))
 
-# RENUMBER 20260620: load old->new pid map for display label conversion.
-# All matrix indices (HUBS, pid, g25) remain old pid throughout.
-# Only display strings (P# labels in figure text) switch to new pid.
+# Provenance contract: source arrays use old component IDs; all displayed and
+# downstream program IDs use the retained 1-54 numbering from this map.
 rmap <- read.delim(file.path(ROOT,"results/crossregion_v1/program_renumber_map.tsv"),
                    check.names=FALSE, stringsAsFactors=FALSE)
 rmap$old_pid_int <- as.integer(rmap$old_P)
-rmap$new_pid_int <- suppressWarnings(as.integer(rmap$new_P))  # NA for EXCLUDED
+rmap$new_pid_int <- suppressWarnings(as.integer(rmap$new_P))
+EXPECTED_EXCLUDED_OLD_IDS <- c(9L, 18L, 19L, 35L, 52L, 57L)
+excluded_old_ids <- sort(rmap$old_pid_int[is.na(rmap$new_pid_int)])
+retained_old_ids <- rmap$old_pid_int[!is.na(rmap$new_pid_int)]
+stopifnot(identical(excluded_old_ids, EXPECTED_EXCLUDED_OLD_IDS))
+stopifnot(length(retained_old_ids) == 54L)
+stopifnot(identical(sort(rmap$new_pid_int[!is.na(rmap$new_pid_int)]), 1:54))
 old2new <- setNames(rmap$new_pid_int, as.character(rmap$old_pid_int))
-# helper: given old pid integer, return new pid integer (or NA if excluded)
 op2np <- function(op) { r <- old2new[as.character(as.integer(op))]; if(is.na(r)) NA_integer_ else as.integer(r) }
-# NAMEFIX 20260614: authoritative display name = program_names.tsv name_short
-# (NOT stale program_labels.tsv label_short). Strip any trailing '*' so the
-# weak-FDR star is added ONLY by star_pid() dynamically (avoid double star).
-meta$short <- sub("\\*+$", "", nmfdr$name_short[match(vapply(meta$pid, op2np, integer(1)), nmfdr$pid)])  # RENUMBER: match via new pid
+keep_pid <- function(p) as.integer(p) %in% retained_old_ids
+sq_pp_hl <- sq_pp_hl[keep_pid(sq_pp_hl$pa) & keep_pid(sq_pp_hl$pb),]
+bt_keys_from_sq <- paste(sq_pp_hl$pa, sq_pp_hl$pb)
+
+FDR_WEAK <- setNames(nmfdr$confidence == "brain-weak", nmfdr$pid)
+star_pid <- function(p) {
+  np <- op2np(p)
+  if (is.na(np)) return("")
+  ifelse(isTRUE(FDR_WEAK[[as.character(np)]]), "*", "")
+}
+star_lab <- function(p) {
+  np <- op2np(p)
+  if (is.na(np)) stop("excluded source component reached a display label")
+  paste0("P", np, star_pid(p))
+}
+
+meta <- source_meta[match(retained_old_ids, source_meta$pid),]
+stopifnot(nrow(meta) == 54L, !anyNA(meta$pid))
+meta$short <- sub("\\*+$", "", nmfdr$name_short[match(vapply(meta$pid, op2np, integer(1)), nmfdr$pid)])
 meta$plab  <- paste0("P", vapply(meta$pid, op2np, integer(1)), " ", meta$short)
 CLASS_ORD <- c("exc","inh","glia","nonneuron","vascular")
 meta$class <- factor(meta$class, levels=CLASS_ORD)
 N <- nrow(meta)
 
-# COHORT-TECHNICAL EXCLUSION (consistency P0): six programs are cohort/batch-driven
-# technical artefacts, NOT biological members — they must NOT be shown as members in
-# any Fig.8 panel (network nodes, headline co-orgs, exemplars, avoidances, span).
-# Filter them out of every data-driven selection below.
-COHORT_TECH <- c(9, 18, 19, 35, 52, 57)
-keep_pid <- function(p) !(as.integer(p) %in% COHORT_TECH)
-
 zg  <- np$load(file.path(FIN,"progprog_median_iqr.npz"), allow_pickle=TRUE)
 L2  <- zg$f[["log2_median_g"]]; FSS <- zg$f[["frac_same_sign"]]
 RING<- as.numeric(zg$f[["ring_edges_um"]])
-g25 <- L2[,,1]; fss25 <- FSS[,,1]
-rownames(g25) <- meta$pid; colnames(g25) <- meta$pid
+g25_source <- L2[,,1]; fss25_source <- FSS[,,1]
+stopifnot(identical(dim(g25_source), c(60L, 60L)))
+rownames(g25_source) <- source_meta$pid; colnames(g25_source) <- source_meta$pid
+rownames(fss25_source) <- source_meta$pid; colnames(fss25_source) <- source_meta$pid
+g25 <- g25_source[as.character(retained_old_ids), as.character(retained_old_ids), drop=FALSE]
+fss25 <- fss25_source[as.character(retained_old_ids), as.character(retained_old_ids), drop=FALSE]
+stopifnot(identical(dim(g25), c(54L, 54L)))
 
-gcos <- as.matrix(read.csv(file.path(SIM,"gene_cosine.csv"), row.names=1, check.names=FALSE))
 simp <- read.delim(file.path(SIM,"program_similarity_pairs.tsv"), stringsAsFactors=FALSE)
 simp$pa <- as.integer(sub("program_","",simp$A)); simp$pb <- as.integer(sub("program_","",simp$B))
 
@@ -153,7 +150,10 @@ loo <- read.delim(file.path(RIG,"progprog_donor_loo.tsv"), stringsAsFactors=FALS
 jac <- read.delim(file.path(RIG,"progprog_jaccard.tsv"), stringsAsFactors=FALSE)
 
 zb  <- np$load(file.path(FIN,"progprog_byarea_median_iqr.npz"), allow_pickle=TRUE)
-L2b <- zb$f[["log2_median_g"]]
+L2b_source <- zb$f[["log2_median_g"]]
+stopifnot(dim(L2b_source)[2] == 60L, dim(L2b_source)[3] == 60L)
+L2b <- L2b_source[, retained_old_ids, retained_old_ids, , drop=FALSE]
+dimnames(L2b) <- list(NULL, as.character(retained_old_ids), as.character(retained_old_ids), NULL)
 AREA<- as.character(zb$f[["area_names"]])
 UNST<- as.integer(zb$f[["unstable"]])
 STABLE <- AREA[UNST==0]
@@ -172,10 +172,11 @@ cluster_within_class_order <- function(mat, class_vec, class_levels){
 }
 
 # =============================================================================
-# PANEL a — 60x60 heatmap
+# PANEL a — retained 54-program heatmap
 # =============================================================================
 ord  <- cluster_within_class_order(g25, meta$class, CLASS_ORD)
 M    <- g25[ord, ord]
+stopifnot(identical(dim(M), c(54L, 54L)))
 cls  <- as.character(meta$class)[ord]; pids <- meta$pid[ord]
 cls_split <- factor(cls, levels=CLASS_ORD)
 rng  <- max(abs(quantile(M, c(.01,.99), na.rm=TRUE)))
@@ -212,7 +213,7 @@ panel_a <- wrap_elements(full=panel_a)
 # PANEL b — co-org vs gene-similarity scatter
 # =============================================================================
 sb <- simp[simp$pa < simp$pb, ]
-sb <- sb[keep_pid(sb$pa) & keep_pid(sb$pb), ]   # drop cohort-technical programs (P0)
+sb <- sb[keep_pid(sb$pa) & keep_pid(sb$pb), ]
 ij <- cbind(match(sb$pa, meta$pid), match(sb$pb, meta$pid))
 sb$g  <- g25[ij]; sb$absg <- abs(sb$g)
 rr <- cor(sb$gene_cosine, sb$g, use="complete.obs")
@@ -307,18 +308,9 @@ for (rI in 0:2) for (cI in 0:2) {
   d <- sp1[sp1$row==rI & sp1$col==cI, ]
   cmap <- d$cmap[1]
   base_t <- d$ptitle[1]
-  # NAMEFIX 20260614: ptitle now carries authoritative program_names name_short
-  # (P8 Neurofilament cytoskeleton (pan-neuronal); P13 Oligodendrocyte development;
-  # P45 Myelination). Weak-FDR star added dynamically via star_pid() (no hard-coded *).
-  # RENUMBER 20260620: replace old P-numbers in ptitle with new P-numbers
-  for(op_str in names(old2new)) {
-    np_val <- old2new[[op_str]]
-    if (!is.na(np_val)) {
-      base_t <- gsub(paste0("(P", op_str, ")"), paste0("(P", np_val, ")"), base_t, fixed=TRUE)
-    }
-  }
+  # The preparation step already writes retained display IDs.
   base_t <- sub(paste0("(P", op2np(13), ")"),
-                paste0("(P", op2np(13), star_pid(13), ")"), base_t, fixed=TRUE)  # P13->new: star if brain-weak
+                paste0("(P", op2np(13), star_pid(13), ")"), base_t, fixed=TRUE)
   # add region prefix on first column only
   ttl <- if (cI==0) paste0(REG_LAB[rI+1], "\n", base_t) else base_t
   sp1_panels[[rI*3 + cI + 1]] <- map_panel(d, ttl, cmap=cmap, legend_lab="SCT",
@@ -452,11 +444,9 @@ getm <- function(k) sub(paste0("^",k,"\t"), "", grep(paste0("^",k,"\t"), m2, val
 sp2_r   <- as.numeric(getm("r"))
 sp2_reg <- getm("region")
 progs2 <- unique(sp2m$prog)
-# NAMEFIX 20260614: authoritative SP2 display names from program_names.tsv name_short
-# (P40 = Microglial immune activation; P29 = Glutamate-receptor (postsyn.));
-# star added dynamically by star_pid().
-nm_P40 <- paste0("P", op2np(40), " ", pid2short[["40"]], star_pid(40))   # "P36 Microglial immune activation (RENUMBER)"
-nm_P29 <- paste0("P", op2np(29), " ", pid2short[["29"]], star_pid(29))   # "P26 Glutamate-receptor (postsyn.) (RENUMBER)"
+# SP2 display names use retained IDs and the authoritative short names.
+nm_P40 <- paste0("P", op2np(40), " ", pid2short[["40"]], star_pid(40))
+nm_P29 <- paste0("P", op2np(29), " ", pid2short[["29"]], star_pid(29))
 mapA <- map_panel(sp2m[sp2m$prog==progs2[1], ],
                   paste0(sp2_reg, "\n", nm_P40),
                   cmap="viridis", title_size=BASE-1, show_legend=FALSE)
@@ -485,7 +475,7 @@ sp2_block <- wrap_elements(full=sp2_grid)
 # =============================================================================
 # PANEL d — strongest avoidances lollipop
 # =============================================================================
-neur <- c(8,24); olig <- c(36,26,37,13)   # P57 removed (cohort-technical, P0)
+neur <- c(8,24); olig <- c(36,26,37,13)
 av <- sb[ (sb$pa %in% neur & sb$pb %in% olig) | (sb$pa %in% olig & sb$pb %in% neur), ]
 av$fss <- fss25[cbind(match(av$pa,meta$pid), match(av$pb,meta$pid))]
 av$pair <- paste0(sapply(av$pa, star_lab)," x ",sapply(av$pb, star_lab))  # FDR star per pid
@@ -509,10 +499,9 @@ panel_d <- ggplot(av, aes(g, pair)) +
 # PANEL e — rigor
 # =============================================================================
 ut <- which(upper.tri(g25), arr.ind=TRUE)
-# drop any co-org pair involving a cohort-technical program (P0) before all
-# data-driven top-N selections (panel e headline hist, g region-clustering, h span)
+# Retained-program pairs are the only candidates for downstream selections.
 ut <- ut[keep_pid(meta$pid[ut[,1]]) & keep_pid(meta$pid[ut[,2]]), ]
-# BETWEENCHIP NULL UPDATE (2026-06-25): use sq_pp is_headline (1208 pairs) instead of |g|>0.32
+# Use sq_pp is_headline (1208 pairs) for the retained program-pair panel.
 hl_all <- data.frame(g=g25[ut], fss=fss25[ut],
                      pa=meta$pid[ut[,1]], pb=meta$pid[ut[,2]])
 hl_all$pair_key <- paste(hl_all$pa, hl_all$pb)
@@ -524,11 +513,11 @@ e1 <- ggplot(hl, aes(fss)) +
            label=sprintf("median %.2f", median(hl$fss))) +
   labs(x="frac same-sign across 44 chips", y="headline co-orgs",
        title="Reproducibility of 1,208 headline co-orgs (between-chip null)",
-       subtitle="direction agreement across chips + donor-LOO stability;\nsanity check: GM/WM compartment recovery (ground-truth)") +
+       subtitle="direction agreement across chips + donor-LOO stability;\nsanity check: GM/WM compartment contrast (reference)") +
   coord_cartesian(clip="off")
 loo$absfull <- abs(loo$full_log2)
 lh <- loo[loo$absfull > 0.32, ]
-lh <- lh[keep_pid(lh$A_idx + 1) & keep_pid(lh$B_idx + 1), ]   # drop cohort-technical (P0)
+lh <- lh[keep_pid(lh$A_idx + 1) & keep_pid(lh$B_idx + 1), ]
 lh <- lh[order(-lh$absfull), ]; lh <- head(lh, 22)
 lh$pair <- paste0(sapply(lh$A_idx+1, star_lab)," x ",sapply(lh$B_idx+1, star_lab))  # FDR star per pid
 lh$pair <- factor(lh$pair, levels=rev(lh$pair))
@@ -546,7 +535,7 @@ panel_e <- wrap_elements(full = (e1 + e2 + plot_layout(widths=c(1,1.15))))
 # =============================================================================
 # PANEL f — region small-multiples
 # =============================================================================
-ex <- list(c(37,38), c(8,36), c(40,29), c(17,47))   # P17xP52 (cohort-technical P52) -> P17xP47 valid synaptic co-org (P0)
+ex <- list(c(37,38), c(8,36), c(40,29), c(17,47))
 exlab <- c(paste0(star_lab(37),"x",star_lab(38)," oligo/myelin"),
            paste0(star_lab(8),"x",star_lab(36)," neuron-oligo avoid"),
            paste0(star_lab(40),"x",star_lab(29)," microglia-glutR"),
@@ -554,7 +543,7 @@ exlab <- c(paste0(star_lab(37),"x",star_lab(38)," oligo/myelin"),
 ai <- match(STABLE, AREA)
 frows <- do.call(rbind, lapply(seq_along(ex), function(k){
   pa<-ex[[k]][1]; pb<-ex[[k]][2]
-  data.frame(area=STABLE, ex=exlab[k], g=sapply(ai, function(a) L2b[a, pa, pb, 1]))
+  data.frame(area=STABLE, ex=exlab[k], g=sapply(ai, function(a) L2b[a, as.character(pa), as.character(pb), 1]))
 }))
 frows$ex <- factor(frows$ex, levels=exlab)
 panel_f <- ggplot(frows, aes(reorder(area,g), g)) +
@@ -577,7 +566,7 @@ panel_f <- ggplot(frows, aes(reorder(area,g), g)) +
 hp <- data.frame(a=meta$pid[ut[,1]], b=meta$pid[ut[,2]], g=g25[ut])
 hp <- hp[order(-abs(hp$g)), ]; hp <- head(hp, 40)
 Mg <- sapply(seq_len(nrow(hp)), function(k){
-  sapply(ai, function(a) L2b[a, hp$a[k], hp$b[k], 1])
+  sapply(ai, function(a) L2b[a, as.character(hp$a[k]), as.character(hp$b[k]), 1])
 })
 rownames(Mg) <- STABLE
 colnames(Mg) <- paste0(sapply(hp$a, star_lab),"x",sapply(hp$b, star_lab))  # FDR star per pid (shown in panel h y-axis)
@@ -632,8 +621,7 @@ hub_block <- wrap_elements(full=hub_block)
 #   a=heatmap b=scatter c=sp1 spatial grid d=hub(network+tissue) e=avoid lollipop
 #   f=rigor g=region exemplars h=region-clustering heatmap i=span
 # =============================================================================
-# Worker override: keep live source/data root, but let this run emit panels into
-# a temp svg_panels directory so layout trials do not touch canonical outputs.
+# The output directory can be overridden for isolated rendering.
 SVGD <- Sys.getenv("FIGB_SVGD", file.path(ROOT, "scripts/figmarkcorr_B/svg_panels"))
 dir.create(SVGD, recursive=TRUE, showWarnings=FALSE)
 mm2in <- function(x) as.numeric(x)/25.4
@@ -665,7 +653,7 @@ svglite(svgf("t"), width=mm2in(172), height=mm2in(13), bg="white", fix_text_size
 print(ptitle_b); invisible(dev.off())
 cat("panel t SVG (172x13 mm, fix_text_size=FALSE)\n")
 
-# a : 60x60 heatmap (grabbed grob, tight padding)
+# a : retained 54-program heatmap (grabbed grob, tight padding)
 pa_tight <- grid.grabExpr(draw(ht, heatmap_legend_side="right",
         annotation_legend_side="right", merge_legend=TRUE,
         padding=unit(c(1,1,1,1),"mm")), wrap.grobs=TRUE)

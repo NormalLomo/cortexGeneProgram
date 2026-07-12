@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Task 1: per-program WITHIN-SPECIES z laminar universality.
 
 For each program x each species, take its RAW score in the 5 common layers
@@ -16,11 +16,25 @@ Verify myelin/oligo set (P45/P37/P26/P38): per-program z peak should be deep
 
 OUT: _aggregate/A_laminar_perprogram_z.tsv + _aggregate/A_perprogram_z_summary.txt
 """
-import numpy as np, pandas as pd
+import argparse
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
 from scipy.stats import spearmanr
 
-AGG = "CORTEX_PROGRAM_ROOT/results/xspecies_humanmap_v1/spatial_xspecies/_aggregate"
-NAMES_AUTHORITY = "CORTEX_PROGRAM_ROOT/results/crossregion_v1/program_names.tsv"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(REPOSITORY_ROOT))
+from workflow.root_contract import add_canonical_root_argument, resolve_canonical_root
+
+parser = argparse.ArgumentParser(description=__doc__)
+add_canonical_root_argument(parser)
+parser.epilog = "Uses --canonical-root or CORTEX_PROGRAM_CANONICAL_ROOT."
+args = parser.parse_args()
+canonical_root = resolve_canonical_root(args.canonical_root)
+AGG = str(canonical_root / "results/xspecies_humanmap_v1/spatial_xspecies/_aggregate")
+NAMES_AUTHORITY = str(canonical_root / "results/crossregion_v1/program_names.tsv")
 COMMON = ["L1", "L2", "L4", "L5", "L6"]          # 5 common layers (mouse has no L3)
 LAY_RANK = {l: i for i, l in enumerate(COMMON)}   # 0..4 in COMMON ordering
 PROG = [f"program_{i}" for i in range(1, 61)]

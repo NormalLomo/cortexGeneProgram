@@ -35,7 +35,7 @@ nomar <- function(p) p + theme(plot.margin = margin(0, 0, 0, 0))
 ## ===================================================================
 build_a_grob <- function() {
   eta <- read.delim(file.path(RES, "within_subclass_region_eta2.tsv"))
-  # RENUMBER 2026-06-20: filter out excluded programs (old cNMF indices)
+  # Filter out excluded raw cNMF programs.
   eta <- eta[!eta$program %in% .EXCLUDED_OLD, ]
   eta$program <- as.character(eta$program)
   M <- eta %>% select(subclass, program, eta2) %>%
@@ -98,7 +98,7 @@ build_a_grob <- function() {
 ## ===================================================================
 build_b <- function() {
   eta <- read.delim(file.path(RES, "within_subclass_region_eta2.tsv"))
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   eta <- eta[!eta$program %in% .EXCLUDED_OLD, ]
   drv <- read.delim(file.path(RES, "subclass_driver_rank.tsv"))
   ord <- drv %>% arrange(median_eta2) %>% pull(subclass)
@@ -120,7 +120,7 @@ build_b <- function() {
 ## ===================================================================
 build_c <- function() {
   pc <- read.delim(file.path(RES, "panel_c_partition.tsv"))
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   pc <- pc[!pc$program %in% .EXCLUDED_OLD, ]
   pc$program <- factor(prog_label(pc$program), levels = prog_label(pc$program[order(pc$eta2_region)]))
   long <- pc %>% select(program, eta2_region, cell_autonomous_frac, compositional_frac) %>%
@@ -143,7 +143,7 @@ build_c <- function() {
 build_d <- function() {
   m <- read.delim(file.path(RES, "region_subclass_program_mean.tsv"))
   SC <- "L3-L4 IT RORB"; sub <- m %>% filter(subclass == SC); sub$program <- as.integer(sub$program)
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   sub <- sub[!sub$program %in% .EXCLUDED_OLD, ]
   rng <- sub %>% group_by(program) %>% summarise(rng = max(mean) - min(mean), .groups = "drop") %>%
     arrange(desc(rng)) %>% head(20)
@@ -171,7 +171,7 @@ build_d <- function() {
 ## ===================================================================
 build_e <- function() {
   eta <- read.delim(file.path(RES, "within_subclass_region_eta2.tsv")); eta$Class <- sc_class(eta$subclass)
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   eta <- eta[!eta$program %in% .EXCLUDED_OLD, ]
   top <- eta %>% filter(fdr < 0.05) %>% arrange(desc(eta2)) %>% head(25)
   top$lab <- factor(paste0(top$subclass, " · ", prog_label(top$program)),
@@ -220,9 +220,8 @@ build_f <- function() {
 
 ## ===================================================================
 ## panel g : bootstrap robustness boxplot grid
-##   LEGIBILITY REBUILD (2026-06-10): the 8-facet 4x2 grid shrank to ~0.53x
-##   at submission size so all tick/strip/label fell <5pt (unreadable).
-##   Fix: (1) trim to 6 REPRESENTATIVE driver subclasses (3 top excitatory
+##   Use a six-subclass 3x2 grid so tick, strip, and label text remains readable
+##   at the target figure size. The selected subclasses are representative driver
 ##   drivers + NP + the L3-L4 IT RORB spotlight + AST as the non-neuronal
 ##   representative), 3x2 grid -> each facet ~1.33x wider; (2) top-6 programs
 ##   per subclass (was 8) -> fewer, taller rows per facet; (3) base font 7->10,
@@ -232,7 +231,7 @@ build_f <- function() {
 ## ===================================================================
 build_g <- function() {
   b <- read.delim(file.path(RES, "panel_g_bootstrap.tsv")); b$Class <- sc_class(b$subclass)
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   b <- b[!b$program %in% .EXCLUDED_OLD, ]
   drv <- read.delim(file.path(RES, "subclass_driver_rank.tsv"))
   # representative subset: top excitatory drivers + spotlight + non-neuronal rep
@@ -274,7 +273,7 @@ build_g <- function() {
 build_h <- function() {
   eta <- read.delim(file.path(RES, "within_subclass_region_eta2.tsv")); eta$program <- as.integer(eta$program)
   m <- read.delim(file.path(RES, "region_subclass_program_mean.tsv")); m$program <- as.integer(m$program)
-  # RENUMBER 2026-06-20: filter excluded
+  # Filter out excluded raw cNMF programs.
   eta <- eta[!eta$program %in% .EXCLUDED_OLD, ]
   m   <- m[!m$program %in% .EXCLUDED_OLD, ]
   sp <- eta %>% filter(fdr < 0.05) %>% arrange(desc(eta2)) %>% head(22)
@@ -348,7 +347,7 @@ pf <- build_f()
 svglite(svgf("f"), width = 9.0, height = 3.0, bg = "white")
 print(pf & theme(plot.margin = margin(0, 0, 0, 0))); invisible(dev.off()); cat("  f done\n")
 
-save_panel("g", build_g(), 9.0, 4.2)  # 6-facet 3x2 wide banner; bigger fonts (legibility rebuild 2026-06-10)
+save_panel("g", build_g(), 9.0, 4.2)  # Six-facet 3x2 wide banner.
 save_panel("h", build_h(), 4.6, 4.4)
 
 cat("ALL fig4 svg panels written to", SVGD, "\n")

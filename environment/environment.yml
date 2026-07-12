@@ -18,6 +18,7 @@ dependencies:
   - r-seurat=5.1.0
   - r-sctransform=0.4.1
   - scipy=1.13.1
+  - statsmodels=0.14.2
   - pip
   - pip:
       - cnmf==1.7.1

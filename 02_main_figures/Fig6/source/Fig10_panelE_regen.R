@@ -1,13 +1,11 @@
 #!/usr/bin/env Rscript
 # Fig.10 panel e — HORIZONTAL conservation-specificity banner (zero-margin vector SVG)
-# [2026-06-20 restore] 嚴格還原提交版「橫 banner」排版 + 套 54-program 新編號.
-#   提交版 e = 2 列 (human->macaque / human->mouse) x 54 欄 (program, mac-cosine 降序)
-#   的 viridis-teal cosine 熱條; program 在 X 軸 (橫式), 非舊 egfix 的直式.
-#   色階 = 還原自母版 colorbar <image> 的 viridis-teal ramp, limits c(0,0.75)
+# Current contract: a horizontal 2-row x 54-column conservation banner using
+# retained program IDs ordered by decreasing human-to-macaque cosine.
+#   The viridis-teal cosine scale uses limits c(0,0.75).
 #     端點: cos0=#F1ECE3 (淺米) -> cos0.75=#1B3B4B (深 teal); 驗證 cos0.715=#1D4351
-#     == 母版 tile col0(P8) fill #1D4351, 逐 tile 吻合.
 #   欄序 = panelE_significance.csv (54 row, mac-cosine 降序, 已剔 6 excluded).
-#   標籤 = 套 54 新編號 (program_renumber_map.tsv old_P->new_P); EN-only.
+#   Labels use retained IDs from program_renumber_map.tsv; source IDs are provenance only.
 #   best-reciprocal 白圈 (diag_rank==1) 保留.
 #   科學數值 (cosine/sig/rank) 一律不動, 只改排版方向 + 顏色映射(還原) + 編號.
 
@@ -40,7 +38,7 @@ stopifnot(nrow(df) == 54)                       # 60 - 6 cohort-technical exclud
 df$h_mac_cosine <- as.numeric(df$h_mac_cosine)
 df$h_mou_cosine <- as.numeric(df$h_mou_cosine)
 
-# ---- old P-id (= csv program) -> new P-id (kept rows) ----
+# ---- source P-id (= csv program) -> retained P-id (kept rows) ----
 renum <- read_tsv(renum_p, show_col_types = FALSE)
 o2n <- setNames(paste0("P", renum$new_P[renum$status == "kept"]),
                 paste0("P", renum$old_P[renum$status == "kept"]))
@@ -63,12 +61,12 @@ long <- bind_rows(
 )
 long$best <- long$rank == 1                     # diag_rank==1 = self best reciprocal
 
-# ---- viridis-teal ramp recovered from master colorbar <image> (12 stops) ----
+# ---- viridis-teal ramp sampled from master colorbar image (12 stops) ----
 ramp_cols <- c("#E4E5DB","#C8D6CA","#ABC6B9","#8EB6A8","#70A697","#509686",
                "#3A887B","#327C76","#2A7171","#256268","#21525C","#1D4250")
 
 # ---- column labels: ALL 54 programs labelled BELOW the band, in TWO TIERS
-#      (== submitted master visual grammar). Highlighted = the 6 highest-mac
+#      Highlighted = the 6 highest-mac
 #      (head) + 6 lowest-mac (tail) columns -> bold black + a ▼ marker ABOVE the
 #      band; the other 42 columns -> grey, no marker. Shown as NEW ids. ----
 df$highlight <- (df$x <= 6) | (df$x >= (n - 5))   # head6 + tail6 (12 cols)
@@ -77,8 +75,7 @@ tick_df <- lab_df                                   # back-compat for the final 
 # ▼ down-triangle markers (above the top band row), one per highlighted column
 tri_df  <- df %>% filter(highlight) %>% transmute(x = x)
 
-# row header labels (right-aligned, left of col 1) — BOLD (== master)
-# [editor-r2 P2] arrow with surrounding spaces == submitted master (human → macaque)
+# Row header labels are right-aligned left of column 1.
 hdr_df <- data.frame(y = c(2, 1), lab = c("human → macaque", "human → mouse"))
 
 # ---- geometry: square cells; x in [1,54], y in {1,2}. left band for row
@@ -96,16 +93,16 @@ p <- ggplot() +
   geom_point(data = subset(long, best), aes(x = x, y = y),
              shape = 21, fill = "white", color = "#1B3A4B",
              size = 0.9, stroke = 0.45) +
-  # ▼ down-triangle markers ABOVE the top band row (highlighted cols) == master
+  # Down-triangle markers above highlighted columns.
   geom_point(data = tri_df, aes(x = x, y = 2.74),
              shape = 25, fill = "#1B1B1B", colour = "#1B1B1B",
              size = 1.05, stroke = 0) +
-  # row headers (right-aligned just left of col 1) — BOLD black == master
+  # Bold row headers, right-aligned just left of column 1.
   geom_text(data = hdr_df, aes(x = 0.2, y = y, label = lab),
             hjust = 1, vjust = 0.5, size = 6 / .pt, family = FONT,
             fontface = "bold", colour = "#1B1B1B") +
   # program labels (rotated 90deg, BELOW the bottom row), TWO TIERS, NEW ids:
-  #   highlighted -> bold black; others -> grey. == submitted master.
+  #   highlighted -> bold black; others -> grey.
   geom_text(data = subset(lab_df, !highlight), aes(x = x, y = 0.34, label = lab),
             angle = 90, hjust = 1, vjust = 0.5, size = 5 / .pt,
             family = FONT, colour = "#9AA0A6") +
@@ -125,12 +122,10 @@ p <- ggplot() +
   theme_void(base_size = 5.5) +
   theme(
     text = element_text(family = FONT, colour = "#3A3A3A"),
-    # [editor-r2 P1] no colorbar title (== submitted master: ticks only)
+    # The colorbar uses ticks only.
     legend.title  = element_blank(),
     legend.text   = element_text(size = 5, colour = "#3A3A3A"),
-    # colorbar centred ABOVE the banner (external top strip, horizontal) ==
-    # master; placing it on top keeps it inside the compose box (a bottom strip
-    # was being clipped out of the 74pt banner box -> "missing colorbar").
+    # Center the colorbar above the banner so it remains inside the compose box.
     legend.position   = "top",
     legend.justification = "center",
     legend.background = element_rect(fill = NA, colour = NA),
@@ -142,11 +137,10 @@ p <- ggplot() +
 
 # ---- export zero-margin vector SVG (wide short banner) ----
 # 54 cols x ~ (2 rows + headers/ticks/colorbar). Wide aspect (~banner).
-# [restore] canvas aspect 調到 ~= placed box e aspect (522/74 = 7.05) 以便 compose
-# 「填寬」後高度恰好吻合 box (不溢出侵入 d/f). 不改 tile 方正 (coord_fixed).
+# Match the placed panel aspect while retaining square tiles with coord_fixed.
 mm2in <- 1 / 25.4
-# canvas aspect ~= placed box e aspect (522/74 = 7.05) so compose FILL_WIDTH lands
-# the height within the 74pt banner box (centred, no overflow into d/f). reference
+# Canvas aspect matches the placed panel box so compose FILL_WIDTH keeps
+# the height within the banner box. The layout contains
 # stack = colorbar (top) + 2-row band + ▼ + two-tier labels (below).
 svglite(out_svg, width = 246 * mm2in, height = 35 * mm2in, bg = "transparent")
 print(p)

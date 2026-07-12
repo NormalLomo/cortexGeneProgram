@@ -9,7 +9,7 @@ Outputs:
   betweenchip_{mode}_stouffer_q.tsv — full table with q_bh column
   betweenchip_{mode}_headline.tsv  — q<0.05 AND |log2g|>0.32 AND frac_same≥0.85
 
-Effect-size threshold: |log2 g| > 0.32 (same as v10 production; spec §5)
+Effect-size threshold: |log2 g| > 0.32 (spec §5)
 Same-sign gate: frac_same_sign >= 0.85 (>=37/44; spec §5)
 
 Usage:

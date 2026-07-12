@@ -58,7 +58,7 @@ def bh_fdr(pvals):
         ranked[idx] = min(prev, 1.0)
     return ranked
 
-# ---- Renumber: old cNMF K60 → submission numbering (54 kept, 6 excluded) ----
+# ---- Map old cNMF K60 labels to retained 54-program display identifiers ----
 _RMAP_PATH = f"{ROOT}/results/crossregion_v1/program_renumber_map.tsv"
 _rmap = pd.read_csv(_RMAP_PATH, sep="\t")
 # Build old_P -> new_P dict (kept only; excluded remain as sentinel)
@@ -79,9 +79,9 @@ long_df = long_df[~long_df["program"].isin(_excluded_old)].copy()
 long_df["fdr"] = bh_fdr(long_df["pval"].values)
 long_df["program"] = long_df["program"].map(_old2new)
 
-# Recompute N-sensitivity in the same retained-program testing universe used for
-# figure_release/Fig. 8 counts. The source n_sensitivity.tsv is the older raw-K60
-# summary (49/72/97) and therefore overstates the primary retained count.
+# Recompute N-sensitivity in the retained-program testing universe used for
+# Fig. 8 counts. The source n_sensitivity.tsv is raw-K60 and therefore
+# overstates the retained-program count.
 sens_rows = []
 for _top_n in (100, 150, 200):
     _df = pd.read_csv(f"{PD_DIR}/enrichment_long_N{_top_n}.tsv", sep="\t")

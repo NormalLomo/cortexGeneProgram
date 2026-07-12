@@ -7,7 +7,7 @@
 # dendrogram kept. Right rowAnnotations carry the d/e content.
 # Standalone -- does NOT source fig1_svg_panels.R. Only writes fig1_b.svg.
 #
-# 2026-06-20 renumber: 60-program old -> 54-program new
+# Map 60 cNMF components to the retained 54-program identifiers.
 # =====================================================================
 suppressPackageStartupMessages({
   library(ComplexHeatmap); library(circlize); library(grid)

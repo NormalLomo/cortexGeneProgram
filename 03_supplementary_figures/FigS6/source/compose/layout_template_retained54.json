@@ -1,0 +1,23 @@
+{
+  "page": {
+    "w_mm": 188.0,
+    "h_mm": 158.86,
+    "margin_mm": 4.0,
+    "content_w_mm": 180.0
+  },
+  "panels": [
+    {"id": "a_lollipop", "x_mm": 4.0, "y_mm": 4.0, "w_mm": 64.242, "h_mm": 67.435, "natural_aspect": 0.9526},
+    {"id": "b_pairheat", "x_mm": 68.242, "y_mm": 4.0, "w_mm": 72.680, "h_mm": 67.435, "natural_aspect": 1.0778},
+    {"id": "c_scatter", "x_mm": 140.922, "y_mm": 4.0, "w_mm": 43.078, "h_mm": 67.435, "natural_aspect": 0.6388},
+    {"id": "d_distcurve", "x_mm": 4.0, "y_mm": 75.0, "w_mm": 45.000, "h_mm": 35.760, "natural_aspect": 1.2850},
+    {"id": "e_netpair_1", "x_mm": 50.000, "y_mm": 75.0, "w_mm": 43.500, "h_mm": 35.760, "natural_aspect": 1.2495},
+    {"id": "e_netpair_2", "x_mm": 94.500, "y_mm": 75.0, "w_mm": 43.500, "h_mm": 35.760, "natural_aspect": 1.2495},
+    {"id": "e_netpair_3", "x_mm": 139.000, "y_mm": 75.0, "w_mm": 43.500, "h_mm": 35.760, "natural_aspect": 1.2495},
+    {"id": "spacer", "x_mm": 4.0, "y_mm": 110.760, "w_mm": 180.0, "h_mm": 4.698, "natural_aspect": 38.3153},
+    {"id": "f_field_1", "x_mm": 4.0, "y_mm": 115.458, "w_mm": 41.996, "h_mm": 40.282, "natural_aspect": 1.0426},
+    {"id": "f_field_2", "x_mm": 45.996, "y_mm": 115.458, "w_mm": 36.584, "h_mm": 40.282, "natural_aspect": 0.9082},
+    {"id": "f_field_3", "x_mm": 82.580, "y_mm": 115.458, "w_mm": 39.552, "h_mm": 40.282, "natural_aspect": 0.9819},
+    {"id": "g_funnel", "x_mm": 122.132, "y_mm": 115.458, "w_mm": 61.868, "h_mm": 40.282, "natural_aspect": 1.5359}
+  ],
+  "max_fill_gap_from_1": 0.0
+}

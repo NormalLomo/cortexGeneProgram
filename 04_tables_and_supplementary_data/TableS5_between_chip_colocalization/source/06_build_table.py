@@ -14,8 +14,8 @@ import datetime
 # ── 路徑設定 ──────────────────────────────────────────────────────────────────
 BASE = Path("CORTEX_PROGRAM_ROOT")
 SRC_DIR = BASE / "results/crossregion_v1/markcorr_betweenchip_v1"
-OUT_DIR = BASE / "figure_release/SUBMISSION_final/supplementary"
-MANIFEST = BASE / "RUN_LOG_W-tableS3_2026-06-25.md"
+OUT_DIR = BASE / "results/crossregion_v1"
+MANIFEST = OUT_DIR / "TableS5_build.log"
 
 cellprog_tsv = SRC_DIR / "betweenchip_cellprog_stouffer_q.tsv"
 progprog_tsv = SRC_DIR / "betweenchip_progprog_stouffer_q.tsv"

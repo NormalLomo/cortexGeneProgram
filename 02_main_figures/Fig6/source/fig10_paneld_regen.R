@@ -22,8 +22,8 @@ sz <- function(pt) pt / .pt
 sc <- read_csv(file.path(data_dir, "panelD_gene_scatter.csv"), show_col_types = FALSE)
 cc <- read_csv(file.path(data_dir, "panelD_case_cos.csv"),     show_col_types = FALSE)
 
-prog_order <- c("P8", "P1", "P15", "P58")   # csv 用舊 cNMF 號
-# [2026-06-20 restore] 顯示套 54 新編號。old->new (program_renumber_map.tsv):
+prog_order <- c("P8", "P1", "P15", "P58")   # CSV source cNMF IDs
+# Source-to-retained provenance mapping (program_renumber_map.tsv):
 #   P8->P8, P1->P1, P15->P14, P58->P52 (cNMF-58 = new P52 Neuropeptide signaling).
 # 第4 範例 cNMF-58(=舊P58) 是低保守對照, 新號 P52。
 old2new_d <- c(P8 = "P8", P1 = "P1", P15 = "P14", P58 = "P52")
@@ -51,7 +51,7 @@ make_panel <- function(pg, show_y = FALSE, show_leg = FALSE) {
   # brain GO:BP enrichment; FDR high). All four exemplars here (P8/P1/P15/P58)
   # are brain-sig (confidence=brain-sig in program_names.tsv) -> no star.
   weak <- character(0)
-  # [restore] 顯示用 new 編號 (old2new_d); 功能名 fn 保留 (來自 csv func_short).
+  # Display the retained ID while preserving the functional label from the CSV.
   pg_new  <- old2new_d[[pg]]
   pg_disp <- if (pg %in% weak) paste0(pg_new, "*") else pg_new
   ttl <- paste0(pg_disp, " ", fn)

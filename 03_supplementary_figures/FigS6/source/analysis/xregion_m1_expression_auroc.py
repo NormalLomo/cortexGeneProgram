@@ -9,26 +9,29 @@ the subclass axis as the shape (composition de-meaned within program x region).
 
 Similarity = Spearman across the subclass axis.
 Background = for a fixed region pair (rA, rB), the distribution of similarity of
-program p in rA against ALL 60 programs in rB.
-AUROC = rank of the TRUE self-program (p in rA vs p in rB) among the 60 (per
-fixed region pair, both directions). Program conservation score = mean over all
-ordered region pairs (bidirectional) of that program's self-vs-others AUROC.
+program p in rA against the other 53 retained programs in rB.
+AUROC = the rank of the self-program (p in rA versus p in rB) among the 54
+retained programs for each ordered region pair. Program conservation is the mean
+self-versus-alternatives AUROC over ordered region pairs.
 
 Inputs:
-  region_subclass_program_mean.tsv  (region, subclass, program, mean)  long
+  raw 60-component inputs in region_subclass_program_mean.tsv
+  (region, subclass, program, mean) long; the retained map selects 54 programs.
 Outputs (xregion_auroc/):
   m1_expr_conservation_per_program.tsv     program, expr_cons_auroc, n_pairs
   m1_expr_pairwise_auroc_matrix.tsv        14x14 region-pair mean self-AUROC (overall)
-  m1_expr_program_region_self_auroc.tsv    program x region-pair self-AUROC (long, for distance curve)
+  m1_expr_program_region_self_auroc.tsv    retained 54-program analysis, program x region-pair self-AUROC (long, for distance curve)
 """
-import sys, itertools
+import os, sys, itertools
 import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
 
-BASE = "CORTEX_PROGRAM_ROOT"
-OUT  = f"{BASE}/results/crossregion_v1/xregion_auroc"
+BASE = os.environ.get("CORTEX_NMF_ROOT", "CORTEX_PROGRAM_ROOT")
+OUT  = os.environ.get("XREGION_OUTPUT_DIR", f"{BASE}/results/crossregion_v1/xregion_auroc")
 SRC  = f"{BASE}/results/crossregion_v1/region_subclass_program_mean.tsv"
+RETAIN_MAP = os.environ.get("RETAIN_MAP", f"{BASE}/tables/TableS3_program_annotation.tsv")
+os.makedirs(OUT, exist_ok=True)
 
 def zshape(v):
     # composition shape over subclass axis: z-score (de-mean + unit sd).
@@ -50,9 +53,20 @@ def spearman_vec(a, B):
     return out
 
 def main():
+    mapping = pd.read_csv(RETAIN_MAP, sep="\t")
+    assert len(mapping) == 54
+    mapping["old_int"] = mapping["cnmf_component"].astype(int)
+    mapping["new_int"] = mapping["new_P"].astype(str).str.removeprefix("P").astype(int)
+    assert mapping["new_int"].tolist() == list(range(1, 55))
+    assert set(range(1, 61)) - set(mapping["old_int"]) == {9, 18, 19, 35, 52, 57}
+    old_to_new = dict(zip(mapping["old_int"], mapping["new_int"]))
     df = pd.read_csv(SRC, sep="\t")
+    df["program"] = df["program"].astype(int)
+    assert set(mapping["old_int"]).issubset(set(df["program"]))
+    df = df[df["program"].isin(mapping["old_int"])].copy()
     regions = sorted(df["region"].unique())
-    programs = sorted(df["program"].unique())
+    programs = mapping["old_int"].tolist()
+    display_programs = mapping["new_int"].tolist()
     subclasses = sorted(df["subclass"].unique())
     P = len(programs); S = len(subclasses); R = len(regions)
     print(f"[m1] regions={R} programs={P} subclasses={S}", flush=True)
@@ -87,7 +101,7 @@ def main():
             gt = np.sum(s_self > others)
             eq = np.sum(s_self == others)
             auroc = (gt + 0.5*eq) / (P-1)
-            self_rows.append((programs[pi], rA, rB, auroc))
+            self_rows.append((display_programs[pi], rA, rB, auroc))
             pair_self_sum[ridx[rA], ridx[rB]] += auroc
             pair_self_n[ridx[rA], ridx[rB]] += 1
 
@@ -110,6 +124,8 @@ def main():
     print(perprog.head(10).to_string(index=False))
     print("...")
     print(perprog.tail(5).to_string(index=False))
+    assert len(perprog) == 54
+    assert int(selfdf.groupby(["program", "regionA", "regionB"]).size().max()) == 1
     print(f"[m1] global mean expr conservation AUROC = {perprog['expr_cons_auroc'].mean():.4f}")
 
 if __name__ == "__main__":
