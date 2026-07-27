@@ -28,7 +28,7 @@ program	display_program	new_P	name_short	dominant_class	dominant_subclass	annota
 30	27	P27	Body fluid secretion	inh	VIP	class_b	1	VIP;IQGAP2;LAMA3;CHRNA2;SLC22A3;TAC3;ABI3BP;PTHLH
 31	28	P28	Axon guidance / cell adhesion (L6b)	exc	L6B	class_a	0	MDFIC;SEMA3D;CCN2;LRAT;PCSK5;NPFFR2;TLE4;HS3ST4
 32	29	P29	Ionotropic glutamate receptors	inh	SST	class_b	1	TRHDE;TRPC6;GRIN3A;SAMD5;PAWR;KCNMB2;QRFPR;CDH9
-33	30	P30	Cholinergic synapse	inh	PAX6	class_a	0	CNR1;CHRNA7;SP8;CCK;WWP1;ADARB2;PLS3;CHRNA6
+33	30	P30	Acetylcholine receptor signaling	inh	PAX6	class_a	0	CNR1;CHRNA7;SP8;CCK;WWP1;ADARB2;PLS3;CHRNA6
 34	31	P31	Activity-dependent IEG	exc	L6 IT	class_a	0	HOMER1;BDNF;NR4A3;NR4A1;PCSK1;NPAS4;ARC;EGR1
 36	32	P32	Oligodendrocyte (diffuse)	glia	OLIGO	class_b	1	CEDORA;PALM2AKAP2;ADAMTS18;RFFL;TMEFF1;DBNDD2;ARAP2;MKRN3
 37	33	P33	Oligodendrocyte/myelin	glia	OLIGO	class_a	0	CERCAM;CD22;ABCA2;PHLDB1;CDK18;POLR2F;PLEKHG3;MYRF
