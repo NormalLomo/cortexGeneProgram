@@ -15,3 +15,5 @@ This repository contains the analysis scripts for the human cortical gene progra
 - `08_external_annotations`: disease, aging and functional annotations.
 
 The scripts are organized by Methods stage. `Fig1A.png` summarizes the study design.
+
+GO Biological Process enrichment uses each program's saved ranked genes and frozen GMT file. Report aggregation rebuilds the enrichment fields, while program naming and curated term choices remain in downstream naming steps.
