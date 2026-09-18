@@ -2,6 +2,18 @@
 
 This repository contains the analysis scripts for the human cortical gene program study. The analyses use single nucleus and spatial transcriptomic data from human, macaque and mouse cortex to define human gene programs, examine their cellular and tissue organization, compare their molecular and spatial patterns across species, and relate selected programs to external disease, aging and functional data.
 
+## Current human-only release
+
+`human_current/` contains the current human-only analysis and figure source for
+“Large-scale cellular and spatial census of human cortical gene programs”. Its
+README defines the adopted P1–P54 program mapping, the single-task 100-start
+cNMF public route, the fixed-H and spatial-score semantics, the environment
+lanes and the boundaries of the recoverable historical source.
+
+The numbered directories below are retained historical project stages. They
+include earlier cross-species work and are not the entry point for the current
+human-only manuscript.
+
 ## Methods stages
 
 - `00_setup_and_inputs`: source data preparation.
