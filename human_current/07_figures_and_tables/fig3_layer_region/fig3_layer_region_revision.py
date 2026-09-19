@@ -38,6 +38,81 @@ SCALE = "fixed_global_program_z_of_SCT_corrected_count_projection"
 DIST_PATH = OUT / "layer_bin_distributions.tsv"
 PROFILE_PATH = OUT / "layer_region_profiles.tsv"
 CONTRAST_PATH = OUT / "fig3_local_donor_contrasts.tsv"
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+
+
+def display_labels_only():
+    """Relabel only visible subclass strings in the retained native Fig3 PDF."""
+    import fitz
+    path = PROJECT_ROOT / "source_figure_pdfs/main_figures_pdf/Fig3.pdf"
+    replacements = {
+        "L2/3 IT": "L2-L3 IT", "L2 / 3 IT": "L2-L3 IT",
+        "L3/4 IT": "L3-L4 IT", "L3 / 4 IT": "L3-L4 IT",
+        "L4/5 IT": "L4-L5 IT", "L4 / 5 IT": "L4-L5 IT",
+        "L6b": "L6B", "Ref. L3/4 IT": "Ref. L3-L4 IT",
+        "Ref. L3 / 4 IT": "Ref. L3-L4 IT",
+    }
+    doc = fitz.open(path)
+    page = doc[0]
+    pending = []
+    # A previous native relabel can leave the two adjacent labels in one text
+    # span (e.g. ``L3-L4 ITL4-L5 IT``). Replace that complete label strip once,
+    # at the original baselines, rather than stacking another text layer.
+    strip_pending = False
+    strip_rect = None
+    strip_origin = None
+    strip_size = 7.0
+    strip_color = (0.10, 0.10, 0.10)
+    for block in page.get_text("dict").get("blocks", []):
+        if block.get("type") != 0:
+            continue
+        for line in block.get("lines", []):
+            line_text = "".join(span.get("text", "") for span in line.get("spans", []))
+            if ("L3-L4 ITL4-L5 IT" in line_text or
+                    "L3-L4 IT L4-L5 IT" in line_text or
+                    "L3/4 ITL4/5 IT" in line_text):
+                spans = line.get("spans", [])
+                if spans:
+                    strip_pending = True
+                    strip_rect = fitz.Rect(line["bbox"])
+                    strip_origin = tuple(spans[0]["origin"])
+                    strip_size = float(spans[0]["size"])
+                    c = int(spans[0].get("color", 0x1A1A1A))
+                    strip_color = ((c >> 16 & 255) / 255,
+                                   (c >> 8 & 255) / 255,
+                                   (c & 255) / 255)
+                continue
+            for span in line.get("spans", []):
+                text = span.get("text", "")
+                if text in replacements:
+                    pending.append((span, replacements[text]))
+    if strip_pending:
+        page.add_redact_annot(strip_rect, fill=(1, 1, 1), cross_out=False)
+    for span, _ in pending:
+        page.add_redact_annot(fitz.Rect(span["bbox"]), fill=(1, 1, 1), cross_out=False)
+    if strip_pending or pending:
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=0, text=0)
+        if strip_pending:
+            x0 = strip_origin[0]
+            y = strip_origin[1]
+            font = fitz.Font(fontname="helv")
+            for text in ("L2-L3 IT", "L3-L4 IT", "L4-L5 IT"):
+                page.insert_text((x0, y), text, fontname="helv", fontsize=strip_size,
+                                 color=strip_color, overlay=True)
+                x0 += font.text_length(text, fontsize=strip_size) + 3.64
+        for span, new_text in pending:
+            page.insert_text(
+                fitz.Point(span["origin"]), new_text, fontname="helv",
+                fontsize=float(span["size"]), color=(0.10, 0.10, 0.10), overlay=True,
+            )
+    payload = doc.tobytes(garbage=4, deflate=True)
+    doc.close()
+    path.write_bytes(payload)
+    rendered = fitz.open(stream=payload, filetype="pdf")
+    rendered[0].get_pixmap(dpi=300, alpha=False).save(
+        PROJECT_ROOT / "figures_png/main_figures/Fig3.png"
+    )
+    rendered.close()
 
 
 def inputs():
@@ -187,8 +262,8 @@ def render(ann, ids, distributions, profiles, local_significance=False):
                       "L6 IT", "L6 CT", "L6B", "L6 CAR3", "ET", "NP",
                       "PVALB", "SST", "VIP", "LAMP5", "NDNF", "PAX6",
                       "CHANDELIER", "AST", "MICRO", "OLIGO", "OPC", "ENDO", "VLMC"]
-    subclass_short = {"L2-L3 IT LINC00507": "L2/3 IT", "L3-L4 IT RORB": "L3/4 IT",
-                      "L4-L5 IT RORB": "L4/5 IT", "L6B": "L6b",
+    subclass_short = {"L2-L3 IT LINC00507": "L2-L3 IT", "L3-L4 IT RORB": "L3-L4 IT",
+                      "L4-L5 IT RORB": "L4-L5 IT", "L6B": "L6B",
                       "CHANDELIER": "Chandelier", "AST": "Ast", "MICRO": "Micro",
                       "OLIGO": "Oligo", "ENDO": "Endo"}
     old_ct = ["AST", "CHANDELIER", "ENDO", "ET", "L2-L3 IT LINC00507",
@@ -614,7 +689,7 @@ def render(ann, ids, distributions, profiles, local_significance=False):
     # Main d retains the principal P16 example unchanged.
     textmm(.4,158.8,"d",fontsize=9,fontweight="bold")
     textmm(6,159.2,"P16 Axon guidance / synaptic adhesion",fontsize=7.5,fontweight="bold")
-    textmm(105,159.3,"Ref. L3/4 IT",fontsize=7,color="#486E43")
+    textmm(105,159.3,"Ref. L3-L4 IT",fontsize=7,color="#486E43")
     case_headers(162.8);case_row("P16",168.9,19.1)
     spatial_key(191.2)
     main_handles=[Line2D([],[],color=DONOR_COLORS[d],marker=DONOR_MARKERS[d],
@@ -790,7 +865,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--render-only", action="store_true")
     parser.add_argument("--local-significance", action="store_true")
+    parser.add_argument("--display-labels-only", action="store_true")
     args = parser.parse_args()
+    if args.display_labels_only:
+        display_labels_only()
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     ann, ids = inputs()
     if args.local_significance:

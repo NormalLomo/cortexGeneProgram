@@ -11,7 +11,6 @@ ROOT=Path(__import__("os").environ["NMF_WORK_ROOT"])
 DATA=ROOT/'analysis/01_existing_regional_evidence'
 OUT=ROOT/'figures/human_revision/panels/fig2_donor_evidence'
 S3=ROOT/'inputs/current_six_figures/Supplementary_Tables_S1-S6.xlsx'
-OLD8=['P1','P3','P4','P6','P8','P9','P13','P33']
 
 def read(n):
     with (DATA/n).open() as h:return list(csv.DictReader(h,delimiter='\t'))
@@ -174,8 +173,7 @@ def main():
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':9,'axes.titlesize':11,'pdf.fonttype':42,'ps.fonttype':42})
     # Numeric P order avoids inventing a fresh significance-ranked subset.
     ids=['P'+str(i) for i in range(1,55)]
-    labs=[p+('*' if ann[p]['confidence']=='Lower confidence' else '')+
-          ('†' if p in OLD8 else '') for p in ids]
+    labs=[p+('*' if ann[p]['confidence']=='Lower confidence' else '') for p in ids]
     fig=plt.figure(figsize=(7.2,4.9));gs=fig.add_gridspec(1,4,width_ratios=[2.5,.55,2.5,.55],wspace=.35)
     for block in range(2):
         ax=fig.add_subplot(gs[block*2]);tab=fig.add_subplot(gs[block*2+1],sharey=ax)
@@ -186,27 +184,17 @@ def main():
             ax.scatter(float(r['partial_eta_sq']),j,s=14,color='#2166ac' if q<.05 else '#999999',zorder=3)
             for k,col in enumerate(['wild_rademacher_F_q_all54','wild_webb_F_q_all54']):
                 tab.scatter(k,j,s=22,marker='s',facecolor='#b46c2b' if float(r[col])<.05 else '#e6e6e6',edgecolor='none')
-        ax.set_yticks(range(27));ax.set_yticklabels([p+('*' if ann[p]['confidence']=='Lower confidence' else '')+('†' if p in OLD8 else '') for p in group],fontsize=8)
+        ax.set_yticks(range(27));ax.set_yticklabels([p+('*' if ann[p]['confidence']=='Lower confidence' else '') for p in group],fontsize=8)
         ax.set_ylim(26.7,-.8);ax.set_xlim(0,1);ax.set_xticks([0,.5,1]);ax.tick_params(labelsize=8);ax.set_xlabel('Partial eta²',fontsize=9);style(ax)
         tab.set_xlim(-.6,1.6);tab.set_xticks([0,1]);tab.set_xticklabels(['R','W'],fontsize=8);tab.xaxis.tick_top();tab.tick_params(left=False,labelleft=False,bottom=False);tab.set_title('Sens.',fontsize=8,pad=8)
         for sp in tab.spines.values():sp.set_visible(False)
     fig.subplots_adjust(left=.075,right=.99,bottom=.22,top=.9)
     fig.text(.04,.055,'Blue: primary permutation q < 0.05. Brown: sensitivity q < 0.05 (R: Rademacher; W: Webb).',fontsize=7.5)
-    fig.text(.04,.018,'Gray ranges: donor-LOO, not CI. Exact q values: Table S4. † Historical eight; * lower annotation confidence.',fontsize=7.1)
+    fig.text(.04,.018,'Gray ranges: donor-LOO, not CI. Exact q values: Table S4. * lower annotation confidence.',fontsize=7.1)
     save(fig,'Fig2_all54_effects')
-    regions=sorted({r['region'] for r in profiles});pr={(r['program'],r['region']):float(r['standardized_effect']) for r in profiles}
-    m=np.array([[pr[p,r] for r in regions] for p in OLD8])
-    fig,ax=plt.subplots(figsize=(3.9,2.55));im=ax.imshow(m,cmap='RdBu_r',aspect='auto',vmin=-4,vmax=4)
-    ax.set_xticks(range(len(regions)));ax.set_xticklabels(regions,rotation=55,ha='right',fontsize=8)
-    ax.set_yticks(range(8));ax.set_yticklabels([p+('*' if ann[p]['confidence']=='Lower confidence' else '') for p in OLD8],fontsize=8)
-    ax.set_title('Historical eight: adjusted profiles',loc='left',fontsize=9)
-    fig.colorbar(im,ax=ax,fraction=.024,pad=.03,label='Standardized regional effect')
-    fig.text(.02,.005,'Descriptive historical subset; not the final 25.',fontsize=7)
-    fig.tight_layout(rect=[0,.045,1,1]);save(fig,'Fig2_original8_profiles')
     donors=sorted({r['donor'] for r in raw});cols=plt.get_cmap('tab10').colors;dc={d:cols[i%10] for i,d in enumerate(donors)}
     import sys
     selected=[(['P3','P9'],'Fig2_donor_examples')]
-    if '--main-panels-only' not in sys.argv:selected.append((OLD8,'Fig2_all_original8_donor_points'))
     for chosen,stem in selected:
         nr,nc=(2,1) if len(chosen)==2 else (4,2)
         fig,axes=plt.subplots(nr,nc,figsize=(3.9 if nc==1 else 9,2.25*nr),squeeze=False)
@@ -221,7 +209,6 @@ def main():
             ax.set_xlim(-.7,len(regions)-.3);style(ax)
         handles,labels=axes.flat[0].get_legend_handles_labels();fig.legend(handles,labels,loc='lower center',ncol=5,frameon=False,fontsize=7)
         fig.tight_layout(rect=[0,.085 if nr==1 else .035,1,1]);save(fig,stem)
-    if '--main-panels-only' in sys.argv:return
     # Reuse the exact retained per-omission direction values, without recomputing.
     ld={(r['program'],r['omitted_donor']):float(r['centered_region_direction_agreement']) for r in loo}
     fig,ax=plt.subplots(figsize=(5.5,10.2));im=ax.imshow([[ld[p,d] for d in donors] for p in ids],aspect='auto',vmin=0,vmax=1,cmap='viridis')

@@ -5,8 +5,8 @@ Saved as the actual production logic; NOT executed in the 2026-09-08 revision.
 The primary association is the within-donor permutation F test (exchangeability
 of regional observations within donor is assumed). Ordinary blocked F/p and
 partial eta-squared are model summaries. Wild bootstrap and donor LOO are
-sensitivity analyses. BH across TARGET8 is explicitly post-selection, not an
-independent confirmatory family. LOO ranges are influence summaries, not CIs.
+sensitivity analyses across the complete retained P1-P54 repertoire. LOO
+ranges are influence summaries, not CIs.
 No CR omnibus, spatial analysis, or additional diagnostic artifacts are created.
 """
 from __future__ import annotations
@@ -22,7 +22,6 @@ import statsmodels.formula.api as smf
 from statsmodels.stats.multitest import multipletests
 
 PROGRAMS = [f"P{i}" for i in range(1, 55)]
-TARGET8 = ["P1", "P3", "P4", "P6", "P8", "P9", "P13", "P33"]
 RNG_SEED = 20260802
 WEBB_REPLICATES = 99_999
 PERMUTATION_REPLICATES = 99_999
@@ -268,11 +267,8 @@ def main():
     robust["donor_block_permutation_F_p"] = perm_p
     robust["donor_block_permutation_exceedances"] = exceed
     robust["donor_block_permutation_draws"] = PERMUTATION_REPLICATES
-    target = robust["program"].isin(TARGET8)
     for prefix in ["wild_rademacher_F", "wild_webb_F", "donor_block_permutation_F"]:
         robust[prefix + "_q_all54"] = bh(robust[prefix + "_p"])
-        robust[prefix + "_q_target8"] = np.nan
-        robust.loc[target, prefix + "_q_target8"] = bh(robust.loc[target, prefix + "_p"])
         robust[prefix + "_df_num"] = int(design["df_num"])
         robust[prefix + "_df_denom_reference"] = int(design["df_denom"])
     loo, summary = leave_one_donor_out(donor)

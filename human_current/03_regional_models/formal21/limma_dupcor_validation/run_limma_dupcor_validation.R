@@ -11,7 +11,6 @@ dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 suppressPackageStartupMessages(library(limma))
 
 programs <- paste0("P", seq_len(54L))
-old8 <- c("P1", "P3", "P4", "P6", "P8", "P9", "P13", "P33")
 input_path <- file.path(root, "output", "donor_region_means.tsv")
 metadata_path <- paste0(Sys.getenv("CORTEX_PROGRAM_ROOT"), "/inputs/snRNA_1M_obs.csv")
 name_path <- file.path(root, "scripts", "program_names.tsv")
@@ -135,4 +134,3 @@ if (file.exists(name_path)) {
 results <- results[order(as.integer(sub("P", "", results$program))), , drop = FALSE]
 
 write.table(results, file.path(output_dir, "all_54_limma_dupcor.tsv"), sep = "\t", quote = FALSE, row.names = FALSE, na = "")
-write.table(results[results$program %in% old8, , drop = FALSE], file.path(output_dir, "old8_summary.tsv"), sep = "\t", quote = FALSE, row.names = FALSE, na = "")

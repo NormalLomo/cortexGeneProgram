@@ -8,7 +8,7 @@
 - 公开交付的 cNMF 主路线为 `public_n100`，在一次任务中对每个候选 K 分别进行 **100 次独立初始化**。100 是初始化次数，不是一次优化的迭代步数。论文既有共识来自分两批完成的 80+20 次运行，原 80 次结果保存在另一台机器，本次不迁移，也不作为公开入口的运行依赖。`historical_n20` 保留历史 20 次支线供来源追溯，不是公开主入口。现存 K60 权重/usage 仍是现稿下游分析的固定输入。
 - 最早可追踪的实际发现入口是已合并 `3_SnRNA_seurat_merged_1m_Cells.RDS`。源论文原始文件到该 RDS 的 QC/合并 producer 尚未定位。单次任务 100 次初始化的代码路线与历史 80+20 的原运行记录分别说明，本次没有执行新的发现任务，也不声称已从公共原始文件完整复现论文。
 - `07_figures_and_tables/fig3_layer_region` 已同步当前 Fig3 的局部统计源与无 b 黑框绘图入口；两页 FigS10 的绘图分支仍保留。固定九 panel PDF 是输入资产，**不是当前主图仍有九个 panel**。本次仅整理代码，未重新拟合统计或生产图件。
-- 不包含跨物种、129 程序、NetRep、全文 STARCAT/cortexCAT 重算、benchmark 模型训练。外部打分中的 fixed-H 内核原位于 cortexCAT，是实际依赖，不是上述被取消的流程。
+- 不包含跨物种、129 程序、NetRep、全文跨数据集注释重算、benchmark 模型训练。外部打分使用随包提供的 fixed-H NMF scorer 与 reference-scoring implementation，不依赖未随包提供的外部运行时。
 
 ## 路径与依赖
 
@@ -71,7 +71,7 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 三方法在总体/亚类两层先写各自原有结果文件；`scripts/analysis/integrate_regional_donor_models.R <root>` 直接读取这些原输出，按下游接口导出不改变内容的六表 `results/crossregion_v2/{overall,subclass}_{nature_lmm,limma_dupcor,dream}.tsv`，再写 `program_method_matrix.tsv` 和 `regional_consensus_21.tsv`；其交集不使用目标8校正。`release_candidate/scripts/build/build_table_s4.py` 读取 `FORMAL21_PROJECT_ROOT` 生成现有表格格式。亚类limma使用 `FORMAL21_MODEL_ROOT`（或 `LIMMA_DUCPOR_SOURCE_ROOT`）；默认写该工作根下原methods子目录，不再向代码目录写研究结果。
 
-`HUMAN_VALIDATION_run_analysis.py --root --outdir --chip-donor-lookup` 保留原单核/空间附加分析；空间聚合是 chip×domain **均值**和原加性 GEE，不是新的 region×layer 交互。`01_regional_donor_analysis.py --input --outdir` 保留原 donor robustness：Rademacher 全信息 donor 符号枚举、permutation/Webb 各99,999；现稿使用 `q_all54`，`q_target8` 只是原目标8的另一字段。
+`HUMAN_VALIDATION_run_analysis.py --root --outdir --chip-donor-lookup` 保留原单核/空间附加分析；空间聚合是 chip×domain **均值**和原加性 GEE，不是新的 region×layer 交互。`01_regional_donor_analysis.py --input --outdir` 保留原 donor robustness：Rademacher 全信息 donor 符号枚举、permutation/Webb 各99,999；现稿使用完整 P1–P54 家族的 `q_all54`。
 
 ### 4. 空间 counts → SCT 分数 → 层与局部关系
 
@@ -89,7 +89,7 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 ### 5. 外部数据 → 固定参考活动
 
-`05_external_scores/05_external_single_cell_score_correlation.py` 调用同目录、已随包提供的 `gep_score.py` 中的 `score_counts_fixed_h`；该内核再使用同目录的 `contracts.py`。因此本入口**无需另行安装完整 cortexCAT**：cortexCAT 是内核可追溯的原始来源，而非此处尚未打包的私有运行时模块。运行仍需 NumPy、SciPy、PyTorch/CUDA 及本节和“路径与依赖”中列明的其它依赖，并须提供既有固定参考、profile、表达数据和标签映射输入。随包代码采用本目录 `LICENSE` 所列 MIT 许可证；第三方原始数据仍遵循来源条款。原始输入的具体 `.X`/raw选择、疾病标签、library RDS及crosswalk路径仍由该脚本按研究定义，**不得一律转成发现集SCT**。
+`05_external_scores/05_external_single_cell_score_correlation.py` 调用同目录、已随包提供的 `gep_score.py` 中的 `score_counts_fixed_h`；该内核再使用同目录的 `contracts.py`。因此本入口使用随包固定-H NMF scorer/reference scoring implementation，不需要未随包提供的外部运行时。运行仍需 NumPy、SciPy、PyTorch/CUDA 及本节和“路径与依赖”中列明的其它依赖，并须提供既有固定参考、profile、表达数据和标签映射输入。随包代码采用本目录 `LICENSE` 所列 MIT 许可证；第三方原始数据仍遵循来源条款。原始输入的具体 `.X`/raw选择、疾病标签、library RDS及crosswalk路径仍由该脚本按研究定义，**不得一律转成发现集SCT**。
 
 共享基因、重复符号求和，study级ddof=0 SD，零SD贡献置零；固定60谱，非负乘法更新，max_iter1000/tol1e-4、每10步判断改善；先60归一化再取54。nearest-reference再L2并搜索全参考，不按真实标签限制。SEAAD source adapter只读RDS，不进行scANVI训练。
 

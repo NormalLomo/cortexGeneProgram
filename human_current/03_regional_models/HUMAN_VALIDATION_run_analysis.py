@@ -26,16 +26,13 @@ import pandas as pd
 import pyarrow.parquet as pq
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from matplotlib.backends.backend_pdf import PdfPages
 from patsy import dmatrix
-from scipy.stats import pearsonr, spearmanr
 from statsmodels.genmod.cov_struct import Independence
 from statsmodels.genmod.families import Gaussian
 from statsmodels.stats.anova import anova_lm
 from statsmodels.stats.multitest import multipletests
 
 
-CORE_PROGRAMS = ["P1", "P3", "P4", "P6", "P8", "P9", "P13", "P33"]
 PREFIX = "HUMAN_VALIDATION_"
 BOOTSTRAPS = 1000
 RNG_SEED = 20260802
@@ -66,14 +63,6 @@ def zscore(values: np.ndarray) -> np.ndarray:
     if not np.isfinite(std) or std == 0:
         return np.zeros_like(values, dtype=float)
     return (values - np.nanmean(values)) / std
-
-
-def correlation_value(result: object) -> float:
-    if hasattr(result, "statistic"):
-        return float(getattr(result, "statistic"))
-    if hasattr(result, "correlation"):
-        return float(getattr(result, "correlation"))
-    raise TypeError(f"unsupported correlation result type: {type(result)!r}")
 
 
 def build_locked_mapping(mapping: pd.DataFrame) -> pd.DataFrame:
@@ -422,156 +411,6 @@ def run_spatial_models(
     return effects, pd.concat(region_profiles, ignore_index=True), pd.concat(layer_profiles, ignore_index=True), chip_adjusted, use_donor
 
 
-def cluster_bootstrap_concordance(
-    human_adjusted: pd.DataFrame,
-    spatial_adjusted: pd.DataFrame,
-    programs: list[str],
-    regions: list[str],
-    replicates: int,
-) -> pd.DataFrame:
-    rng = np.random.default_rng(RNG_SEED)
-    human = human_adjusted.loc[human_adjusted.region.isin(regions)].copy()
-    spatial = spatial_adjusted.loc[spatial_adjusted.region.isin(regions)].copy()
-    human_by_region = {region: human.loc[human.region.eq(region)] for region in regions}
-    spatial_by_region = {region: spatial.loc[spatial.region.eq(region)] for region in regions}
-    if any(len(human_by_region[region]) == 0 for region in regions):
-        raise ValueError("cross-modal bootstrap received a region without a donor-region unit")
-    if any(len(spatial_by_region[region]) < 2 for region in regions):
-        raise ValueError("cross-modal bootstrap received a single-section inference region")
-    rows: list[dict[str, object]] = []
-    for replicate in range(replicates):
-        human_values: dict[str, np.ndarray] = {}
-        spatial_values: dict[str, np.ndarray] = {}
-        for region in regions:
-            human_frame = human_by_region[region]
-            human_index = rng.integers(0, len(human_frame), size=len(human_frame))
-            human_values[region] = human_frame.iloc[human_index][programs].mean(axis=0).to_numpy(dtype=float)
-            spatial_frame = spatial_by_region[region]
-            spatial_index = rng.integers(0, len(spatial_frame), size=len(spatial_frame))
-            spatial_values[region] = spatial_frame.iloc[spatial_index][programs].mean(axis=0).to_numpy(dtype=float)
-        h_profile = pd.DataFrame.from_dict(human_values, orient="index", columns=programs).reindex(regions)
-        s_profile = pd.DataFrame.from_dict(spatial_values, orient="index", columns=programs).reindex(regions)
-        for program in programs:
-            hv = zscore(h_profile[program].to_numpy(dtype=float))
-            sv = zscore(s_profile[program].to_numpy(dtype=float))
-            rows.append(
-                {
-                    "program": program,
-                    "replicate": replicate,
-                    "pearson_r": correlation_value(pearsonr(hv, sv)),
-                    "spearman_rho": correlation_value(spearmanr(hv, sv)),
-                    "n_common_regions": len(regions),
-                }
-            )
-    return pd.DataFrame(rows)
-
-
-def summarize_concordance(
-    snrna_profiles: pd.DataFrame,
-    spatial_profiles: pd.DataFrame,
-    bootstrap: pd.DataFrame,
-    programs: list[str],
-) -> pd.DataFrame:
-    regions = sorted(set(snrna_profiles.region).intersection(spatial_profiles.region))
-    rows: list[dict[str, object]] = []
-    for program in programs:
-        human = snrna_profiles.loc[snrna_profiles.program.eq(program)].set_index("region").reindex(regions)
-        spatial = spatial_profiles.loc[spatial_profiles.program.eq(program)].set_index("region").reindex(regions)
-        h = human.standardized_effect.to_numpy(dtype=float)
-        s = spatial.standardized_effect.to_numpy(dtype=float)
-        draw = bootstrap.loc[bootstrap.program.eq(program)]
-        rows.append(
-            {
-                "program": program,
-                "n_common_regions": len(regions),
-                "pearson_r_standardized_profile": correlation_value(pearsonr(h, s)),
-                "spearman_rho_standardized_profile": correlation_value(spearmanr(h, s)),
-                "bootstrap_pearson_ci_lo": float(draw.pearson_r.quantile(0.025)),
-                "bootstrap_pearson_ci_hi": float(draw.pearson_r.quantile(0.975)),
-                "bootstrap_pearson_positive_fraction": float((draw.pearson_r > 0).mean()),
-                "bootstrap_scheme": "region_stratified_donor_region_resampling_for_snRNA_and_region_stratified_section_resampling_for_spatial",
-                "interpretation": "descriptive_cross_modality_profile_concordance_no_null_p_value",
-            }
-        )
-    return pd.DataFrame(rows)
-
-
-def render_panel_candidate(
-    outdir: Path,
-    snrna_profiles: pd.DataFrame,
-    spatial_profiles: pd.DataFrame,
-    layer_profiles: pd.DataFrame,
-    concordance: pd.DataFrame,
-    mapping: pd.DataFrame,
-) -> None:
-    program_labels = []
-    for program in CORE_PROGRAMS:
-        raw = int(mapping.loc[mapping.display_program.eq(program), "raw_component"].iat[0])
-        program_labels.append(f"{program} (raw {raw})")
-    human_regions = sorted(snrna_profiles.region.unique())
-    spatial_regions = sorted(spatial_profiles.region.unique())
-    layers = sorted(layer_profiles.majorDomain.unique())
-    human_matrix = np.vstack([
-        snrna_profiles.loc[snrna_profiles.program.eq(program)].set_index("region").reindex(human_regions).standardized_effect.to_numpy()
-        for program in CORE_PROGRAMS
-    ])
-    spatial_matrix = np.vstack([
-        spatial_profiles.loc[spatial_profiles.program.eq(program)].set_index("region").reindex(spatial_regions).standardized_effect.to_numpy()
-        for program in CORE_PROGRAMS
-    ])
-    layer_matrix = np.vstack([
-        layer_profiles.loc[layer_profiles.program.eq(program)].set_index("majorDomain").reindex(layers).standardized_effect.to_numpy()
-        for program in CORE_PROGRAMS
-    ])
-    corr = concordance.set_index("program").reindex(CORE_PROGRAMS)
-
-    fig = plt.figure(figsize=(16.0, 9.2), constrained_layout=True)
-    grid = fig.add_gridspec(2, 2, height_ratios=[1.0, 0.86])
-    axes = [fig.add_subplot(grid[0, 0]), fig.add_subplot(grid[0, 1]), fig.add_subplot(grid[1, 0]), fig.add_subplot(grid[1, 1])]
-    cmap = "coolwarm"
-    im1 = axes[0].imshow(human_matrix, aspect="auto", vmin=-2.2, vmax=2.2, cmap=cmap)
-    axes[0].set_title("snRNA-seq donor-adjusted region profiles")
-    axes[0].set_xticks(range(len(human_regions)), human_regions, rotation=45, ha="right", fontsize=8)
-    axes[0].set_yticks(range(len(CORE_PROGRAMS)), program_labels, fontsize=9)
-    fig.colorbar(im1, ax=axes[0], fraction=0.046, pad=0.04, label="standardized adjusted effect")
-
-    im2 = axes[1].imshow(spatial_matrix, aspect="auto", vmin=-2.2, vmax=2.2, cmap=cmap)
-    axes[1].set_title("Spatial section profiles, adjusted for layer and donor")
-    axes[1].set_xticks(range(len(spatial_regions)), spatial_regions, rotation=45, ha="right", fontsize=8)
-    axes[1].set_yticks(range(len(CORE_PROGRAMS)), program_labels, fontsize=9)
-    axes[1].text(0.0, -0.23, "Only regions with >=2 sections are shown; single-section regions remain display-only in tables.", transform=axes[1].transAxes, fontsize=8)
-    fig.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04, label="standardized adjusted effect")
-
-    im3 = axes[2].imshow(layer_matrix, aspect="auto", vmin=-2.2, vmax=2.2, cmap=cmap)
-    axes[2].set_title("Spatial laminar localization")
-    axes[2].set_xticks(range(len(layers)), layers, rotation=45, ha="right", fontsize=8)
-    axes[2].set_yticks(range(len(CORE_PROGRAMS)), program_labels, fontsize=9)
-    fig.colorbar(im3, ax=axes[2], fraction=0.046, pad=0.04, label="standardized adjusted effect")
-
-    y = np.arange(len(CORE_PROGRAMS))
-    point = corr.pearson_r_standardized_profile.to_numpy(dtype=float)
-    low = corr.bootstrap_pearson_ci_lo.to_numpy(dtype=float)
-    high = corr.bootstrap_pearson_ci_hi.to_numpy(dtype=float)
-    axes[3].errorbar(point, y, xerr=np.vstack([point - low, high - point]), fmt="o", color="#253746", ecolor="#6f8798", capsize=3)
-    axes[3].axvline(0, color="#555555", linewidth=0.8)
-    axes[3].set_xlim(-1.0, 1.0)
-    axes[3].set_yticks(y, program_labels, fontsize=9)
-    axes[3].invert_yaxis()
-    axes[3].set_xlabel("Pearson r of standardized regional profiles")
-    axes[3].set_title("Cross-modality profile concordance")
-    axes[3].grid(axis="x", color="#dddddd", linewidth=0.7)
-    axes[3].text(0.0, -0.18, "95% conditional cluster-bootstrap intervals; descriptive, no cross-modality null p-value.", transform=axes[3].transAxes, fontsize=8)
-
-    for axis in axes:
-        axis.tick_params(length=0)
-    png = outpath(outdir, "review_panel_candidate.png")
-    pdf = outpath(outdir, "review_panel_candidate.pdf")
-    fig.savefig(png, dpi=300, bbox_inches="tight")
-    with PdfPages(pdf) as pages:
-        pages.savefig(fig, bbox_inches="tight")
-    plt.close(fig)
-
-
 def write_methods(outdir: Path, spatial_donor_included: bool) -> None:
     text = f"""# Human donor-aware and spatial validation
 
@@ -582,7 +421,6 @@ def write_methods(outdir: Path, spatial_donor_included: bool) -> None:
 - The formal component map is read from `results/crossregion_v1/program_renumber_map.tsv`; it is not inferred from display order. P33 is raw component 37.
 - snRNA-seq primary model is `score ~ region + donor`. Batch/cohort is not added because it is exactly collinear with donor in this dataset. A subclass-conditioned, donor-region-clustered sensitivity analysis is reported separately.
 - Spatial primary model is a Gaussian GEE with robust chip-cluster covariance: `score ~ region + majorDomain {'+ donor' if spatial_donor_included else ''}`. Regions represented by one section are excluded from this inferential model and preserved only in display-oriented tables.
-- Cross-modality comparison uses standardized adjusted regional profiles, never absolute score magnitudes. Because donor-region coverage is incomplete, the bootstrap resamples donor-region units within region and spatial sections within region. It supplies descriptive interval estimates, not a causal or homologous-area claim.
 """
     outpath(outdir, "methods_and_evidence_boundary.md").write_text(text)
 
@@ -596,8 +434,6 @@ def main() -> None:
     map_path = crossregion / "program_renumber_map.tsv"
     mapping_source = pd.read_csv(map_path, sep="\t")
     mapping = build_locked_mapping(mapping_source)
-    if set(CORE_PROGRAMS).difference(mapping.display_program):
-        raise ValueError("core program set is absent from formal retained mapping")
     mapping.to_csv(outpath(outdir, "component_mapping_locked.tsv"), sep="\t", index=False)
 
     donor_region, subclass, snrna_obs = load_snrna_pseudobulk(root, mapping)
@@ -609,39 +445,21 @@ def main() -> None:
         raise ValueError("snRNA donor-adjusted region model is not identifiable")
     if int(snrna_design[1]["matrix_rank"]) != int(snrna_design[0]["matrix_rank"]):
         raise ValueError("unexpected batch contribution beyond donor; inspect cohort structure")
-    snrna_effects, snrna_profiles, subclass_sensitivity, human_adjusted = run_snrna_models(donor_region, subclass, mapping)
+    snrna_effects, snrna_profiles, subclass_sensitivity, _ = run_snrna_models(donor_region, subclass, mapping)
     donor_region.to_csv(outpath(outdir, "snrna_donor_region_pseudobulk_all54.tsv"), sep="\t", index=False)
     snrna_effects.to_csv(outpath(outdir, "snrna_all54_donor_adjusted_region_effects.tsv"), sep="\t", index=False)
     snrna_profiles.to_csv(outpath(outdir, "snrna_all54_donor_adjusted_region_profiles.tsv"), sep="\t", index=False)
     subclass_sensitivity.to_csv(outpath(outdir, "snrna_all54_subclass_conditioned_sensitivity.tsv"), sep="\t", index=False)
 
     section_layer, spatial_counts = aggregate_spatial_sections(root, mapping, args.chip_donor_lookup.resolve())
-    spatial_effects, spatial_profiles, layer_profiles, spatial_adjusted, spatial_donor_included = run_spatial_models(section_layer, mapping)
+    spatial_effects, spatial_profiles, layer_profiles, _, spatial_donor_included = run_spatial_models(section_layer, mapping)
     section_layer.to_csv(outpath(outdir, "spatial_section_by_layer_aggregates_all54.tsv"), sep="\t", index=False)
     spatial_counts.to_csv(outpath(outdir, "spatial_section_support_by_region.tsv"), sep="\t", index=False)
     spatial_effects.to_csv(outpath(outdir, "spatial_all54_region_and_layer_effects.tsv"), sep="\t", index=False)
     spatial_profiles.to_csv(outpath(outdir, "spatial_all54_region_profiles.tsv"), sep="\t", index=False)
     layer_profiles.to_csv(outpath(outdir, "spatial_all54_layer_profiles.tsv"), sep="\t", index=False)
 
-    common_regions = sorted(set(snrna_profiles.region).intersection(spatial_profiles.region))
-    if len(common_regions) < 3:
-        raise ValueError("fewer than three common inferential regions for profile comparison")
-    bootstrap = cluster_bootstrap_concordance(
-        human_adjusted, spatial_adjusted, CORE_PROGRAMS, common_regions, args.bootstrap_replicates
-    )
-    concordance = summarize_concordance(snrna_profiles, spatial_profiles, bootstrap, CORE_PROGRAMS)
-    bootstrap.to_csv(outpath(outdir, "cross_modal_8program_cluster_bootstrap.tsv"), sep="\t", index=False)
-    concordance.to_csv(outpath(outdir, "cross_modal_8program_profile_concordance.tsv"), sep="\t", index=False)
-
-    targets = mapping.loc[mapping.display_program.isin(CORE_PROGRAMS), ["display_program", "raw_component", "functional_name", "class"]].copy()
-    targets = targets.rename(columns={"display_program": "program"})
-    targets["core_eight_axis"] = True
-    targets["P33_mapping_note"] = np.where(targets.program.eq("P33"), "P33 is formally mapped from raw component 37", "")
-    targets = targets.merge(snrna_effects[["program", "F_region", "p_region", "p_region_bh_fdr", "partial_eta_sq"]], on="program", how="left")
-    targets = targets.merge(spatial_effects[["program", "region_wald_chi2", "region_p", "region_p_bh_fdr", "layer_wald_chi2", "layer_p_bh_fdr"]], on="program", how="left")
-    targets = targets.merge(concordance, on="program", how="left")
-    targets.to_csv(outpath(outdir, "target8_evidence_summary.tsv"), sep="\t", index=False)
-    render_panel_candidate(outdir, snrna_profiles, spatial_profiles, layer_profiles, concordance, mapping)
+    write_methods(outdir, spatial_donor_included)
 
 
 

@@ -16,7 +16,6 @@ input_path <- file.path(root, "output", "donor_region_means.tsv")
 metadata_path <- paste0(Sys.getenv("CORTEX_PROGRAM_ROOT"), "/inputs/snRNA_1M_obs.csv")
 name_path <- file.path(root, "scripts", "program_names.tsv")
 programs <- paste0("P", seq_len(54L))
-old8 <- c("P1", "P3", "P4", "P6", "P8", "P9", "P13", "P33")
 formula_text <- "~ region + age + sex + (1 | donor)"
 response_scale_factor <- 1000
 
@@ -110,4 +109,3 @@ if (anyNA(joint[, key_columns, drop = FALSE])) stop("Final result contains NA in
 if (n_model_errors != 0L) stop("At least one dream model retained an error")
 
 write.table(joint, file.path(out_dir, "all_54_dream.tsv"), sep = "\t", quote = FALSE, row.names = FALSE, na = "")
-write.table(joint[joint$program %in% old8, , drop = FALSE], file.path(out_dir, "old8_summary.tsv"), sep = "\t", quote = FALSE, row.names = FALSE, na = "")

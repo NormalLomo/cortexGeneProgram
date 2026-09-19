@@ -10,6 +10,7 @@ import argparse
 import csv
 
 ROOT = Path((__import__("os").environ["NMF_WORK_ROOT"] + ""))
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 OUT = ROOT / 'analysis/fig4_cross_cell_preferences'
 ANNOTATIONS = ROOT / 'tables/TableS3_program_annotation.tsv'
 RELATIONS = ROOT / 'tables/TableS6_between_chip_colocalization.tsv'
@@ -719,9 +720,9 @@ def draw_reorganized(records, base_pdf, compact_candidate=False):
     axc.tick_params(length=0,labelsize=5.05 if compact_candidate else 5.6,pad=.7 if compact_candidate else 2)
     for spine in axc.spines.values():spine.set_visible(False)
     axc.legend(handles=[
-        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#2166AC',label='headline −'),
-        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#B2182B',label='headline +'),
-        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#CCCCCC',label='sub-threshold')],
+        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#2166AC',label='Negative'),
+        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#B2182B',label='Positive'),
+        Line2D([],[],marker='o',markersize=1.8,linestyle='',color='#CCCCCC',label='Below threshold')],
         loc='upper center',bbox_to_anchor=(.5,1.16 if compact_candidate else -.3045),ncol=3,frameon=False,
         fontsize=5.05 if compact_candidate else 5.2,handlelength=.8,columnspacing=.65 if compact_candidate else 1.0,borderaxespad=0)
     highlights=[
@@ -1270,13 +1271,95 @@ def draw_removed_supplement(base_pdf):
     print('RETAINED',png_path,flush=True)
     print('CONTENT a/b/c original b/c/d; d P30-VIP; e/f/g/h original f/g/h/i; i/j/k original j/k/l; l unchanged directed preference-to-target program counts; no duplicated consistency or intermediate profiles',flush=True)
 
+def display_labels_only():
+    """Relabel only the retained native Fig4 legend; no data are loaded."""
+    import fitz
+    path = PROJECT_ROOT / 'source_figure_pdfs/main_figures_pdf/Fig4_reorganized.pdf'
+    replacements = {
+        'headline −': 'Negative',
+        'headline +': 'Positive',
+        'Negative association': 'Negative',
+        'Positive association': 'Positive',
+        'sub-threshold': 'Below threshold',
+    }
+    doc = fitz.open(path)
+    page = doc[0]
+    pending = []
+    legend_lines = []
+    for block in page.get_text('dict').get('blocks', []):
+        if block.get('type') != 0:
+            continue
+        for line in block.get('lines', []):
+            line_text = ''.join(span.get('text', '') for span in line.get('spans', []))
+            if ('Positive associationBelow threshold' in line_text or
+                    'Positive association Below threshold' in line_text or
+                    any(key in line_text for key in ('headline −', 'headline +', 'sub-threshold'))):
+                legend_lines.append(line)
+                continue
+            for span in line.get('spans', []):
+                text = span.get('text', '')
+                if text in replacements:
+                    pending.append((span, replacements[text]))
+    if legend_lines:
+        spans = [span for line in legend_lines for span in line.get('spans', [])]
+        legend_rect = fitz.Rect(legend_lines[0]['bbox'])
+        for line in legend_lines[1:]:
+            legend_rect |= fitz.Rect(line['bbox'])
+        if spans:
+            baseline = float(spans[0]['origin'][1])
+            size = float(spans[0]['size'])
+            c = int(spans[0].get('color', 0x1A1A1A))
+            text_color = ((c >> 16 & 255) / 255, (c >> 8 & 255) / 255, (c & 255) / 255)
+        else:
+            baseline, size, text_color = 472.74, 5.2, (0.10, 0.10, 0.10)
+        page.add_redact_annot(legend_rect, fill=(1, 1, 1), cross_out=False)
+    else:
+        baseline = size = None
+        text_color = (0.10, 0.10, 0.10)
+    for span, _ in pending:
+        page.add_redact_annot(fitz.Rect(span['bbox']), fill=(1, 1, 1), cross_out=False)
+    if legend_lines or pending:
+        page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=0, text=0)
+        if legend_lines:
+            # Recover the three existing marker centers from the native legend;
+            # text is re-emitted at the original baseline with short labels.
+            centers = []
+            for drawing in page.get_drawings():
+                r = drawing['rect']; fill = drawing.get('fill')
+                if (fill is not None and 465 < r.y0 < 475 and r.width < 4 and r.height < 4):
+                    centers.append((r.x0 + r.x1) / 2)
+            centers = sorted(centers)[:3]
+            if len(centers) != 3:
+                centers = [337.43, 379.61, 421.78]
+            for center, label in zip(centers, ('Negative', 'Positive', 'Below threshold')):
+                page.insert_text((center + 6.24, baseline), label, fontname='helv',
+                                 fontsize=size, color=text_color, overlay=True)
+        for span, new_text in pending:
+            page.insert_text(
+                fitz.Point(span['origin']), new_text, fontname='helv',
+                fontsize=float(span['size']), color=(0.10, 0.10, 0.10), overlay=True,
+            )
+    payload = doc.tobytes(garbage=4, deflate=True)
+    doc.close()
+    path.write_bytes(payload)
+    rendered = fitz.open(stream=payload, filetype='pdf')
+    rendered[0].get_pixmap(dpi=300, alpha=False).save(
+        PROJECT_ROOT / 'figures_png/main_figures/Fig4_reorganized.png'
+    )
+    rendered.close()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--overview-only', action='store_true')
     parser.add_argument('--reorganized', action='store_true')
     parser.add_argument('--compact-candidate', action='store_true')
     parser.add_argument('--removed-supplement', action='store_true')
+    parser.add_argument('--display-labels-only', action='store_true')
     args = parser.parse_args()
+    if args.display_labels_only:
+        display_labels_only()
+        return
     if args.compact_candidate:
         import sys
         draw_reorganized(None, sys.stdin.buffer.read(),compact_candidate=True)

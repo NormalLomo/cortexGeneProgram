@@ -5,8 +5,7 @@ Latest targeted mapping: Fig1 a/b/c retained, old e -> d; rank plot remains S1. 
 
 Prior mapping (for source identification):
 Fig1 a=new human workflow; b=old1b text repair; c=old1c; d=S1a; e=S2c.
-Fig2 a=A all54 regional effects / q / LOO; b=A original8 adjusted profiles;
-     c=A P3/P9 donor-region observations. All old2a-i -> S11.
+Fig2 current native-cleaning and local repair actions only; no retired subset panels.
 Fig3 a=old3a; b=old3b; c=old3f; d=old3g; e=old3h (inclusive reference).
 Fig4 a=old4a text repair; b=old4b; c=old4d; d=old4c;
      e=old4e label repair; f=old4f V1 row + old4g overlays.
@@ -14,10 +13,8 @@ Fig5 a=old5a; b=old5b; c=old5g; d=old5h left section histogram ONLY;
      e=A P16 same-bin donor/LOO; f=A P16 0-500 donor/LOO.
      Old5h right pseudo-donor LOO is superseded, not relabelled or retained as evidence.
 Fig6 a=old6a; b=old6f; c=old6e; d=old6j (current6 is historical8).
-S1-S9 retained; S10=old1d/e/f; S11=old2a-i; S12=old3c/d/e/i;
-S13=old4f/h/i; S14=old4j/k/l; S15=old5c/d/e/f; S16=old5i/j/k;
-S17=old6b/c/d/g/h/i; S18=original8 donor points; S19=all54 donor direction;
-S20=P16 per-section points + all44 section distance curves.
+Current figures and supplemental panels are produced by their dedicated current
+producers; this file contains only explicit native-PDF repair actions.
 """
 from pathlib import Path
 import fitz
@@ -375,260 +372,6 @@ def build_fig2_subclass_reorder():
     print("Produced", main_pdf, main_png, "successful Fig2 production 6", flush=True)
     for document in (combined, result, s11, support, old_bundle, old_s11, old_main):
         document.close()
-def build_fig2_legacy_heatmap():
-    """Final-size Fig2 composition; all scientific marks reuse the approved sources."""
-    import re
-    heatmap = fitz.open(PAN / "fig2_donor_evidence" / "Fig2_donor_adjusted_regional_heatmap.pdf")
-    examples = fitz.open(PAN / "fig2_donor_evidence" / "Fig2_donor_adjusted_examples.pdf")
-    old = fitz.open(SRC / "Fig2.pdf")
-    d = fitz.open()
-    p = d.new_page(width=547, height=729)
-    font = fitz.Font("helv")
-    source_drawings = old[0].get_drawings()
-    source_spans = []
-    for block in old[0].get_text("dict")["blocks"]:
-        if block.get("type") != 0:
-            continue
-        for line in block.get("lines", []):
-            for span in line.get("spans", []):
-                source_spans.append(span)
-
-    def put(x, y, label, size=6.5, bold=False, align="left", rotate=0, color=(.13,.15,.17)):
-        if rotate == 0:
-            width = fitz.get_text_length(label, fontname="hebo" if bold else "helv", fontsize=size)
-            if align == "center": x -= width/2
-            elif align == "right": x -= width
-        p.insert_text((x,y), label, fontsize=size, fontname="hebo" if bold else "helv",
-                      rotate=rotate, color=color)
-
-    def heading(letter, title, x, y):
-        put(x+3,y+15,letter,13,True,color=(0,0,0))
-        put(x+21,y+15,title,8,True)
-
-    # A/D have been drawn at their exact final footprints in the saved R producer.
-    p.show_pdf_page(fitz.Rect(8,8,539,248),heatmap,0,keep_proportion=True)
-    p.show_pdf_page(fitz.Rect(8,444,539,592),examples,0,keep_proportion=True)
-
-    # B retains every original arrow and its source functional annotation.
-    heading("b","Region similarity (program profile)",330,8)
-    bclip = fitz.Rect(385,225,547,359)
-    bslot = fitz.Rect(334,40,536,202)
-    scale = min(bslot.width/bclip.width,bslot.height/bclip.height)
-    bdest = fitz.Rect(bslot.x0+(bslot.width-bclip.width*scale)/2,
-                      bslot.y0+(bslot.height-bclip.height*scale)/2,
-                      bslot.x0+(bslot.width+bclip.width*scale)/2,
-                      bslot.y0+(bslot.height+bclip.height*scale)/2)
-    bcopy = fitz.open()
-    bcopy.insert_pdf(old)
-    bsource = bcopy[0]
-    b_text = []
-    for span in source_spans:
-        rect = fitz.Rect(span["bbox"])
-        if not rect.intersects(fitz.Rect(382,210,547,360)):
-            continue
-        label = span["text"].strip()
-        if rect.x0>=385 and rect.x1<=547 and 225<rect.y0<358:
-            b_text.append(span)
-    e_source_regions=[fitz.Rect(10,525,88,580),fitz.Rect(93,525,171,580),fitz.Rect(10,587.5,88,642)]
-    for rect in [fitz.Rect(382,210,547,360)]+e_source_regions:
-        bsource.add_redact_annot(rect,fill=False,cross_out=False)
-    bsource.apply_redactions(images=0,graphics=0)
-    bsource.draw_rect(fitz.Rect(510,320,547,347),color=None,fill=(1,1,1),overlay=True)
-    p.show_pdf_page(bdest,bcopy,0,clip=bclip,keep_proportion=True)
-    lobes = ["Occipital","Parietal","Temporal","Frontal/PFC","Limbic"]
-    region_set = {"V1","S1","S1E","PoCG","M1","STG","SPL","SMG","AG","ITG","VLPFC","DLPFC","FPPFC","ACC"}
-    color_by_region = {}
-    obstacles=[]
-    for drawing in source_drawings:
-        rect=fitz.Rect(drawing["rect"])
-        if bclip.contains(rect) and drawing.get("fill") is not None and 0<rect.width<5 and 0<rect.height<5:
-            obstacles.append(fitz.Rect(bdest.x0+(rect.x0-bclip.x0)*scale-2,
-                                       bdest.y0+(rect.y0-bclip.y0)*scale-2,
-                                       bdest.x0+(rect.x1-bclip.x0)*scale+2,
-                                       bdest.y0+(rect.y1-bclip.y0)*scale+2))
-    obstacles.append(fitz.Rect(470,152,537,199))
-    bounds=fitz.Rect(bdest.x0+4,bdest.y0+2,bdest.x1-3,bdest.y1-18)
-
-    def place_annotation(label, wanted, color, max_width):
-        words=label.split(); lines=[]; current=""
-        for word in words:
-            candidate=(current+" "+word).strip()
-            if current and font.text_length(candidate,fontsize=6.5)>max_width:
-                lines.append(current); current=word
-            else: current=candidate
-        lines.append(current)
-        width=max(font.text_length(line,fontsize=6.5) for line in lines)
-        height=len(lines)*8.5
-        candidates=[(wanted[0],wanted[1]-6.5)]
-        yy=bounds.y0
-        while yy+height<=bounds.y1:
-            xx=bounds.x0
-            while xx+width<=bounds.x1:
-                candidates.append((xx,yy)); xx+=4
-            yy+=4
-        best=None
-        for x,y in candidates:
-            rect=fitz.Rect(x-1,y-1,x+width+1,y+height+1)
-            if not bounds.contains(rect): continue
-            overlap=0.0
-            for obstacle in obstacles:
-                intersect=rect & obstacle
-                if not intersect.is_empty: overlap+=intersect.width*intersect.height
-            score=overlap*1000000+(x-wanted[0])**2+(y+6.5-wanted[1])**2
-            if best is None or score<best[0]: best=(score,x,y,rect)
-        _,x,y,rect=best
-        if abs(x-wanted[0])+abs(y+6.5-wanted[1])>8:
-            end=(min(max(wanted[0],rect.x0),rect.x1),min(max(wanted[1],rect.y0),rect.y1))
-            p.draw_line(wanted,end,color=color,width=.3,overlay=True)
-        for j,line in enumerate(lines): put(x,y+6.5+j*8.5,line,6.5,color=color)
-        obstacles.append(rect)
-
-    arrow_names=[]
-    for span in b_text:
-        label = span["text"].strip()
-        ox,oy = span["origin"]
-        x = bdest.x0+(ox-bclip.x0)*scale
-        y = bdest.y0+(oy-bclip.y0)*scale
-        value = span["color"]
-        color = ((value>>16&255)/255,(value>>8&255)/255,(value&255)/255)
-        if re.match(r"^P\d+\s",label) and span["bbox"][0]>=400:
-            arrow_names.append((label,(x,y),color))
-        elif label in region_set:
-            color_by_region[label]=color
-            place_annotation(label,(x,y),color,60)
-        elif label.startswith("PC1"):
-            put((bdest.x0+bdest.x1)/2,209,label,6.5,align="center")
-        elif label.startswith("PC2"):
-            put(334,136,label,6.5,rotate=90)
-        elif label in {"-4","0","4"}:
-            put(x,y,label,6.5,color=color)
-    for label,wanted,color in arrow_names:
-        place_annotation(label,wanted,color,88)
-    for i,(lobe,region) in enumerate(zip(lobes,["V1","S1","ITG","FPPFC","ACC"])):
-        yy=160+i*7.3
-        color=color_by_region[region]
-        p.draw_circle((477,yy-2.3),1.7,color=None,fill=color,overlay=True)
-        put(482,yy,lobe,6.5)
-
-    # C: the original 38 x 14 graphical matrix, enlarged without recomputation.
-    heading("c","Region–program similarity matrix (descriptive)",8,260)
-    matrix_short_ids = [
-        "P13","P6","P41","P46","P26","P14","P23","P49","P9","P1",
-        "P31","P15","P7","P20","P2","P16","P10","P22","P33","P40",
-        "P54","P39","P32","P50","P45","P12","P51","P42","P4","P52",
-        "P44","P35","P43","P5","P3","P21","P47","P34"
-    ]
-    source_stars=set()
-    for span in source_spans:
-        x0,y0,x1,y1=span["bbox"]
-        label=span["text"].strip()
-        match=re.match(r"^(P\d+)\s",label)
-        if match and 194<x0<363 and 510<y0<579 and "*" in label:
-            source_stars.add(match.group(1))
-    column_labels=[label+("*" if label in source_stars else "") for label in matrix_short_ids]
-    source_matrix=fitz.Rect(193,579,363,642)
-    matrix_x,matrix_y,matrix_w=46.0,280.0,465.0
-    matrix_h=138.0
-    matrix_rect=fitz.Rect(matrix_x,matrix_y,matrix_x+matrix_w,matrix_y+matrix_h)
-    p.show_pdf_page(matrix_rect,old,0,clip=source_matrix,keep_proportion=False)
-    regions=["V1","S1","S1E","PoCG","M1","STG","SPL","SMG","AG","ITG","VLPFC","DLPFC","FPPFC","ACC"]
-    for i,label in enumerate(regions):
-        center=matrix_y+(i+.5)*matrix_h/14
-        put(matrix_x-5,center+2.3,label,7,align="right")
-    for i,label in enumerate(column_labels):
-        label_y=matrix_rect.y1+4+font.text_length(label,fontsize=7)
-        xx=matrix_x+(i+.5)*matrix_w/38
-        p.draw_line((xx,matrix_rect.y1),(xx,matrix_rect.y1+2),color=(.3,.3,.3),width=.35)
-        put(xx+2.4,label_y,label,7,rotate=90)
-    put(521,matrix_y-5,"z-score",6.5)
-    bar_source=fitz.Rect(179.8,547.8,186.6,577.2)
-    bar_target=fitz.Rect(521,matrix_y,527,matrix_rect.y1)
-    p.show_pdf_page(bar_target,old,0,clip=bar_source,keep_proportion=False)
-    for span in source_spans:
-        x0,y0,x1,y1=span["bbox"]
-        label=span["text"].strip()
-        if 175<x0<179 and 545<y0<578 and label in {"-4","-2","0","2","4"}:
-            yy=bar_target.y0+((y0+y1)/2-bar_source.y0)/bar_source.height*bar_target.height
-            put(531,yy+2.3,label,6.5)
-
-    # E/F share both the title baseline and the actual data-frame top.
-    band_y=596.0
-    data_top=band_y+30.0
-    e_left=8.0
-    e_previous_width=327.0
-    e_width=e_previous_width*0.85
-    e_plot_width=(e_width-16.0-2*12.0-5.0)/3.0
-    e_first=e_left+16.0
-    e_step=e_plot_width+12.0
-    f_left=e_left+e_width+12.0
-    heading("e","Spotlight programs across regions",8,band_y)
-    heading("f","Program rank shifts across lobes",f_left,band_y)
-    e_labels=regions
-    facets=[
-        (fitz.Rect(10,525,88,580),e_first,["P13 Pos. reg.","cation channel"],
-         [("0.75",540.6),("0.50",553.6),("0.25",566.6),("0.00",579.7)]),
-        (fitz.Rect(93,525,171,580),e_first+e_step,["P6 Pos. reg.","secretion"],
-         [("0.6",530.1),("0.4",546.6),("0.2",563.2),("0.0",579.7)]),
-        (fitz.Rect(10,587.5,88,642),e_first+2*e_step,["P1 Reg. alt.","mRNA splicing"],
-         [("0.4",593.6),("0.3",605.5),("0.2",617.3),("0.1",629.2),("0.0",641.1)])
-    ]
-    for source,x,title_lines,ticks in facets:
-        width=e_plot_width
-        height=width*source.height/source.width
-        dest=fitz.Rect(x,data_top,x+width,data_top+height)
-        p.show_pdf_page(dest,bcopy,0,clip=source,keep_proportion=True)
-        put(x,band_y+25.0," ".join(title_lines),6.5)
-        for label,sy in ticks:
-            yy=dest.y0+(sy-source.y0)/source.height*dest.height
-            put(x-2,yy+1.8,label,6.5,align="right")
-        for j,label in enumerate(e_labels):
-            baseline=dest.y1+4+font.text_length(label,fontsize=6.5)
-            xx=x+2+j*(width-6)/13
-            put(xx+1.7,baseline,label,6.5,rotate=90)
-
-    # F redraws only text at final-size points; ribbons/node relationships stay source-bound.
-    flow_src=fitz.Rect(401,528,540,644)
-    flow_dest=fitz.Rect(f_left+31.0,data_top,535,data_top+84)
-    p.show_pdf_page(flow_dest,old,0,clip=flow_src,keep_proportion=False)
-    sx=flow_dest.width/flow_src.width; sy=flow_dest.height/flow_src.height
-    node_spans=[]
-    for span in source_spans:
-        x0,y0,x1,y1=span["bbox"]
-        label=span["text"].strip()
-        if re.fullmatch(r"P\d+",label) and flow_src.contains(fitz.Rect(span["bbox"])):
-            node_spans.append(span)
-    centers=[[] for _ in range(5)]
-    rank_ys=[]
-    for span in node_spans:
-        x0,y0,x1,y1=span["bbox"]
-        cx=(x0+x1)/2; cy=(y0+y1)/2
-        tx0=flow_dest.x0+(x0-flow_src.x0)*sx
-        tx1=flow_dest.x0+(x1-flow_src.x0)*sx
-        ty0=flow_dest.y0+(y0-flow_src.y0)*sy
-        ty1=flow_dest.y0+(y1-flow_src.y0)*sy
-        px=flow_dest.x0+(cx-flow_src.x0)*sx
-        py=flow_dest.y0+(cy-flow_src.y0)*sy
-        p.draw_rect(fitz.Rect(tx0-.6,ty0-.4,tx1+.6,ty1+.4),color=None,fill=(1,1,1),overlay=True)
-        put(px,py+2.3,span["text"].strip(),6.5,align="center",color=(.06,.06,.06))
-        col=max(0,min(4,round((cx-flow_src.x0)/flow_src.width*4)))
-        centers[col].append(px)
-        if col==0: rank_ys.append(py)
-    for i,yy in enumerate(sorted(rank_ys)):
-        put(flow_dest.x0-6,yy+2.3,f"rank {i+1}",6.5,align="right")
-    for group,label in zip(centers,lobes):
-        xx=sum(group)/len(group)
-        put(xx,flow_dest.y1+9.0,label,6.5,align="center")
-
-    finish_fig2(d)
-    bcopy.close()
-    heatmap.close()
-    examples.close()
-    old.close()
-
-FIG5_SANS = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
-FIG5_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
-
-
 def _fig5_old_source():
     d = fitz.open(SRC / 'Fig5.pdf')
     p = d[0]
@@ -912,67 +655,6 @@ def build_fig4_native():
     p.insert_text((12,831),'P7 weakening is retained.',
                   fontsize=7,fontname='helv',color=(.25,.28,.32))
     finish(d,'Fig4')
-
-def mainfigures():
-    d,p=newpage(600,845,'Figure 1 | Human program repertoire and internal stability')
-    place(p,'a','Human-only study workflow',(10,38,580,125),path=PAN/'fig1_human_workflow/Fig1_human_workflow.pdf')
-    place(p,'b','Program usage across subclasses',(10,177,320,635),path=PAN/'fig1b_label_repair/Fig1b.pdf')
-    place(p,'c','Program-usage embedding',(342,177,245,215),key='1c')
-    place(p,'d','Internal cNMF stability',(342,430,245,205),key='S2c')
-    p.insert_textbox(fitz.Rect(346,671,581,737),'Names, leading genes and annotation confidence: Table S3.\nRank sensitivity remains in Fig. S1.',fontsize=9)
-    p.insert_text((12,831),'Internal stability and rank sensitivity are not independent validation.',fontsize=9)
-    finish(d,'Fig1')
-    d,p=newpage(600,765,'Figure 2 | Donor-aware regional associations across all 54 programs')
-    place(p,'a','All 54: effect, primary association and sensitivity',(10,40,580,330),path=PAN/'fig2_donor_evidence/Fig2_all54_effects.pdf')
-    place(p,'b','Historical eight: regional profiles',(10,397,280,216),path=PAN/'fig2_donor_evidence/Fig2_original8_profiles.pdf')
-    place(p,'c','Observed donor-region values',(310,397,280,339),path=PAN/'fig2_donor_evidence/Fig2_donor_examples.pdf')
-    p.insert_text((12,753),'25 primary associations; all 54 remain displayed. No three-method intersection or new inference.',fontsize=8.5)
-    finish(d,'Fig2')
-    build_fig3()
-    build_fig4_native()
-    build_fig5()
-    build_fig6()
-
-def supplements():
-    original=fitz.open(SRC/'Supplementary_Figures.pdf')
-    for i in range(len(original)):
-        d=fitz.open();d.insert_pdf(original,from_page=i,to_page=i);finish(d,'FigS'+str(i+1),True)
-    d,p=newpage(820,935,'Figure S10 | Additional cellular program views')
-    place(p,'a','Canonical markers on the same embedding',(15,42,383,469),key='1d')
-    place(p,'b','Subclass program-sharing summary',(420,42,383,469),key='1e')
-    place(p,'c','Nuclear program co-activity network',(15,533,788,383),key='1f');finish(d,'FigS10',True)
-    d,p=newpage(1040,1810,'Figure S11 | Original nucleus-level regional screen and descriptive views')
-    place(p,'a','Full original 54-program regional matrix',(15,42,1010,425),key='2a')
-    for l,k,b in [('b','2b',(15,487,225,335)),('c','2c',(260,487,310,335)),('d','2d',(591,487,435,335)),('e','2e',(15,845,390,350))]:place(p,l,'Original screen / descriptive summary',b,key=k)
-    place(p,'f','Original pooled regional activity profiles',(420,845,605,350),key='2f')
-    place(p,'g','Pooled nucleus distributions',(15,1220,310,565),key='2g')
-    place(p,'h','Original regional extremes',(345,1220,370,565),key='2h')
-    place(p,'i','Original lobe-level rankings',(735,1220,290,565),key='2i')
-    finish(d,'FigS11',True)
-    d,p=newpage(860,870,'Figure S12 | Supporting human spatial projection views')
-    place(p,'a','Selected domain distributions',(15,42,405,365),key='3c');place(p,'b','RCTD composition',(441,42,402,365),key='3d')
-    place(p,'c','Program scores versus subclass weights',(15,433,405,415),key='3e');place(p,'d','Expression embedding and program maps',(441,433,402,415),key='3i');finish(d,'FigS12',True)
-    d,p=newpage(900,1110,'Figure S13 | Additional subclass-program tissue examples')
-    place(p,'a','All three original regional examples',(15,42,868,630),key='4f');place(p,'b','Upper IT and reactive astrocytic/vascular territory',(15,698,412,386),key='4h');place(p,'c','OPC and neuropil territory',(451,698,432,386),key='4i');finish(d,'FigS13',True)
-    d,p=newpage(1000,640,'Figure S14 | Descriptive regional variation of subclass-program relationships')
-    place(p,'a','Regional summaries',(15,42,296,575),key='4j');place(p,'b','Regional clustering',(330,42,306,575),key='4k');place(p,'c','Regional effect ranges',(660,42,322,575),key='4l');finish(d,'FigS14',True)
-    d,p=newpage(930,1240,'Figure S15 | Additional program-program spatial examples')
-    place(p,'a','Myelin / neuropil fields across regions',(15,42,440,632),key='5c');place(p,'b','331 low-similarity, strong-association edges',(478,42,435,355),key='5d')
-    place(p,'c','P36 and P26: one V1 section only',(478,437,435,451),key='5e');place(p,'d','P36 versus P26 in the same single section',(15,713,440,500),key='5f')
-    p.insert_textbox(fitz.Rect(490,949,896,1210),'The P36–P26 single-section example is distinct from the P16–P36/P45/P54 evidence across 44 sections.\n\nThe 331-edge network retains its original similarity/effect definition; it is not a new donor-level significance result.',fontsize=11,color=(.25,.28,.32));finish(d,'FigS15',True)
-    d,p=newpage(940,1080,'Figure S16 | Descriptive regional organization of program-program relationships')
-    place(p,'a','Representative regional effects',(15,42,909,351),key='5i');place(p,'b','Regional clustering',(15,422,443,631),key='5j');place(p,'c','Largest regional ranges',(480,422,445,631),key='5k');finish(d,'FigS16',True)
-    d,p=newpage(1010,1180,'Figure S17 | Supporting external disease and aging annotations')
-    specs=[('a','6b',(15,42,475,355)),('b','6c',(515,42,478,245)),('c','6d',(515,309,478,265)),('d','6g',(15,427,475,350)),('e','6h',(15,804,475,350)),('f','6i',(515,804,478,350))]
-    for l,k,b in specs:place(p,l,'Original external gene-set summary',b,key=k)
-    p.insert_textbox(fitz.Rect(530,620,979,770),'The regional heatmap in b uses the healthy human reference. It is not a regional disease effect.\n\nAll labels, enrichment values and confidence marks retain their original interpretation.',fontsize=11,color=(.25,.28,.32));finish(d,'FigS17',True)
-    d,p=newpage(780,1300,'Figure S18 | Donor-region observations for the eight original screen programs')
-    place(p,'a','All originally screened programs, including weaker evidence',(15,42,750,1235),path=PAN/'fig2_donor_evidence/Fig2_all_original8_donor_points.pdf');finish(d,'FigS18',True)
-    d,p=newpage(650,1080,'Figure S19 | Existing regional donor-omission direction sensitivity')
-    place(p,'a','All 54 programs; each omitted donor shown',(15,42,620,1008),path=PAN/'fig2_donor_evidence/Fig2_donor_direction_sensitivity.pdf');finish(d,'FigS19',True)
-    d,p=newpage(960,1060,'Figure S20 | P16 relationships: individual sections and distance profiles')
-    place(p,'a','Same-bin and 0–500 µm section observations',(15,42,930,621),path=PAN/'fig5_true_donor_evidence/Fig5_P16_section_points.pdf');place(p,'b','All 44 section profiles across ten rings',(15,691,930,345),path=PAN/'fig5_true_donor_evidence/Fig5_P16_section_distance_profiles.pdf');finish(d,'FigS20',True)
-    combine_supplements()
 
 def build_s17():
     d,p=newpage(1010,1480,'Figure S17 | Supporting external disease and aging annotations')
@@ -2096,9 +1778,6 @@ def main():
     if '--fig6-only' in sys.argv:
         build_fig6()
         return
-    if '--fig2-legacy-heatmap-only' in sys.argv:
-        build_fig2_legacy_heatmap()
-        return
     if '--fig1-local-fg' in sys.argv:
         build_fig1_local_fg()
         return
@@ -2112,7 +1791,5 @@ def main():
         build_fig3();build_s17();combine_supplements();return
     if "--combine-only" in sys.argv:
         combine_supplements();return
-    mainfigures()
-    if '--targeted' in sys.argv:affected_supplements()
-    elif "--main-only" not in sys.argv:supplements()
+    return
 if __name__=='__main__':main()
