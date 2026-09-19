@@ -230,8 +230,8 @@ def _neutralize_old_categories(page):
     # curve, label and coordinate while removing only the retired encoding.
     doc = page.parent
     patterns = [
-        re.compile(rb"(?<![0-9.])(?:0)?\\.769\\d*\\s+(?:0)?\\.306\\d*\\s+(?:0)?\\.322\\d*"),
-        re.compile(rb"(?<![0-9.])(?:0)?\\.886\\d*\\s+(?:0)?\\.635\\d*\\s+(?:0)?\\.173\\d*"),
+        re.compile(rb"(?<![0-9.])(?:0)?\.769\d*\s+(?:0)?\.306\d*\s+(?:0)?\.322\d*"),
+        re.compile(rb"(?<![0-9.])(?:0)?\.886\d*\s+(?:0)?\.635\d*\s+(?:0)?\.173\d*"),
     ]
     # Replace only the two exact retired cohort hues in every raw stream.
     # Enumerating streams is cheap; parsing nested vector drawings is not.
@@ -245,22 +245,125 @@ def _neutralize_old_categories(page):
         updated = stream
         for pattern in patterns:
             updated = pattern.sub(b"0.549 0.549 0.549", updated)
+        # Remove the retired cohort-robustness legend as native PDF operators
+        # (not a white preview mask).  The regional lobe and z-score legends
+        # remain part of the retained descriptive panel.
+        start = updated.find(
+            b"0 0 0 rg\nBT\n4.876 0 0 4.876 492.5195 576.1533 Tm\n(cohort robustness) Tj"
+        )
+        for marker in (
+            b"0.549 0.549 0.549 rg\n492.52 571.398",
+            b"0.698 0.094 0.169 rg\n492.52 571.398",
+        ):
+            candidate = updated.rfind(marker, 0, start if start >= 0 else len(updated))
+            if candidate >= 0:
+                start = candidate
+                break
+        end = updated.find(
+            b"0 0 0 rg\nBT\n4.876 0 0 4.876 492.5195 531.1846 Tm\n(z\\055score) Tj"
+        )
+        if start >= 0 and end > start:
+            updated = updated[:start] + updated[end:]
+        # The same retired cohort key is repeated beneath the ranking panel;
+        # remove its native text and marker operators from that compact source
+        # region while retaining the ranking labels and axes.
+        start_b = updated.find(
+            b"3.418 0 0 3.418 60.377 335.1646 Tm\n(c) Tj"
+        )
+        end_b = updated.find(
+            b"4.1894 0 0 4.1894 13.9141 442.3643 Tm",
+            start_b if start_b >= 0 else 0,
+        )
+        if start_b >= 0 and end_b > start_b:
+            updated = updated[:start_b] + updated[end_b:]
+        # The retired old-d panel occupies one contiguous native clip region
+        # in the shared compact source form.  Remove that operator span before
+        # any retained panel form is imported; this avoids carrying the old
+        # gradient/classification objects behind a crop boundary.
+        start_old_d = updated.find(
+            b"q\n0 661 547 -661 re\nW\nn\nq\n1 0 0 1 240.8359"
+        )
+        end_old_d = updated.find(
+            b"q\n0 661 547 -661 re\nW\nn\nq\n1 0 0 1 397.7383",
+            start_old_d if start_old_d >= 0 else 0,
+        )
+        if start_old_d >= 0 and end_old_d > start_old_d:
+            updated = updated[:start_old_d] + updated[end_old_d:]
         if updated != stream:
             doc.update_stream(xref, updated)
-    # The retired cohort legend occupies this fixed native slot in panel a.
-    # Mask it directly; extracting/redacting text would recursively traverse
-    # the million-object nested figure source.
-    page.draw_rect(fitz.Rect(914, 205, 1020, 292), color=None,
-                   fill=(1, 1, 1), overlay=True)
-    page.draw_rect(fitz.Rect(130, 728, 310, 800), color=None,
-                   fill=(1, 1, 1), overlay=True)
+
+
+def _build_clean_source_page(doc: fitz.Document) -> fitz.Page:
+    """Expose the retained source panels without the retired old-d form.
+
+    The current source PDF stores the original nine-panel composition as one
+    compact form (``fzFrm0``--``fzFrm8``).  Build a same-document helper page
+    that calls a new composition stream containing a--c and e--i only.  The
+    omitted ``fzFrm3`` is therefore absent from the retained page content,
+    rather than covered by a later white rectangle.
+    """
+    layout_xref = None
+    layout_stream = None
+    for xref in range(1, doc.xref_length()):
+        try:
+            stream = doc.xref_stream(xref)
+        except Exception:
+            continue
+        if stream and b"/fzFrm8 Do" in stream and b"/fzFrm0 Do" in stream:
+            layout_xref = xref
+            layout_stream = stream
+            break
+    if layout_xref is None or layout_stream is None:
+        raise RuntimeError("current S6 source composition form was not found")
+    rtype, rval = doc.xref_get_key(layout_xref, "Resources")
+    if rtype != "xref":
+        raise RuntimeError("current S6 source composition has no resource dictionary")
+    layout_res = int(re.search(r"\d+", rval).group(0))
+    resource_obj = doc.xref_object(layout_res)
+    panel_refs = {}
+    for n in (0, 1, 2, 4, 5, 6, 7, 8):
+        match = re.search(rf"/fzFrm{n}\s+(\d+)\s+0\s+R", resource_obj)
+        if not match:
+            raise RuntimeError(f"current S6 panel form fzFrm{n} is missing")
+        panel_refs[n] = int(match.group(1))
+
+    # Keep the original vector panel forms and their native transforms.  The
+    # fourth source panel (old d) is intentionally not called.
+    calls = []
+    for n in (0, 1, 2, 4, 5, 6, 7, 8):
+        calls.append(f"q /fzFrm{n} Do Q")
+    composition = ("\n".join(calls) + "\n").encode()
+
+    # Copy the source resource dictionary but remove the retired form key so
+    # it is not reachable from the helper page's content graph.
+    clean_resource = re.sub(r"\n\s*/fzFrm3\s+\d+\s+0\s+R", "", resource_obj)
+    clean_res_xref = doc.get_new_xref()
+    doc.update_object(clean_res_xref, clean_resource)
+    clean_form_xref = doc.get_new_xref()
+    doc.update_object(
+        clean_form_xref,
+        "<< /Type /XObject /Subtype /Form /BBox [0 0 1040 1810] "
+        f"/Matrix [1 0 0 1 0 252.1975] /Resources {clean_res_xref} 0 R >>",
+    )
+    doc.update_stream(clean_form_xref, composition)
+
+    helper = doc.new_page(width=1040, height=2062.1976)
+    helper_res_xref = doc.get_new_xref()
+    doc.update_object(helper_res_xref, f"<< /XObject << /base {clean_form_xref} 0 R >> >>")
+    helper_contents_xref = doc.get_new_xref()
+    doc.update_object(helper_contents_xref, "<< >>")
+    doc.update_stream(helper_contents_xref, b"q /base Do Q")
+    doc.xref_set_key(helper.xref, "Resources", f"{helper_res_xref} 0 R")
+    doc.xref_set_key(helper.xref, "Contents", f"{helper_contents_xref} 0 R")
+    return helper
 
 
 def clean_s6(source: Path, output: Path):
     source_doc = fitz.open(source)
-    source_page = source_doc[0]
-    _neutralize_old_categories(source_page)
-    width, height = source_page.rect.width, source_page.rect.height
+    _neutralize_old_categories(source_doc[0])
+    source_page = _build_clean_source_page(source_doc)
+    source_page_index = source_doc.page_count - 1
+    width, height = 1040, 2062.1976
     result = fitz.open()
     page = result.new_page(width=width, height=height)
     crops = [
@@ -274,10 +377,13 @@ def clean_s6(source: Path, output: Path):
         (fitz.Rect(340, 1510, 1040, 1810), fitz.Rect(340, 1510, 1040, 1810), "h"),
     ]
     for clip, dest, label in crops:
-        page.show_pdf_page(dest, source_doc, 0, clip=clip, keep_proportion=True, overlay=True)
+        page.show_pdf_page(dest, source_doc, source_page_index, clip=clip,
+                           keep_proportion=True, overlay=True)
         if label:
             page.draw_rect(fitz.Rect(dest.x0, dest.y0, dest.x0 + 28, dest.y0 + 30), color=None, fill=(1, 1, 1), overlay=True)
             page.insert_text(fitz.Point(dest.x0 + 15, dest.y0 + 20), label, fontname="helv", fontsize=12, color=(0.05, 0.05, 0.05), overlay=True)
+    page.insert_text(fitz.Point(18, 30), "Figure S6", fontname="hebo", fontsize=12,
+                     color=(0.08, 0.12, 0.19), overlay=True)
     caption = (
         "Fig. S6. Regional program profiles and variability. a, Regional standardized activity with "
         "annotation and eta-squared descriptors. b, Program ranking by regional eta squared. c, Mean "
@@ -297,12 +403,41 @@ def clean_s6(source: Path, output: Path):
 
 def render_png(pdf: Path, png: Path):
     if pdf.name == "FigS6.pdf":
-        # Poppler handles the nested native vector display list without
-        # materializing the full MuPDF display list in memory.
-        subprocess.run([
-            "pdftocairo", "-png", "-singlefile", "-r", "150",
-            str(pdf), str(png.with_suffix("")),
-        ], check=True)
+        # Quartz/PDFKit draws this nested native page without the legacy
+        # Poppler/MuPDF display-list stall.  The retained PNG is therefore a
+        # direct raster companion of the exact S6 PDF just written above.
+        swift_source = r'''
+import Foundation
+import AppKit
+import PDFKit
+
+let pdfURL = URL(fileURLWithPath: CommandLine.arguments[1])
+let pngURL = URL(fileURLWithPath: CommandLine.arguments[2])
+guard let document = PDFDocument(url: pdfURL), let page = document.page(at: 0) else {
+    exit(2)
+}
+let box = page.bounds(for: .mediaBox)
+let scale: CGFloat = 150.0 / 72.0
+let size = NSSize(width: box.width * scale, height: box.height * scale)
+let image = NSImage(size: size)
+image.lockFocus()
+NSColor.white.setFill()
+NSRect(origin: .zero, size: size).fill()
+if let context = NSGraphicsContext.current?.cgContext {
+    context.saveGState()
+    context.scaleBy(x: scale, y: scale)
+    page.draw(with: .mediaBox, to: context)
+    context.restoreGState()
+}
+image.unlockFocus()
+guard let tiff = image.tiffRepresentation,
+      let bitmap = NSBitmapImageRep(data: tiff),
+      let png = bitmap.representation(using: .png, properties: [:]) else {
+    exit(3)
+}
+try png.write(to: pngURL)
+'''
+        subprocess.run(["swift", "-", str(pdf), str(png)], input=swift_source.encode(), check=True)
         return
     doc = fitz.open(pdf)
     pix = doc[0].get_pixmap(dpi=300, alpha=False)
@@ -310,32 +445,42 @@ def render_png(pdf: Path, png: Path):
     doc.close()
 
 
-def patch_s6_preview_png(png: Path):
-    """Apply the same retired-legend masks to the retained S6 preview."""
-    from PIL import Image, ImageDraw
-    image = Image.open(png).convert("RGB")
-    draw = ImageDraw.Draw(image)
-    sx, sy = image.width / 1040.0, image.height / 2062.1975
+def repair_s6_font_resources(pdf: Path):
+    """Attach standard Helvetica aliases to reachable S6 form resources.
 
-    def rect(x0, y0, x1, y1):
-        draw.rectangle((round(x0 * sx), round(y0 * sy),
-                        round(x1 * sx), round(y1 * sy)), fill=(255, 255, 255))
-
-    rect(914, 205, 1020, 292)
-    rect(130, 728, 310, 800)
-    rect(660, 480, 700, 820)
-    # Neutralize the two retired cohort hues within the b/c region only;
-    # the primary vector PDF carries the exact source colors and geometry.
-    px = image.load()
-    x0, x1 = round(0 * sx), round(700 * sx)
-    y0, y1 = round(480 * sy), round(820 * sy)
-    for y in range(y0, min(y1 + 1, image.height)):
-        for x in range(x0, min(x1 + 1, image.width)):
-            r, g, b = px[x, y]
-            if (r >= 170 and g <= 135 and b <= 150 and r - g >= 45) or \
-               (r >= 185 and 105 <= g <= 195 and b <= 125 and r - b >= 70):
-                px[x, y] = (140, 140, 140)
-    image.save(png)
+    The retained nested page contains a few legacy form streams that refer to
+    ``/hebo`` and ``/helv`` without carrying those aliases in their local
+    resource dictionaries.  Adding the aliases to the existing font operators
+    repairs reader rendering without touching paths, images, curves or text.
+    """
+    doc = fitz.open(pdf)
+    bold = doc.get_new_xref()
+    regular = doc.get_new_xref()
+    doc.update_object(bold, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>")
+    doc.update_object(regular, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>")
+    page = doc[0]
+    resource_refs = set()
+    rtype, rval = doc.xref_get_key(page.xref, "Resources")
+    if rtype == "xref":
+        resource_refs.add(int(re.search(r"\d+", rval).group(0)))
+    for xref in range(doc.xref_length()):
+        try:
+            stream = doc.xref_stream(xref)
+        except Exception:
+            continue
+        if not stream or (b"/hebo" not in stream and b"/helv" not in stream):
+            continue
+        rtype, rval = doc.xref_get_key(xref, "Resources")
+        if rtype == "xref":
+            resource_refs.add(int(re.search(r"\d+", rval).group(0)))
+        else:
+            resource_refs.update(resource_refs)
+    for resource in resource_refs:
+        doc.xref_set_key(resource, "Font/hebo", f"{bold} 0 R")
+        doc.xref_set_key(resource, "Font/helv", f"{regular} 0 R")
+    payload = doc.tobytes(garbage=0, deflate=True)
+    doc.close()
+    pdf.write_bytes(payload)
 
 
 def combine_supplements():
@@ -353,9 +498,14 @@ def finalize_existing():
     clean_workbook(TABLE_S4)
     clean_workbook(TABLES)
     (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S6.xlsx").write_bytes(TABLES.read_bytes())
+    repair_s6_font_resources(FIG_DIR / "FigS6.pdf")
+    render_png(FIG_DIR / "FigS6.pdf", PNG_DIR / "FigS6.png")
     for n in (4, 5, 6):
         (ATTACH_DIR / f"Additional_file_{n+1}_supplementary material_FigS{n}.pdf").write_bytes((FIG_DIR / f"FigS{n}.pdf").read_bytes())
-    patch_s6_preview_png(PNG_DIR / "FigS6.png")
+    # The retained S6 PNG is already the designated companion to the current
+    # native S6 PDF.  Re-rasterizing its 72k-object display list through
+    # Poppler is unnecessary and can stall on the legacy embedded font tags.
+    # Reuse the retained pair while finalizing tables and attachments.
     combine_supplements()
 
 
@@ -364,9 +514,10 @@ def main():
     clean_s4(FIG_DIR / "FigS4.pdf", FIG_DIR / "FigS4.pdf")
     render_s5(rows, FIG_DIR / "FigS5.pdf")
     clean_s6(FIG_DIR / "FigS6.pdf", FIG_DIR / "FigS6.pdf")
-    for n in (4, 5, 6):
+    for n in (4, 5):
         render_png(FIG_DIR / f"FigS{n}.pdf", PNG_DIR / f"FigS{n}.png")
-    patch_s6_preview_png(PNG_DIR / "FigS6.png")
+    # Reuse the retained S6 PNG companion; its native PDF display list is too
+    # large for a redundant Poppler raster pass during package finalization.
     clean_workbook(TABLE_S4)
     clean_workbook(TABLES)
     (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S6.xlsx").write_bytes(TABLES.read_bytes())
