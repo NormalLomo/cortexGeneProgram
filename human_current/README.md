@@ -59,7 +59,7 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 **公开主入口**为 `public_n100/02_run_cnmf_discovery.py --config <config> --data-root <input-root> --results-root <output-root>`，使用同目录 `config/cnmf_discovery.yaml`，并由相邻 `03_export_cnmf_outputs.py` 导出结果。入口将 `n_iter=100` 传给 cNMF prepare，继而完成 factorize、combine 和 consensus，每个候选 K 在同一次任务中分别进行100次独立初始化。现有配置保留 K=30、40、50、60、70、80、90，选择 K60，seed=42、HVG=3000、density threshold=0.15，本次未修改这些设置。`counts_h5ad` 必须指向上述过滤后的 SCT 校正矩阵。该入口不需要另一台机器的历史80次文件，不等同于宣称新任务已运行或与原80+20共识逐组件相同。
 
-复用论文结果时，输入已采用的 K60 gene_spectra_score、gene_spectra_tpm、consensus usages 与 `program_renumber_map.tsv`。`build_canonical_map.py` 的 table-s2/s3/s4 参数采用旧发布表 schema；其中 TableS4 必须是覆盖原组件 1–60、含 `cnmf_component`、`new_P`、`status`、`name_short` 及排除依据字段的 **60 行 TSV**，不是现稿仅列保留 54 程序的 Table S4 工作簿。该脚本也未补出原先未明确的技术排除数值阈值。不要互换同号表，或用重新发现的组件次序硬套此映射。
+复用论文结果时，输入已采用的 K60 gene_spectra_score、gene_spectra_tpm、consensus usages 与 `program_renumber_map.tsv`。`build_canonical_map.py` 的 table-s2/s3/s4 参数采用旧发布表 schema；其中 TableS4 必须是覆盖原组件 1–60、含 `cnmf_component`、`new_P`、`status`、`name_short` 及排除依据字段的 **60 行 TSV**，不是现稿仅列保留 54 程序的 Table S3 工作簿。该脚本也未补出原先未明确的技术排除数值阈值。不要互换同号表，或用重新发现的组件次序硬套此映射。
 
 ### 3. 单核活动 → 区域、亚类与 formal21
 
@@ -119,7 +119,7 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 #### FigS10 与 Fig3 的早期汇总分支
 
 - 原完整54程序×34片八域profile的r及已存median/切片身份移至**FigS10h**，读取既有值而不重算。FigS10仍是同一PDF两页，**每页170×225mm**；原a–g保留（首页从固定九panel原c/d/e/i重编a–d；四原分布e、P40 f、P48 g），两页含caption。对应 `FigS10.png` 是完整两页纵向预览，依赖Pillow，不是第一页缩图。
-- 主图源设置仍170×200mm、图字至少7pt；这是源设置，不是整刊排版合规认证。S10从固定源重建，不读取当前S10再append，因此不会重复追加；无新固定源、S21或S11–S20改动。旧OLIGO距离仅在固定九panel输入保留，不声称在S10。
+- 主图源设置仍170×200mm、图字至少7pt；这是源设置，不是整刊排版合规认证。S10从固定源重建，不读取当前S10再append，因此不会重复追加。现行补图范围为S1–S19：重复主Fig6内容的旧S19已撤下，原S20 Neurosynth功能图顺延为S19。旧OLIGO距离仅在固定九panel输入保留，不声称在S10。
 - 外部只读输入：`NMF_SOURCE_ROOT/tables/TableS3_program_annotation.tsv`、该source根下既有 `HUMAN_VALIDATION_spatial_section_by_layer_aggregates_all54.tsv`；`NMF_ARCHIVE_SOURCE_ROOT/results/crossregion_v1` 下 `spatial_bin50_meta.parquet`、`spatial_bin50_program_score_SCT.parquet`；同archive根 `scripts/fig2` 下 `prog_x_layer_per_chip.tsv`、`prog_x_layer_global.tsv`、`panelg_summary.tsv`、`panelg_reproducibility.tsv`、`repchip_meta.tsv`。数据未复制进代码包。`NMF_ARCHIVE_SOURCE_ROOT` 必须是只读来源根，区别于可写的 `CORTEX_PROGRAM_ROOT`。
 - 两张L1–L6表位于 `NMF_WORK_ROOT/analysis/fig3_layer_region/layer_bin_distributions.tsv`、`layer_region_profiles.tsv`；原值与早期 `display_example/illustrated_layer` 字段不改、不扩WM。S10e四例仍对应早期P5/P13/P28/P8快照，P16/P40/P48按当前producer选择。缺失槽保持 `observed=False`、score空，不补0。原生产任务表意为44片/5donor/14区；distribution 14,580行、profile 27,216行，本整理任务未重算。
 - `--render-only` 是保留的主图/补图联合绘图分支：读两张原值表，在上述分析目录写 `Fig3.pdf`、`Fig3.png`、`FigS10.pdf`、`FigS10.png`，不写两表，但**会覆盖 Fig3，且不读取局部统计 TSV**，因此不能代替当前主图的 `--local-significance` 入口。无选项默认入口还会生成并写入两张汇总表，不能误作仅重绘命令。
@@ -128,11 +128,11 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 以下文件均在 `07_figures_and_tables/current`；“已有源”不代表本次重新执行或重画。
 
-- **Fig2 正式区域面板**：`render_fig2_donor_panels.R` 读取已有 formal21 模型结果和注释；其中 `--within-subclass-only` 分支只生产当前亚类支持面板。新增的 `render_fig2_donor_evidence.py` 保存较早的 donor-robust 图源，不能把其历史八程序显示或 permutation 结果替换成 formal21 三方法定义。其默认入口读取 `NMF_WORK_ROOT/analysis/01_existing_regional_evidence/` 中的 `DONOR_ROBUST_ALL54.tsv`、`DONOR_LOO_STABILITY.tsv`、`HUMAN_VALIDATION_snrna_all54_donor_adjusted_region_profiles.tsv`、`HUMAN_VALIDATION_snrna_donor_region_pseudobulk_all54.tsv`，并读取工作根下 `inputs/current_six_figures/Supplementary_Tables_S1-S6.xlsx` 的 Table S3；相应 PDF/PNG 写入 `figures/human_revision/panels/fig2_donor_evidence/`，用于该历史链及 S18/S19 面板。`--main-panels-only` 排除完整八程序供体点图和方向敏感性面板；`--heatmap-only` 则仅读已存区域 profile、robust 表及 `tables/TableS3_program_annotation.tsv`，输出早期 `Fig2_donor_adjusted_regional_heatmap.pdf/.png`。这些选项均不重新拟合推断或 LOO，也不是自动重建当前 Fig2 的总入口。
+- **Fig2 正式区域面板**：`render_fig2_donor_panels.R` 读取已有 formal21 模型结果和注释；其中 `--within-subclass-only` 分支只生产当前亚类支持面板。新增的 `render_fig2_donor_evidence.py` 保存较早的 donor-robust 图源，不能把其历史八程序显示或 permutation 结果替换成 formal21 三方法定义。其默认入口读取 `NMF_WORK_ROOT/analysis/01_existing_regional_evidence/` 中的 `DONOR_ROBUST_ALL54.tsv`、`DONOR_LOO_STABILITY.tsv`、`HUMAN_VALIDATION_snrna_all54_donor_adjusted_region_profiles.tsv`、`HUMAN_VALIDATION_snrna_donor_region_pseudobulk_all54.tsv`，并读取工作根下 `inputs/current_six_figures/Supplementary_Tables_S1-S5.xlsx` 的 Table S2；相应 PDF/PNG 写入 `figures/human_revision/panels/fig2_donor_evidence/`，用于该历史链及 S18 面板。`--main-panels-only` 排除完整八程序供体点图和方向敏感性面板；`--heatmap-only` 则仅读已存区域 profile、robust 表及 `tables/TableS3_program_annotation.tsv`，输出早期 `Fig2_donor_adjusted_regional_heatmap.pdf/.png`。这些选项均不重新拟合推断或 LOO，也不是自动重建当前 Fig2 的总入口。
 - **Fig2 原生内容整理**：`reduce_main_figure_layouts.py --fig2-clean-native-only` 读取并原位更新 `NMF_WORK_ROOT/figures/human_revision/main_figures_pdf/Fig2.pdf`，只去除实际放置区域外内容及被后续不透明白矩形完整遮盖的旧字，保留可见 vector/text、Form、字体、clip 和绘制顺序。它不重画统计面板、不生成 PNG，也**不读取或回写稿件阅读 PDF**；不能把 PDF 内容裁剪当作上游分析。
 - **Fig4 当前构图**：`render_fig4_cross_cell_preferences.py --reorganized` 从标准输入读取对应固定 native 底图的 PDF 字节，结合 `NMF_WORK_ROOT/tables/TableS3_program_annotation.tsv`、`TableS6_between_chip_colocalization.tsv` 及现成空间/距离关系输入，写入 `NMF_WORK_ROOT/analysis/fig4_cross_cell_preferences/Fig4_reorganized.pdf/.png`。`--compact-candidate` 是另存的候选布局，不是当前正式构图；默认入口生产跨参考偏好–目标亚类概览，也不等同于 `--reorganized`。
 - **Fig5 当前构图**：`render_fig5_revision.py` 同样从标准输入读取对应固定 native 底图，使用工作根的 TableS3、真实供体/整供体留出结果，以及 `CORTEX_PROGRAM_ROOT/results/crossregion_v1/` 下既有 SCT 分数、空间元数据、RCTD、program similarity 和 program–program markcorr 汇总，写 `NMF_WORK_ROOT/analysis/fig5_revision/Fig5_revised.pdf/.png`。Fig4/5 底图须符合原 panel 布局，不能用任意同名或已重排 PDF 顶替。两份核心 producer 本来已与最新生产源同步，本次没有重画。
-- **Fig5/S20 的真实供体面板源**：新增 `render_fig5_true_donor_evidence.py` 无动作选项。它读取 `NMF_WORK_ROOT/analysis/02_true_donor_spatial_support/` 的 `same_bin_per_donor_effects.tsv`、`same_bin_true_donor_loo.tsv`、`P16_distance_0_500_per_donor_effects.tsv`、`P16_distance_0_500_true_donor_loo.tsv`、`P16_section_ring_effects.tsv`，并从上述旧工作簿 Table S3 读取注释，写入 `figures/human_revision/panels/fig5_true_donor_evidence/`。输出 stem 为 `Fig5_P16_same_bin`、`Fig5_P16_distance_support`、`Fig5_P16_section_distance_profiles`、`Fig5_P16_section_points`，各含 PDF/PNG；保留同 bin 与 0–500 µm 的区别，不重新计算效应或 LOO。整供体留出范围是影响敏感性，不是置信区间，也不改变当前 Fig5 的例证选择。
+- **Fig5 的真实供体面板源**：新增 `render_fig5_true_donor_evidence.py` 无动作选项。它读取 `NMF_WORK_ROOT/analysis/02_true_donor_spatial_support/` 的 `same_bin_per_donor_effects.tsv`、`same_bin_true_donor_loo.tsv`、`P16_distance_0_500_per_donor_effects.tsv`、`P16_distance_0_500_true_donor_loo.tsv`、`P16_section_ring_effects.tsv`，并从上述工作簿 Table S2 读取注释，写入 `figures/human_revision/panels/fig5_true_donor_evidence/`。输出 stem 为 `Fig5_P16_same_bin`、`Fig5_P16_distance_support`、`Fig5_P16_section_distance_profiles`、`Fig5_P16_section_points`，各含 PDF/PNG；保留同 bin 与 0–500 µm 的区别，不重新计算效应或 LOO。整供体留出范围是影响敏感性，不是置信区间，也不改变当前 Fig5 的例证选择。当前补图S19是Neurosynth功能图，不复用这些真实供体面板。
 
 #### 其它保留图源
 
@@ -148,6 +148,6 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 既有副本整理保留路径环境变量/参数、同目录代码引用和 SCT 表示说明，取消危险的旧结果递归删除及不必要记录；R 内存上限为 50 GiB。原独立 dream 尺度比较拟合已移除，实际采用的 response×1000 模型与结果生成保留。最新同步仅补入已存在的历史 rank/供体图源、更新 Fig3 已批准的生产源，并将 Fig2 native 内容处理隔离为源图入口；没有新设科学阈值、模型、分母、映射或计算并行参数。本包不存在“运行所有入口即可重建最新版”的总控脚本。
 
-GO:BP 的来源边界已进一步明确。历史 GO 表合并、54 程序筛选及绘表脚本已纳入 `07_figures_and_tables/gobp_program_table/`。上游富集计算 producer 与当前 TableS3 的精确最终装配脚本仍未定位。已找到的129程序 prerank 脚本属于另一分析对象，未混入。`make_program_names.py` 自带警告，自动全名会覆盖后来人工修正，故不是现稿名称的再生成入口。现稿采用 TableS3 及固定 program_names，不盲跑历史命名脚本。
+GO:BP 的来源边界已进一步明确。历史 GO 表合并、54 程序筛选及绘表脚本已纳入 `07_figures_and_tables/gobp_program_table/`。上游富集计算 producer 与当前 TableS2 的精确最终装配脚本仍未定位。已找到的129程序 prerank 脚本属于另一分析对象，未混入。`make_program_names.py` 自带警告，自动全名会覆盖后来人工修正，故不是现稿名称的再生成入口。现稿采用 TableS2 及固定 program_names，不盲跑历史命名脚本。
 
 原始文件→合并 RDS 的 QC/merge 以及上述 GO:BP 来源链仍有未定位环节。历史80次结果位于另一台机器，公开单次任务100次初始化路线不以迁移这批结果为前提。各下游入口仍需外置的原始数据、固定参考、既有分析结果和 native 图形资产；这些输入依赖与源码缺口分别保留。本包交付了当前可追踪的代码及使用边界，**不声称已完成新一轮100次任务、端到端复现或运行测试**。

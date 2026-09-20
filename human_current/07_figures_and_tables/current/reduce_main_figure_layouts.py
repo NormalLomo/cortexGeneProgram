@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Approved six-main-figure composition, preserving source vector marks.
 
-Latest targeted mapping: Fig1 a/b/c retained, old e -> d; rank plot remains S1. Fig2 a-c retained with condensed display. Fig3 unchanged. Fig4 old a/b/c/d retained, old f -> e; old e -> S14d. Fig5 old b/c/e/f -> a/b/c/d; old a -> S15e; old d -> S16d. Fig6 old a/b retained; old c/d -> S17g/h. Existing S1-S20 numbering retained.
+Latest targeted mapping: Fig1 a/b/c retained, old e -> d; rank plot remains S1. Fig2 a-c retained with condensed display. Fig3 unchanged. Fig4 old a/b/c/d retained, old f -> e; old e -> S14d. Fig5 old b/c/e/f -> a/b/c/d; old a -> S15e; old d -> S16d. Fig6 old a/b retained; old c/d -> S17g/h. Current supplements end at S19; the duplicate former S19 is withdrawn and the former S20 Neurosynth figure is S19.
 
 Prior mapping (for source identification):
 Fig1 a=new human workflow; b=old1b text repair; c=old1c; d=S1a; e=S2c.
@@ -228,7 +228,7 @@ def build_fig1_original():
     place(p,'b','Program usage across subclasses',(10,177,320,635),path=PAN/'fig1b_label_repair/Fig1b.pdf')
     place(p,'c','Program-usage embedding',(342,177,245,215),key='1c')
     place(p,'d','Internal cNMF stability',(342,430,245,205),key='S2c')
-    p.insert_textbox(fitz.Rect(346,671,581,737),'Names, leading genes and annotation confidence: Table S3.\nRank sensitivity remains in Fig. S1.',fontsize=9)
+    p.insert_textbox(fitz.Rect(346,671,581,737),'Names, leading genes and annotation confidence: Table S2.\nRank sensitivity remains in Fig. S1.',fontsize=9)
     p.insert_text((12,831),'Internal stability and rank sensitivity are not independent validation.',fontsize=9)
     finish(d,'Fig1')
 
@@ -239,7 +239,7 @@ def build_fig1_with_overall_box():
     place(p,'c','Program-usage embedding',(342,177,245,215),key='1c')
     place(p,'d','Internal cNMF stability',(342,430,245,205),key='S2c')
     place(p,'e','Overall cell-pooled nearest-reference similarity',(342,671,245,145),path=OVERALL_BOX)
-    p.insert_textbox(fitz.Rect(346,830,581,900),'Names, leading genes and annotation confidence: Table S3.\nRank sensitivity remains in Fig. S1.',fontsize=9)
+    p.insert_textbox(fitz.Rect(346,830,581,900),'Names, leading genes and annotation confidence: Table S2.\nRank sensitivity remains in Fig. S1.',fontsize=9)
     p.insert_text((12,955),'Internal stability and rank sensitivity are not independent validation.',fontsize=9)
     finish(d,'Fig1')
 
@@ -683,7 +683,7 @@ def affected_supplements():
 
 def combine_supplements():
     combined=fitz.open()
-    for i in range(1,21):
+    for i in range(1,20):
         z=fitz.open(OUT/'supplementary_figures_pdf'/('FigS'+str(i)+'.pdf'));combined.insert_pdf(z)
     combined.save(OUT/'Supplementary_Figures.pdf',garbage=1,deflate=True)
     print('Produced',OUT/'Supplementary_Figures.pdf',flush=True)
@@ -1208,7 +1208,7 @@ def gigascience_labels():
     if not any(name.startswith('FigS') for name in names):
         return
     combined = fitz.open()
-    for i in range(1,21):
+    for i in range(1,20):
         part = fitz.open(OUT/'supplementary_figures_pdf'/('FigS'+str(i)+'.pdf'))
         combined.insert_pdf(part)
         part.close()

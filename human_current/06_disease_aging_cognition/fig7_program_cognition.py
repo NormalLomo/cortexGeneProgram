@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Fig 7 = gene-program x cognitive-term/functional-network association via Neurosynth.
+Source producer for the Neurosynth supplement, delivered as current Fig. S19.
 
 Method mirrors the reference NC paper (Nat Commun 2025, s41467-025-62793-9), which
 "employed the Neurosynth framework for meta-analysis, which provides term-region
@@ -399,9 +399,9 @@ axd.set_title("Neurosynth region x term cognitive atlas (mean z in ROI; *S1E low
 cb2=fig.colorbar(imd, ax=axd, fraction=0.02, pad=0.01); cb2.ax.tick_params(labelsize=5); cb2.set_label("mean z", fontsize=5)
 panel_tag(axd,"d")
 
-fig.suptitle("Fig. S10 | Program-cognition imaging-transcriptomics (Neurosynth DMN), exploratory analysis (n=14 regions)",
+fig.suptitle("Fig. S19 | Program-cognition imaging-transcriptomics (Neurosynth DMN), exploratory analysis (n=14 regions)",
              fontsize=7)
-fig.savefig(f"{FIGD}/figS10_cognition.pdf", dpi=400)
-fig.savefig(f"{FIGD}/figS10_cognition.png", dpi=300)
+fig.savefig(f"{FIGD}/figS19_cognition.pdf", dpi=400)
+fig.savefig(f"{FIGD}/figS19_cognition.png", dpi=300)
 print("    saved figure", flush=True)
 print("DONE", flush=True)

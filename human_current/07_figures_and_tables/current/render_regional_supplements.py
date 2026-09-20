@@ -24,8 +24,8 @@ from openpyxl import load_workbook
 ROOT = Path(__file__).resolve().parents[3]
 FIG_DIR = ROOT / "source_figure_pdfs" / "supplementary_figures_pdf"
 PNG_DIR = ROOT / "figures_png" / "supplementary_figures"
-TABLE_S4 = ROOT / "tables" / "TableS4_program_variability_validity_human.xlsx"
-TABLES = ROOT / "tables" / "Supplementary_Tables_S1-S6_human.xlsx"
+TABLE_S3 = ROOT / "tables" / "TableS3_program_variability_validity_human.xlsx"
+TABLES = ROOT / "tables" / "Supplementary_Tables_S1-S5_human.xlsx"
 SUPP_DIR = ROOT / "supplementary_data"
 ATTACH_DIR = SUPP_DIR / "gigascience_supplementary_material"
 
@@ -127,9 +127,9 @@ def clean_s4(source: Path, output: Path):
     doc.close()
 
 
-def _table_s4_values(path: Path):
+def _table_s3_values(path: Path):
     wb = load_workbook(path, read_only=True, data_only=True)
-    ws = wb["Table S4"]
+    ws = wb["Table S3"]
     headers = [ws.cell(1, c).value for c in range(1, ws.max_column + 1)]
     headers = [str(x) if x is not None else "" for x in headers]
     region_col = next(
@@ -160,7 +160,7 @@ def _table_s4_values(path: Path):
 
 def clean_workbook(path: Path, rows_for_plot=None):
     wb = load_workbook(path)
-    ws = wb["Table S4"]
+    ws = wb["Table S3"]
     headers = [ws.cell(1, c).value for c in range(1, ws.max_column + 1)]
     remove = {
         "Historical nucleus screen F",
@@ -178,11 +178,11 @@ def clean_workbook(path: Path, rows_for_plot=None):
     for c in range(1, ws.max_column + 1):
         if ws.cell(1, c).value == "Historical nucleus screen eta-squared":
             ws.cell(1, c).value = "Nucleus-level regional eta-squared (descriptive)"
-    for name in ["S4 Human target8 evidence"]:
+    for name in ["S3 Human target8 evidence"]:
         if name in wb.sheetnames:
             del wb[name]
-    if "S4 Human donor robustness" in wb.sheetnames:
-        donor = wb["S4 Human donor robustness"]
+    if "S3 Human donor robustness" in wb.sheetnames:
+        donor = wb["S3 Human donor robustness"]
         header_row = 3
         for c in range(donor.max_column, 0, -1):
             if str(donor.cell(header_row, c).value) == "historical_nucleus_screen_eight":
@@ -392,7 +392,7 @@ def clean_s6(source: Path, output: Path):
         "P13, P4, P8 and P9. f, P13, P6 and P1 activity across nuclei in each region. g, Within-program "
         "regional z scores for 38 programs, with frames marking each region's largest positive value. h, "
         "Relative rankings of ten programs across five lobes. These profiles describe regional expression; "
-        "the donor-adjusted 21-program analysis is specified in Fig. 2a,c and Supplementary Table S4."
+        "the donor-adjusted 21-program analysis is specified in Fig. 2a,c and Supplementary Table S3."
     )
     page.insert_textbox(fitz.Rect(70, 1810, 970, 1995), caption, fontname="helv", fontsize=10, lineheight=1.25, color=(0.05, 0.05, 0.05), overlay=True)
     # Keep the native form resources intact; full garbage collection traverses
@@ -495,9 +495,9 @@ def combine_supplements():
 
 def finalize_existing():
     """Finalize tables and attachment copies from already-rendered S4--S6."""
-    clean_workbook(TABLE_S4)
+    clean_workbook(TABLE_S3)
     clean_workbook(TABLES)
-    (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S6.xlsx").write_bytes(TABLES.read_bytes())
+    (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S5.xlsx").write_bytes(TABLES.read_bytes())
     repair_s6_font_resources(FIG_DIR / "FigS6.pdf")
     render_png(FIG_DIR / "FigS6.pdf", PNG_DIR / "FigS6.png")
     for n in (4, 5, 6):
@@ -510,7 +510,7 @@ def finalize_existing():
 
 
 def main():
-    rows = _table_s4_values(TABLE_S4)
+    rows = _table_s3_values(TABLE_S3)
     clean_s4(FIG_DIR / "FigS4.pdf", FIG_DIR / "FigS4.pdf")
     render_s5(rows, FIG_DIR / "FigS5.pdf")
     clean_s6(FIG_DIR / "FigS6.pdf", FIG_DIR / "FigS6.pdf")
@@ -518,9 +518,9 @@ def main():
         render_png(FIG_DIR / f"FigS{n}.pdf", PNG_DIR / f"FigS{n}.png")
     # Reuse the retained S6 PNG companion; its native PDF display list is too
     # large for a redundant Poppler raster pass during package finalization.
-    clean_workbook(TABLE_S4)
+    clean_workbook(TABLE_S3)
     clean_workbook(TABLES)
-    (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S6.xlsx").write_bytes(TABLES.read_bytes())
+    (ATTACH_DIR / "Additional_file_1_supplementary material_Tables_S1-S5.xlsx").write_bytes(TABLES.read_bytes())
     for n in (4, 5, 6):
         (ATTACH_DIR / f"Additional_file_{n+1}_supplementary material_FigS{n}.pdf").write_bytes((FIG_DIR / f"FigS{n}.pdf").read_bytes())
     combine_supplements()

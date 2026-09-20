@@ -858,7 +858,7 @@ def render(ann, ids, distributions, profiles, local_significance=False):
     print("REGIONAL_ROW_ORDER",[row_keys[int(i)] for i in row_order],flush=True)
     print("REGIONAL_COLUMN_ORDER",[order[int(i)] for i in col_order],flush=True)
     print("SPATIAL_CASES",spatial_cases,"scores/curves unchanged; no sampling or smoothing; DNB/2 and 1mm bars",flush=True)
-    print("UNCHANGED",DIST_PATH,PROFILE_PATH,"S11-S20; no S21 or fixed-source copy",flush=True)
+    print("UNCHANGED",DIST_PATH,PROFILE_PATH,"S11-S19; no S20 or fixed-source copy",flush=True)
 
 
 def main():
