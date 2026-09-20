@@ -8,7 +8,7 @@
 - 公开交付的 cNMF 主路线为 `public_n100`，在一次任务中对每个候选 K 分别进行 **100 次独立初始化**。100 是初始化次数，不是一次优化的迭代步数。论文既有共识来自分两批完成的 80+20 次运行，原 80 次结果保存在另一台机器，本次不迁移，也不作为公开入口的运行依赖。`historical_n20` 保留历史 20 次支线供来源追溯，不是公开主入口。现存 K60 权重/usage 仍是现稿下游分析的固定输入。
 - 最早可追踪的实际发现入口是已合并 `3_SnRNA_seurat_merged_1m_Cells.RDS`。源论文原始文件到该 RDS 的 QC/合并 producer 尚未定位。单次任务 100 次初始化的代码路线与历史 80+20 的原运行记录分别说明，本次没有执行新的发现任务，也不声称已从公共原始文件完整复现论文。
 - `07_figures_and_tables/fig3_layer_region` 已同步当前 Fig3 的局部统计源与无 b 黑框绘图入口；两页 FigS10 的绘图分支仍保留。固定九 panel PDF 是输入资产，**不是当前主图仍有九个 panel**。本次仅整理代码，未重新拟合统计或生产图件。
-- 不包含跨物种、129 程序、NetRep、全文跨数据集注释重算、benchmark 模型训练。外部打分使用随包提供的 fixed-H NMF scorer 与 reference-scoring implementation，不依赖未随包提供的外部运行时。
+- 不包含跨物种、129 程序、NetRep、全文跨数据集注释重算、benchmark 模型训练。外部打分使用随包提供的 fixed-H NMF scorer 代码与 reference-scoring implementation，不依赖未随包提供的外部运行时；论文采用的固定 K60 谱、映射和参考 profile 是该入口的独立数据输入，不包含在源码包中。
 
 ## 路径与依赖
 
@@ -23,6 +23,20 @@
 |`NMF_WORK_ROOT`|可写的 standalone 工作树，保留 `analysis/`、`tables/`、`inputs/`、`figures/` 的既有布局|
 |`NMF_SOURCE_ROOT`|只读 standalone 来源根；外部脚本从其 `inputs/cortex_nmf_program` 读参考、外部输入和标签映射|
 |`NMF_ARCHIVE_SOURCE_ROOT`|Fig3 读取既有空间分数、元数据和 `scripts/fig2/` 表的只读 archived 根，与可写的 `CORTEX_PROGRAM_ROOT` 分开|
+|`NMF_SOURCE_PROJECT_ROOT`|外部评分所需只读 cortex_nmf_program 项目根；未设时沿用 `NMF_SOURCE_ROOT/inputs/cortex_nmf_program`|
+|`NMF_EXTERNAL_BENCH_ROOT`|外部单核 benchmark 根；未设时使用 `NMF_SOURCE_PROJECT_ROOT/R2_Benchmark_Staging/01_human_single_cell_benchmark`|
+|`NMF_EXTERNAL_INPUT_ROOT`|八项外部研究的表达矩阵、metadata 与固定标签 crosswalk 根|
+|`NMF_EXTERNAL_SCORE_OUTPUT`|外部评分、profile、相关与作图源的可写输出目录|
+|`NMF_FIXED_H_REFERENCE`|论文外部评分使用的完整 K60 fixed-H/starCAT reference 谱|
+|`NMF_RETAIN_MAP`|覆盖原 K60 组件并标识保留54程序的固定映射 TSV|
+|`NMF_DISCOVERY_PROFILE`|发现集逐核完整60维 usage/profile parquet；先按60维归一化，再取保留54维|
+|`NMF_DISCOVERY_OBS`|与发现集 profile 同轴的逐核 donor、region、subclass、library metadata|
+|`NMF_GENE_INFO`|SEA-AD 路线采用的固定 gene ID-to-symbol 映射|
+|`NMF_SUBCLASS_CLASS`|发现集 subclass-to-broad-class 固定映射 CSV|
+|`NMF_SEAAD_META_ROOT`|SEA-AD DLPFC/MTG 重建 raw-count H5AD 根|
+|`NMF_DISCOVERY_SOURCE_RDS`|SEA-AD adapter 记录的发现集源 RDS 路径|
+|`NMF_SEAAD_RUNTIME_CARRIER`|SEA-AD adapter 读取的参考 raw-count carrier H5AD|
+|`NMF_SEAAD_LIBRARY_INPUT_ROOT`|按 cohort/{dlpfc,mtg}/library_*.rds 排列的 SEA-AD library 根|
 |`SNRNA_MERGED_RDS`|上述合并 RNA-count RDS，保留原始 metadata 与 library_prep|
 |`SNRNA_WORK_DIR`|SCT 对象、donor MTX、obs/var CSV、snRNA_1M.h5ad 的独立输出位置|
 |`SEURAT_OBJECT_SOURCE`、`SEURAT_SOURCE`|历史 producer 使用的本地 SeuratObject/Seurat 源目录；不自动安装或替换版本|
@@ -89,7 +103,9 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 ### 5. 外部数据 → 固定参考活动
 
-`05_external_scores/05_external_single_cell_score_correlation.py` 调用同目录、已随包提供的 `gep_score.py` 中的 `score_counts_fixed_h`；该内核再使用同目录的 `contracts.py`。因此本入口使用随包固定-H NMF scorer/reference scoring implementation，不需要未随包提供的外部运行时。运行仍需 NumPy、SciPy、PyTorch/CUDA 及本节和“路径与依赖”中列明的其它依赖，并须提供既有固定参考、profile、表达数据和标签映射输入。随包代码采用本目录 `LICENSE` 所列 MIT 许可证；第三方原始数据仍遵循来源条款。原始输入的具体 `.X`/raw选择、疾病标签、library RDS及crosswalk路径仍由该脚本按研究定义，**不得一律转成发现集SCT**。
+`05_external_scores/05_external_single_cell_score_correlation.py` 调用同目录、已随包提供的 `gep_score.py` 中的 `score_counts_fixed_h`；该内核再使用同目录的 `contracts.py`。因此 fixed-H 求解和 reference-scoring 实现随源码提供，不需要另一个外部评分运行时。运行仍需 NumPy、SciPy、PyTorch/CUDA 及本节和“路径与依赖”中列明的其它依赖，并须显式提供 `NMF_FIXED_H_REFERENCE`、`NMF_RETAIN_MAP`、`NMF_DISCOVERY_PROFILE`、`NMF_DISCOVERY_OBS`、`NMF_GENE_INFO`、`NMF_SUBCLASS_CLASS`、外部研究输入根及 SEA-AD 输入。为兼容原工作树，上述变量未设时仍从 `NMF_SOURCE_PROJECT_ROOT` 的既有相对布局读取。随包代码采用本目录 `LICENSE` 所列 MIT 许可证；第三方原始数据仍遵循来源条款。原始输入的具体 `.X`/raw选择、疾病标签、library RDS及crosswalk路径仍由该脚本按研究定义，**不得一律转成发现集SCT**。
+
+公开数据归档提供 P1–P54 的发现集 usage、空间分数、factor loadings、TPM 谱及程序映射，供保留程序的派生数据复用；这些54维文件不替代外部评分入口实际采用的完整 K60 fixed-H 谱和完整60维发现集 profile。源码参数化没有改变论文方法，也没有把54维直接拟合当作60维拟合的替代。采用参考材料未随源码包复制时，调用者必须从获准的数据位置提供相应路径。
 
 共享基因、重复符号求和，study级ddof=0 SD，零SD贡献置零；固定60谱，非负乘法更新，max_iter1000/tol1e-4、每10步判断改善；先60归一化再取54。nearest-reference再L2并搜索全参考，不按真实标签限制。SEAAD source adapter只读RDS，不进行scANVI训练。
 
@@ -150,4 +166,4 @@ PDF 预览还依赖 Poppler；Fig4 当前入口调用 `pdftoppm`，候选布局�
 
 GO:BP 的来源边界已进一步明确。历史 GO 表合并、54 程序筛选及绘表脚本已纳入 `07_figures_and_tables/gobp_program_table/`。上游富集计算 producer 与当前 TableS2 的精确最终装配脚本仍未定位。已找到的129程序 prerank 脚本属于另一分析对象，未混入。`make_program_names.py` 自带警告，自动全名会覆盖后来人工修正，故不是现稿名称的再生成入口。现稿采用 TableS2 及固定 program_names，不盲跑历史命名脚本。
 
-原始文件→合并 RDS 的 QC/merge 以及上述 GO:BP 来源链仍有未定位环节。历史80次结果位于另一台机器，公开单次任务100次初始化路线不以迁移这批结果为前提。各下游入口仍需外置的原始数据、固定参考、既有分析结果和 native 图形资产；这些输入依赖与源码缺口分别保留。本包交付了当前可追踪的代码及使用边界，**不声称已完成新一轮100次任务、端到端复现或运行测试**。
+原始文件→合并 RDS 的 QC/merge 以及上述 GO:BP 来源链仍有未定位环节。已找到的 GO:BP prerank producer 实际读取129程序 meta 与分亚类载荷，不属于当前54程序对象，因而未移入本目录。历史80次结果位于另一台机器，公开单次任务100次初始化路线不以迁移这批结果为前提。各下游入口仍需外置的原始数据、固定参考、既有分析结果和 native 图形资产；可确定的 fixed-H 路径已参数化，但这些输入依赖与源码缺口分别保留。本包交付了当前可追踪的代码及使用边界，**不声称已完成新一轮100次任务、端到端复现或运行测试**。

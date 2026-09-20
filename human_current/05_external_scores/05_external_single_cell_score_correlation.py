@@ -22,11 +22,36 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 from scipy import sparse
 
-PROJECT = Path(os.environ["NMF_SOURCE_ROOT"]) / "inputs/cortex_nmf_program"
-BENCH = PROJECT / "R2_Benchmark_Staging/01_human_single_cell_benchmark"
-INPUT = BENCH / "input"
+
+def configured_path(name: str, default: Path | None = None) -> Path:
+    value = os.environ.get(name, "").strip()
+    if value:
+        return Path(value).expanduser()
+    if default is not None:
+        return default
+    raise RuntimeError(f"Set {name} to the required input or output path")
+
+
+legacy_source_root = os.environ.get("NMF_SOURCE_ROOT", "").strip()
+legacy_project = (
+    Path(legacy_source_root) / "inputs/cortex_nmf_program"
+    if legacy_source_root
+    else None
+)
+PROJECT = configured_path("NMF_SOURCE_PROJECT_ROOT", legacy_project)
+BENCH = configured_path(
+    "NMF_EXTERNAL_BENCH_ROOT",
+    PROJECT / "R2_Benchmark_Staging/01_human_single_cell_benchmark",
+)
+INPUT = configured_path("NMF_EXTERNAL_INPUT_ROOT", BENCH / "input")
 CORE = Path(__file__).resolve().parent
-OUTPUT = Path((__import__("os").environ["NMF_WORK_ROOT"] + "/analysis/external_single_cell_program_scores"))
+legacy_work_root = os.environ.get("NMF_WORK_ROOT", "").strip()
+legacy_output = (
+    Path(legacy_work_root) / "analysis/external_single_cell_program_scores"
+    if legacy_work_root
+    else None
+)
+OUTPUT = configured_path("NMF_EXTERNAL_SCORE_OUTPUT", legacy_output)
 NEURON_OUTPUT = OUTPUT / "neuron_program_consistency_by_study.tsv"
 CELL_NEAREST_OUTPUT_PREFIX = "cell_nearest_reference_"
 CELL_NEAREST_BOX_PDF = OUTPUT / "cell_nearest_reference_cosine_boxplot.pdf"
@@ -35,12 +60,34 @@ CELL_NEAREST_QUERY_BATCH_SIZE = 4096
 CELL_NEAREST_REFERENCE_BLOCK_SIZE = 262144
 SCRIPT_OUTPUT = Path(__file__).resolve()
 
-REFERENCE_PATH = PROJECT / "archived/results/cnmf_snrna_joint_full1M_v1/cnmf_work/snrna_joint_full1M_v1/snrna_joint_full1M_v1.starcat_spectra.k_60.dt_0_15.txt"
-RETAIN_MAP_PATH = PROJECT / "archived/results/crossregion_v1/program_renumber_map.tsv"
-DISCOVERY_PROFILE_PATH = PROJECT / "archived/results/crossregion_v1/cell_program_region_subclass.parquet"
-DISCOVERY_OBS_PATH = PROJECT / "archived/inputs/snRNA_1M_obs.csv"
-GENE_INFO_PATH = PROJECT / "archived/inputs/geneInfo_snRNA.csv"
-SEAAD_META = PROJECT / "original_data/human/SEAAD_DLPFC_MTG"
+REFERENCE_PATH = configured_path(
+    "NMF_FIXED_H_REFERENCE",
+    PROJECT / "archived/results/cnmf_snrna_joint_full1M_v1/cnmf_work/snrna_joint_full1M_v1/snrna_joint_full1M_v1.starcat_spectra.k_60.dt_0_15.txt",
+)
+RETAIN_MAP_PATH = configured_path(
+    "NMF_RETAIN_MAP",
+    PROJECT / "archived/results/crossregion_v1/program_renumber_map.tsv",
+)
+DISCOVERY_PROFILE_PATH = configured_path(
+    "NMF_DISCOVERY_PROFILE",
+    PROJECT / "archived/results/crossregion_v1/cell_program_region_subclass.parquet",
+)
+DISCOVERY_OBS_PATH = configured_path(
+    "NMF_DISCOVERY_OBS",
+    PROJECT / "archived/inputs/snRNA_1M_obs.csv",
+)
+GENE_INFO_PATH = configured_path(
+    "NMF_GENE_INFO",
+    PROJECT / "archived/inputs/geneInfo_snRNA.csv",
+)
+SUBCLASS_CLASS_PATH = configured_path(
+    "NMF_SUBCLASS_CLASS",
+    PROJECT / "archived/figures/fig1/_intermediate/subclass_class.csv",
+)
+SEAAD_META = configured_path(
+    "NMF_SEAAD_META_ROOT",
+    PROJECT / "original_data/human/SEAAD_DLPFC_MTG",
+)
 SEAAD_ADAPTER_PATH = Path(__file__).with_name("00_scanvi_source_adapter.py")
 
 STUDIES = [
@@ -1450,8 +1497,7 @@ def _external_umap_median_profiles(study: str) -> pd.DataFrame:
 def _reference_umap_median_profiles() -> pd.DataFrame:
     old_columns = _load_umap_retained_columns()
     source_columns = [str(value) for value in range(1, 61)]
-    path = PROJECT / "archived/results/crossregion_v1/cell_program_region_subclass.parquet"
-    scores = pd.read_parquet(path, columns=source_columns)
+    scores = pd.read_parquet(DISCOVERY_PROFILE_PATH, columns=source_columns)
     if "__index_level_0__" in scores.columns:
         cell_ids = [clean(value) for value in scores["__index_level_0__"].tolist()]
     else:
@@ -2711,7 +2757,7 @@ def _resolve_original_class(
 def run_annotate_study_celltype_program_source() -> None:
     source_path = OUTPUT / "study_celltype_program_score_heatmap.tsv"
     annotation_path = Path((__import__("os").environ["NMF_WORK_ROOT"] + "/tables/TableS3_program_annotation.tsv"))
-    reference_class_path = PROJECT / "archived/figures/fig1/_intermediate/subclass_class.csv"
+    reference_class_path = SUBCLASS_CLASS_PATH
     with source_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle, delimiter="\t")
         fieldnames = list(reader.fieldnames or [])
@@ -3125,10 +3171,7 @@ def _scatter_reference_profiles(
     ).fillna("")
     obs.index = [clean(value) for value in obs.index]
     obs = obs.reindex(cell_ids)
-    subclass_class_table = pd.read_csv(
-        PROJECT / "archived/figures/fig1/_intermediate/subclass_class.csv",
-        dtype=str,
-    ).fillna("")
+    subclass_class_table = pd.read_csv(SUBCLASS_CLASS_PATH, dtype=str).fillna("")
     subclass_class = {
         clean(record.get("subclass", "")): clean(record.get("class", ""))
         for record in subclass_class_table.to_dict("records")
@@ -3279,10 +3322,7 @@ def _cell_nearest_reference_vectors() -> tuple[np.ndarray, np.ndarray, np.ndarra
     ).fillna("")
     obs.index = [clean(value) for value in obs.index]
     subclasses = obs.reindex(cell_ids)["subclass"].astype(str).map(clean).to_numpy(dtype=str)
-    subclass_class_table = pd.read_csv(
-        PROJECT / "archived/figures/fig1/_intermediate/subclass_class.csv",
-        dtype=str,
-    ).fillna("")
+    subclass_class_table = pd.read_csv(SUBCLASS_CLASS_PATH, dtype=str).fillna("")
     subclass_class = {
         clean(record.get("subclass", "")): clean(record.get("class", ""))
         for record in subclass_class_table.to_dict("records")

@@ -10,15 +10,44 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as sp
 
-PROJECT = Path(os.environ["NMF_SOURCE_ROOT"]) / "inputs/cortex_nmf_program"
-ROOT = PROJECT / "R2_Benchmark_Staging/01_human_single_cell_benchmark"
+
+def configured_path(name: str, default: Path | None = None) -> Path:
+    value = os.environ.get(name, "").strip()
+    if value:
+        return Path(value).expanduser()
+    if default is not None:
+        return default
+    raise RuntimeError(f"Set {name} to the required input path")
+
+
+legacy_source_root = os.environ.get("NMF_SOURCE_ROOT", "").strip()
+legacy_project = (
+    Path(legacy_source_root) / "inputs/cortex_nmf_program"
+    if legacy_source_root
+    else None
+)
+PROJECT = configured_path("NMF_SOURCE_PROJECT_ROOT", legacy_project)
+ROOT = configured_path(
+    "NMF_EXTERNAL_BENCH_ROOT",
+    PROJECT / "R2_Benchmark_Staging/01_human_single_cell_benchmark",
+)
 METHOD_DIR = ROOT / "06_scanvi"
-SOURCE_RDS = PROJECT / "original_data/human/single_cell/0_original/3_SnRNA_seurat_merged_1m_Cells.RDS"
-RUNTIME_CARRIER = ROOT / "00_rds_raw_counts_carrier.h5ad"
+SOURCE_RDS = configured_path(
+    "NMF_DISCOVERY_SOURCE_RDS",
+    PROJECT / "original_data/human/single_cell/0_original/3_SnRNA_seurat_merged_1m_Cells.RDS",
+)
+RUNTIME_CARRIER = configured_path(
+    "NMF_SEAAD_RUNTIME_CARRIER",
+    ROOT / "00_rds_raw_counts_carrier.h5ad",
+)
 COHORT = os.environ.get("SEAAD_COHORT", "normal")
 if COHORT not in {"normal", "dementia"}:
     raise RuntimeError("SEAAD_COHORT must be normal or dementia")
-PER_LIBRARY_ROOT = ROOT / "input/SEAAD" / COHORT
+SEAAD_LIBRARY_INPUT_ROOT = configured_path(
+    "NMF_SEAAD_LIBRARY_INPUT_ROOT",
+    ROOT / "input/SEAAD",
+)
+PER_LIBRARY_ROOT = SEAAD_LIBRARY_INPUT_ROOT / COHORT
 REFERENCE_N = 1_036_039
 REFERENCE_GENE_N = 36_547
 REGION_LIBRARY_N = {
