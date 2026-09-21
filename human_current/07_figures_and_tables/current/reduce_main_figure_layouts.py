@@ -1740,8 +1740,127 @@ def clean_fig2_native_content():
           "native vector/text retained",flush=True)
 
 
+def _retained_form(document, marker):
+    """Find the existing native form that owns a scoped layout operation."""
+    seen = set()
+    for xref, name, parent, box in document[0].get_xobjects():
+        if xref in seen:
+            continue
+        seen.add(xref)
+        stream = document.xref_stream(xref)
+        if stream and marker in stream:
+            return xref, stream
+    raise RuntimeError("The expected retained native PDF form was not found.")
+
+
+def _translate_native_x(fragment, delta):
+    """Translate absolute native coordinates without changing fonts or scales."""
+    import re
+    number = rb"-?(?:\d+(?:\.\d*)?|\.\d+)"
+    line = re.compile(rb"(?m)^(?:" + number + rb"[ \t]+)+(?:m|l|c|re|cm|Tm)[ \t]*$")
+
+    def shifted(match):
+        parts = match.group(0).split()
+        operator = parts[-1]
+        indices = {b"m": (0,), b"l": (0,), b"c": (0, 2, 4),
+                   b"re": (0,), b"cm": (4,), b"Tm": (4,)}[operator]
+        for index in indices:
+            parts[index] = f"{float(parts[index]) + delta:.7f}".rstrip("0").rstrip(".").encode()
+        return b" ".join(parts)
+
+    return line.sub(shifted, fragment)
+
+
+def _move_s9_row_labels(document):
+    import re
+    xref, stream = _retained_form(document, b"(ARACHNOID) Tj")
+    moved = 0
+    block = re.compile(rb"\bBT\b.*?\bET\b", re.S)
+    matrix = re.compile(rb"(?m)^5 0 0 -5 ([\d.]+) ([\d.]+) Tm$")
+
+    def reposition(match):
+        nonlocal moved
+        text = match.group(0)
+        location = matrix.search(text)
+        if location is None:
+            return text
+        x, y = map(float, location.groups())
+        if 25 <= y <= 170 and (60 <= x <= 120 or 315 <= x <= 362):
+            moved += 1
+            new = f"5 0 0 -5 {x - 50:.7f} {y:.7f} Tm".encode()
+            return text[:location.start()] + new + text[location.end():]
+        return text
+
+    changed = block.sub(reposition, stream)
+    if moved != 30:
+        raise RuntimeError(f"Expected 22 subclass and 8 domain labels; found {moved}.")
+    document.update_stream(xref, changed)
+    return "30 native row labels moved left; dendrograms and font operators unchanged"
+
+
+def _move_s16_pair_panel(document):
+    import re
+    xref, stream = _retained_form(document, b"301.91166 40.248 m")
+    start = stream.index(b"301.91166 40.248 m")
+    boundary = b"\nQ\nQ\nq\n1 1 1 rg\n1 1 1 RG\n301.91166 188.5397"
+    end = stream.index(boundary, start)
+    delta = 48.0
+    changed = stream[:start] + _translate_native_x(stream[start:end], delta) + stream[end:]
+    # Move the existing e title and its existing replacement masks with the plot.
+    # These are scoped coordinates, not a new white overlay or retyped label.
+    for x, y in [("301.91166", "188.5397"), ("301.91166", "190.4367"),
+                 ("360.89634", "20.75238"), ("360.19633", "19.91235"),
+                 ("350.6814", "22.10736")]:
+        old = f"{x} {y}".encode()
+        if changed.count(old) != 1:
+            raise RuntimeError("The retained S16e title/mask coordinates changed unexpectedly.")
+        new = f"{float(x) + delta:.7f}".rstrip("0").rstrip(".").encode() + b" " + y.encode()
+        changed = changed.replace(old, new, 1)
+    document.update_stream(xref, changed)
+    # The parent frame originally ended at the old figure's right edge. Expand
+    # its clip into existing page whitespace; do not scale the figure or fonts.
+    document.xref_set_key(xref, "BBox", "[0 0 566.4 619.2]")
+    for parent, name, owner, box in document[0].get_xobjects():
+        if parent == xref:
+            continue
+        resource_kind, resource = document.xref_get_key(parent, "Resources")
+        if resource_kind == "xref":
+            resource = document.xref_object(int(resource.split()[0]))
+        if re.search(rf"/fullpage\s+{xref}\s+0\s+R", resource):
+            document.xref_set_key(parent, "BBox", "[0 0 566.4 619.2]")
+    return "S16e translated right without resizing; native d heatmap retained"
+
+
+def repair_retained_supplement_layouts(names):
+    """Produce only the owner's requested S9/S16 retained-layout repairs."""
+    repairs = {"FigS9": _move_s9_row_labels, "FigS16": _move_s16_pair_panel}
+    if not names or any(name not in repairs for name in names):
+        raise RuntimeError("Select only FigS9 and/or FigS16 for this retained repair.")
+    for name in names:
+        pdf = ROOT / "source_figure_pdfs/supplementary_figures_pdf" / f"{name}.pdf"
+        png = ROOT / "figures_png/supplementary_figures" / f"{name}.png"
+        document = fitz.open(pdf)
+        description = repairs[name](document)
+        payload = document.tobytes(garbage=0, clean=False, deflate=True, no_new_id=True)
+        document.close()
+        pdf.write_bytes(payload)
+        print("Produced", pdf, description, flush=True)
+        with fitz.open(pdf) as rendered:
+            rendered[0].get_pixmap(dpi=300, alpha=False).save(png)
+        print("Produced", png, flush=True)
+        number = int(name[4:]) + 1
+        attachment = (ROOT / "supplementary_data/gigascience_supplementary_material"
+                      / f"Additional_file_{number}_supplementary material_{name}.pdf")
+        attachment.write_bytes(payload)
+        print("Produced", attachment, flush=True)
+
+
 def main():
     import sys
+    if '--retained-supplement-layouts' in sys.argv:
+        position = sys.argv.index('--retained-supplement-layouts')
+        repair_retained_supplement_layouts(sys.argv[position + 1:])
+        return
     if '--fig2-clean-native-only' in sys.argv:
         clean_fig2_native_content()
         return

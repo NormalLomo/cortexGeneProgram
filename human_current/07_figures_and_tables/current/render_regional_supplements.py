@@ -509,6 +509,41 @@ def finalize_existing():
     combine_supplements()
 
 
+def restore_retained_s6_distribution():
+    """Reveal the existing lower P1 plot without rescaling any native object."""
+    source = FIG_DIR / "FigS6.pdf"
+    doc = fitz.open(source)
+    page = doc[0]
+    target = None
+    for xref, name, parent, _ in page.get_xobjects():
+        if name != "fzFrm12":
+            continue
+        kind, value = doc.xref_get_key(xref, "BBox")
+        if kind != "array":
+            continue
+        box = [float(v) for v in re.findall(r"-?\d+(?:\.\d+)?", value)]
+        if (len(box) == 4 and abs(box[0]) < .01
+                and abs(box[2] - 340) < .01
+                and abs(box[3] - (page.rect.height - 1215)) < .02):
+            target = xref
+            break
+    if target is None:
+        raise RuntimeError("The retained S6f native crop could not be located.")
+    # P13/P6 occupy the upper row; P1 already exists directly beneath P13.
+    # Only the lower clipping boundary hid P1. The right-hand g/h clips stay put.
+    doc.xref_set_key(target, "BBox",
+                     f"[0 {page.rect.height - 1690:.6f} 340 {page.rect.height - 1215:.6f}]")
+    payload = doc.tobytes(garbage=0, clean=False, deflate=True, no_new_id=True)
+    doc.close()
+    source.write_bytes(payload)
+    print("Produced", source, "retained P1 crop restored; fonts unchanged", flush=True)
+    render_png(source, PNG_DIR / "FigS6.png")
+    print("Produced", PNG_DIR / "FigS6.png", flush=True)
+    attachment = ATTACH_DIR / "Additional_file_7_supplementary material_FigS6.pdf"
+    attachment.write_bytes(payload)
+    print("Produced", attachment, flush=True)
+
+
 def main():
     rows = _table_s3_values(TABLE_S3)
     clean_s4(FIG_DIR / "FigS4.pdf", FIG_DIR / "FigS4.pdf")
@@ -527,7 +562,9 @@ def main():
 
 
 if __name__ == "__main__":
-    if "--finalize-existing" in sys.argv[1:]:
+    if "--s6-layout-only" in sys.argv[1:]:
+        restore_retained_s6_distribution()
+    elif "--finalize-existing" in sys.argv[1:]:
         finalize_existing()
     else:
         main()
